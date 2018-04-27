@@ -1,14 +1,19 @@
 package com.tistory.deque.previewmaker;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.ActionBar;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -19,17 +24,29 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
 import android.widget.Toast;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity
   implements NavigationView.OnNavigationItemSelectedListener {
+  private final int REQUEST_TAKE_STAMP_FROM_ALBUM = 101;
+  private final int REQUEST_IMAGE_CROP = 102;
   private final String TAG = "MainActivity";
 
   private Toolbar toolbar;
   private Permission permission;
+
+  String mCurrentPhotoPath;
+  Uri imageURI, cropSourceURI, cropEndURI; //  cropSourceURI = 자를 uri, cropEndURI = 자르고 난뒤 uri
+
+  ImageView imageView;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +63,7 @@ public class MainActivity extends AppCompatActivity
       @Override
       public void onClick(View view) {
         if(!permission.checkPermissions()) return;
+        getStampFromAlbum();
       }
     });
 
@@ -59,6 +77,50 @@ public class MainActivity extends AppCompatActivity
     navigationView.setNavigationItemSelectedListener(this);
 
     permission.checkPermissions();
+
+    imageView = findViewById(R.id.tempImageView);
+  }
+
+  private void getStampFromAlbum() {
+    Log.d(TAG, "getAlbum()");
+    Intent intent = new Intent(Intent.ACTION_PICK);
+    intent.setType("image/*");
+    intent.setType(MediaStore.Images.Media.CONTENT_TYPE);
+    Log.d(TAG, "start Activity : album intent");
+    startActivityForResult(intent, REQUEST_TAKE_STAMP_FROM_ALBUM);
+  }
+
+  @Override
+  protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    super.onActivityResult(requestCode, resultCode, data);
+    switch (requestCode){
+      case REQUEST_TAKE_STAMP_FROM_ALBUM:
+        if(resultCode == Activity.RESULT_OK){
+          File albumFile = null;
+          try{
+            albumFile = createImageFile();
+          } catch (IOException e){
+            Log.d(TAG, "Create dump image file IO Exception");
+          }
+          cropSourceURI = data.getData();
+          cropEndURI = Uri.fromFile(albumFile);
+          cropImage();
+          Log.d(TAG, "TAKE STAMP FROM ALBUM OK");
+        } else {
+          Log.d(TAG, "TAKE STAMP FROM ALBUM FAIL");
+        }
+        break;
+
+      case REQUEST_IMAGE_CROP:
+        if(resultCode == Activity.RESULT_OK){
+          galleryAddPic();
+          imageView.setImageURI(cropEndURI);
+          Log.d(TAG, "IMAGE CROP OK");
+        } else {
+          Log.d(TAG, "IMAGE CROP FAIL");
+        }
+        break;
+    }
   }
 
   @Override
@@ -122,4 +184,55 @@ public class MainActivity extends AppCompatActivity
   public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
     permission.requestPermissionsResult(requestCode, permissions, grantResults);
   }
+
+  public File createImageFile() throws IOException {
+    Log.d(TAG, "createImageFile func");
+    String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+    String imageFileName = "JPEG_" + timeStamp + ".jpg";
+    File imageFile = null;
+    File storageDir = new File(Environment.getExternalStorageDirectory() + "/Pictures", "Preview Maker");
+    Log.d(TAG, "storageDir : " + storageDir);
+    if (!storageDir.exists()) {
+      Log.d(TAG, storageDir.toString() + " is not exist");
+      storageDir.mkdir();
+      Log.d(TAG, "storageDir make");
+    }
+    imageFile = new File(storageDir, imageFileName);
+    Log.d(TAG, "imageFile init");
+    mCurrentPhotoPath = imageFile.getAbsolutePath();
+    Log.d(TAG, "mCurrentPhotoPath : " + mCurrentPhotoPath);
+
+    return imageFile;
+  }
+
+  public void cropImage() {
+    /**
+     * cropSourceURI = 자를 uri
+     * cropEndURI = 자르고 난뒤 uri
+     */
+    Log.d(TAG, "cropImage() CALL");
+    Log.d(TAG, "cropImage() : Photo URI, Album URI" + cropSourceURI + ", " + cropEndURI);
+
+    Intent cropIntent = new Intent("com.android.camera.action.CROP");
+
+    cropIntent.setFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+    cropIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+    cropIntent.setDataAndType(cropSourceURI, "image/*");
+    cropIntent.putExtra("output", cropEndURI);
+    startActivityForResult(cropIntent, REQUEST_IMAGE_CROP);
+  }
+  private void galleryAddPic() {
+    /**
+     * Do media scan
+     */
+    Log.d(TAG, "galleryAddPic, do media scan");
+    Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+    File f = new File(mCurrentPhotoPath);
+    Uri contentUri = Uri.fromFile(f);
+    mediaScanIntent.setData(contentUri);
+    sendBroadcast(mediaScanIntent);
+    Log.d(TAG, "media scanning end");
+  }
+
+
 }
