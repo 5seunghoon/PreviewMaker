@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.io.File;
@@ -27,12 +28,14 @@ public class StampAdatper extends RecyclerView.Adapter<StampAdatper.ViewHolder> 
   public static class ViewHolder extends RecyclerView.ViewHolder {
     public TextView StampNameTextView;
     public ImageView StampImageTextView;
+    public LinearLayout selectLayout;
     public Button deleteItemButton;
 
     public ViewHolder(View v) {
       super(v);
       StampNameTextView = v.findViewById(R.id.stampListTextView);
       StampImageTextView = v.findViewById(R.id.stampListImageView);
+      selectLayout = v.findViewById(R.id.selectLayout);
       deleteItemButton = v.findViewById(R.id.deleteItempButton);
     }
   }
@@ -61,14 +64,7 @@ public class StampAdatper extends RecyclerView.Adapter<StampAdatper.ViewHolder> 
         clickDel(v, position);
       }
     });
-
-    holder.StampNameTextView.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        clickItem(v, position);
-      }
-    });
-    holder.StampImageTextView.setOnClickListener(new View.OnClickListener() {
+    holder.selectLayout.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
         clickItem(v, position);

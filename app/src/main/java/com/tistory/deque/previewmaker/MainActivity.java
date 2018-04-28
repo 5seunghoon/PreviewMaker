@@ -2,6 +2,7 @@ package com.tistory.deque.previewmaker;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -25,6 +26,8 @@ import android.view.MenuItem;
 import android.view.ViewGroup;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -141,8 +144,12 @@ public class MainActivity extends AppCompatActivity
             Log.d(TAG, "Create dump image file IO Exception");
           }
           mCropSourceURI = data.getData();
+          Log.d(TAG, "mCropSourceURI : " + mCropSourceURI);
           mCropEndURI = Uri.fromFile(albumFile);
-          cropImage();
+
+          //cropImage();
+          nonCropImage();
+
           Log.d(TAG, "TAKE STAMP FROM ALBUM OK");
         } else {
           Log.d(TAG, "TAKE STAMP FROM ALBUM FAIL");
@@ -283,6 +290,61 @@ public class MainActivity extends AppCompatActivity
     cropIntent.setDataAndType(mCropSourceURI, "image/*");
     cropIntent.putExtra("output", mCropEndURI);
     startActivityForResult(cropIntent, REQUEST_IMAGE_CROP);
+  }
+
+  public void nonCropImage(){
+    String pathCropSourceURI = getRealPathFromURI(mCropSourceURI);
+    File file = new File(pathCropSourceURI);
+    File outFile = new File(mCropEndURI.getPath());
+    Log.d(TAG, "inFile , outFile " + file + " , " + outFile);
+
+    if (file != null && file.exists()) {
+
+      try {
+
+        FileInputStream fis = new FileInputStream(file);
+        FileOutputStream newfos = new FileOutputStream(outFile);
+        int readcount = 0;
+        byte[] buffer = new byte[1024];
+
+        while ((readcount = fis.read(buffer, 0, 1024)) != -1) {
+          newfos.write(buffer, 0, readcount);
+        }
+        newfos.close();
+        fis.close();
+      } catch (Exception e) {
+        Log.d(TAG, "FILE COPY FAIL");
+        e.printStackTrace();
+      }
+    } else {
+      Log.d(TAG, "IN FILE NOT EXIST");
+    }
+
+    Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+    File f = new File(mCropEndURI.getPath());
+    Uri contentUri = Uri.fromFile(f);
+    mediaScanIntent.setData(contentUri);
+    sendBroadcast(mediaScanIntent);
+
+    Intent intent = new Intent(getApplicationContext(), MakeStampActivity.class);
+    intent.setData(mCropEndURI);
+    startActivityForResult(intent, REQUEST_MAKE_STAMP_ACTIVITY);
+
+  }
+
+  public String getRealPathFromURI(Uri contentUri) {
+
+    String[] proj = { MediaStore.Images.Media.DATA };
+
+    Cursor cursor = getContentResolver().query(contentUri, proj, null, null, null);
+    cursor.moveToNext();
+    String path = cursor.getString(cursor.getColumnIndex(MediaStore.MediaColumns.DATA));
+    Uri uri = Uri.fromFile(new File(path));
+
+    Log.d(TAG, "getRealPathFromURI(), path : " + uri.toString());
+
+    cursor.close();
+    return path;
   }
   private void galleryAddPic() {
     /**
