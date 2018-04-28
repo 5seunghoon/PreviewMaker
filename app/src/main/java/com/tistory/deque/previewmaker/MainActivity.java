@@ -1,9 +1,7 @@
 package com.tistory.deque.previewmaker;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -11,9 +9,9 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.ActionBar;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -24,16 +22,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.view.ViewGroup;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity
   implements NavigationView.OnNavigationItemSelectedListener {
@@ -42,49 +37,86 @@ public class MainActivity extends AppCompatActivity
   private final int REQUEST_MAKE_STAMP_ACTIVITY = 103;
   private final String TAG = "MainActivity";
 
-  private Toolbar toolbar;
-  private Permission permission;
+  Toolbar mToolbar;
+  Permission mPermission;
 
   String mCurrentPhotoPath;
-  Uri cropSourceURI, cropEndURI; //  cropSourceURI = 자를 uri, cropEndURI = 자르고 난뒤 uri
+  Uri mCropSourceURI, mCropEndURI; //  mCropSourceURI = 자를 uri, mCropEndURI = 자르고 난뒤 uri
 
-  long backPressedTime;
+  RecyclerView mRecyclerStampView;
+  ArrayList<StampItem> mStampItems;
+  StampAdatper mStampAdapter;
+  LinearLayoutManager mRecyclerViewLayoutManager;
 
-  ImageView imageView;
+
+
+  long mBackPressedTime;
+
+  //ImageView imageView;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
-    toolbar = (Toolbar) findViewById(R.id.toolbar);
-    setSupportActionBar(toolbar);
 
-    permission = new Permission(getApplicationContext(), this);
-    permission.permissionSnackbarInit(toolbar);
+    //setting toolbar
+    mToolbar = (Toolbar) findViewById(R.id.toolbar);
+    setSupportActionBar(mToolbar);
 
+    //permission
+    mPermission = new Permission(getApplicationContext(), this);
+    mPermission.permissionSnackbarInit(mToolbar);
+
+    //setting recycler view
+    setRecyclerView();
+
+    //floating action button
     FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
     fab.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
-        if(!permission.checkPermissions()) return;
+        if(!mPermission.checkPermissions()) return;
         getStampFromAlbum();
       }
     });
 
     setTitle("프리뷰 메이커");
 
+    //setting drawer
     DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
     ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-      this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+      this, drawer, mToolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
     drawer.addDrawerListener(toggle);
     toggle.syncState();
 
+    //setting navigation view
     NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
     navigationView.setNavigationItemSelectedListener(this);
 
-    permission.checkPermissions();
 
-    imageView = findViewById(R.id.tempImageView);
+    mPermission.checkPermissions();
+
+    //imageView = findViewById(R.id.tempImageView);
+  }
+
+  private void setRecyclerView(){
+
+    mRecyclerStampView = findViewById(R.id.recyclerStampView);
+    // 각 Item 들이 RecyclerView 의 전체 크기를 변경하지 않는 다면
+    // setHasFixedSize() 함수를 사용해서 성능을 개선할 수 있습니다.
+    // 변경될 가능성이 있다면 false 로 , 없다면 true를 설정해주세요.
+    mRecyclerStampView.setHasFixedSize(true);
+
+    mRecyclerViewLayoutManager = new LinearLayoutManager(this);
+    mRecyclerViewLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+    mRecyclerStampView.setLayoutManager(mRecyclerViewLayoutManager);
+    mRecyclerStampView.setItemAnimator(new DefaultItemAnimator());
+
+    mStampItems = new ArrayList<>();
+    mStampAdapter = new StampAdatper(mStampItems);
+    mRecyclerStampView.setAdapter(mStampAdapter);
+
+
   }
 
   private void getStampFromAlbum() {
@@ -108,8 +140,8 @@ public class MainActivity extends AppCompatActivity
           } catch (IOException e){
             Log.d(TAG, "Create dump image file IO Exception");
           }
-          cropSourceURI = data.getData();
-          cropEndURI = Uri.fromFile(albumFile);
+          mCropSourceURI = data.getData();
+          mCropEndURI = Uri.fromFile(albumFile);
           cropImage();
           Log.d(TAG, "TAKE STAMP FROM ALBUM OK");
         } else {
@@ -121,7 +153,7 @@ public class MainActivity extends AppCompatActivity
         if(resultCode == Activity.RESULT_OK){
           galleryAddPic();
           Intent intent = new Intent(getApplicationContext(), MakeStampActivity.class);
-          intent.setData(cropEndURI);
+          intent.setData(mCropEndURI);
           startActivityForResult(intent, REQUEST_MAKE_STAMP_ACTIVITY);
           Log.d(TAG, "IMAGE CROP OK");
         } else {
@@ -131,9 +163,11 @@ public class MainActivity extends AppCompatActivity
 
       case REQUEST_MAKE_STAMP_ACTIVITY:
         if(resultCode == Activity.RESULT_OK){
-          imageView.setImageURI(data.getData());
-          TextView textView = findViewById(R.id.tempTextView);
-          textView.setText(data.getStringExtra("STAMP_NAME"));
+          //imageView.setImageURI(data.getData());
+          //TextView textView = findViewById(R.id.tempTextView);
+          //textView.setText(data.getStringExtra("STAMP_NAME"));
+          mStampItems.add(new StampItem(data.getData(), data.getStringExtra("STAMP_NAME")));
+          mStampAdapter.notifyDataSetChanged();
         }
     }
   }
@@ -144,8 +178,8 @@ public class MainActivity extends AppCompatActivity
     if (drawer.isDrawerOpen(GravityCompat.START)) {
       drawer.closeDrawer(GravityCompat.START);
     } else {
-      if(System.currentTimeMillis() - backPressedTime > 2000){
-        Snackbar.make(toolbar, "뒤로 버튼을 한번 더 누르시면 종료합니다", Snackbar.LENGTH_LONG)
+      if(System.currentTimeMillis() - mBackPressedTime > 2000){
+        Snackbar.make(mToolbar, "뒤로 버튼을 한번 더 누르시면 종료합니다", Snackbar.LENGTH_LONG)
           .setAction("EXIT", new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -153,7 +187,7 @@ public class MainActivity extends AppCompatActivity
             }
           })
           .show();
-        backPressedTime = System.currentTimeMillis();
+        mBackPressedTime = System.currentTimeMillis();
       } else {
         finish();
       }
@@ -209,7 +243,7 @@ public class MainActivity extends AppCompatActivity
 
   @Override
   public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-    permission.requestPermissionsResult(requestCode, permissions, grantResults);
+    mPermission.requestPermissionsResult(requestCode, permissions, grantResults);
   }
 
   public File createImageFile() throws IOException {
@@ -234,18 +268,18 @@ public class MainActivity extends AppCompatActivity
 
   public void cropImage() {
     /**
-     * cropSourceURI = 자를 uri
-     * cropEndURI = 자르고 난뒤 uri
+     * mCropSourceURI = 자를 uri
+     * mCropEndURI = 자르고 난뒤 uri
      */
     Log.d(TAG, "cropImage() CALL");
-    Log.d(TAG, "cropImage() : Photo URI, Album URI" + cropSourceURI + ", " + cropEndURI);
+    Log.d(TAG, "cropImage() : Photo URI, Album URI" + mCropSourceURI + ", " + mCropEndURI);
 
     Intent cropIntent = new Intent("com.android.camera.action.CROP");
 
     cropIntent.setFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
     cropIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-    cropIntent.setDataAndType(cropSourceURI, "image/*");
-    cropIntent.putExtra("output", cropEndURI);
+    cropIntent.setDataAndType(mCropSourceURI, "image/*");
+    cropIntent.putExtra("output", mCropEndURI);
     startActivityForResult(cropIntent, REQUEST_IMAGE_CROP);
   }
   private void galleryAddPic() {
