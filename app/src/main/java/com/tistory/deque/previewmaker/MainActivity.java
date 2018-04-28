@@ -43,6 +43,25 @@ public class MainActivity extends AppCompatActivity
   DBOpenHelper dbOpenHelper;
   int dbVersion = 1;
   final String dpOpenHelperName = "DB_OPEN_HELPER_NAME";
+  /**
+   * 중요 :
+   * endOfID는 ArrayList의 Stamp들과 DB의 item들이 서로 같은 id를 갖게 하기 위해
+   * 존재하는 변수.
+   *
+   * endOfID는 처음 앱이 실행될때 DB에 있는 아이템들의 id를 체크하여 가장 높은
+   * id를 체크하고있다. 그리고 새로운 stamp를 만들면 그 endOfID + 1 값을 id로 가지고,
+   * 그 값이 또한 DB에 들어가게 됨으로써 arrayList의 stamp들과 DB들의 item들의 id가
+   * 싱크가 맞춰진다. 즉, arrayList의 stamp중 하나를 골라 id를 뽑아낸 다음, DB에서
+   * 해당 id를 찾으면 그것은 방금 고른 stamp와 같은 item이 된다.
+   *
+   * 따라서 ArryaList에서 Stamp를 하나 삭제하게 되면,
+   * 그것과 같은 Stamp를 DB에서 삭제해야 한다.
+   * 즉, 방금 삭제한 ArrayList에 있던 Stamp의 ID를 식별하고,
+   * 그 ID와 같은 item을 DB에서 찾은 뒤 그 item을 삭제하면 된다.
+   *
+   * 식별자를 이름과 같은 걸 쓰지않고 ID를 내장하여 쓰는 이유는 이름을 중복해서 만들수 있게 하기 위해서임.
+   * 다만 endOfID가 DB에 있는 ID와 중복되는 경우를 예외처리하지 않았음...
+   */
   int endOfID = 0; // db에 있는 id들의 값들 중 가장 큰 값
 
   Toolbar mToolbar;
