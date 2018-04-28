@@ -113,7 +113,7 @@ public class MainActivity extends AppCompatActivity
     mRecyclerStampView.setItemAnimator(new DefaultItemAnimator());
 
     mStampItems = new ArrayList<>();
-    mStampAdapter = new StampAdatper(mStampItems);
+    mStampAdapter = new StampAdatper(mStampItems, this);
     mRecyclerStampView.setAdapter(mStampAdapter);
 
 
@@ -156,8 +156,10 @@ public class MainActivity extends AppCompatActivity
           intent.setData(mCropEndURI);
           startActivityForResult(intent, REQUEST_MAKE_STAMP_ACTIVITY);
           Log.d(TAG, "IMAGE CROP OK");
+        } else if(resultCode == Activity.RESULT_CANCELED){
+          Log.d(TAG, "IMAGE CROP CANCLE");
         } else {
-          Log.d(TAG, "IMAGE CROP FAIL");
+          Log.d(TAG, "IMAGE CROP FIRST USER");
         }
         break;
 
