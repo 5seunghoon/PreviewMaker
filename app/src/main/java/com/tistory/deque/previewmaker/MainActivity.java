@@ -25,6 +25,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
@@ -38,13 +39,14 @@ public class MainActivity extends AppCompatActivity
   implements NavigationView.OnNavigationItemSelectedListener {
   private final int REQUEST_TAKE_STAMP_FROM_ALBUM = 101;
   private final int REQUEST_IMAGE_CROP = 102;
+  private final int REQUEST_MAKE_STAMP_ACTIVITY = 103;
   private final String TAG = "MainActivity";
 
   private Toolbar toolbar;
   private Permission permission;
 
   String mCurrentPhotoPath;
-  Uri imageURI, cropSourceURI, cropEndURI; //  cropSourceURI = 자를 uri, cropEndURI = 자르고 난뒤 uri
+  Uri cropSourceURI, cropEndURI; //  cropSourceURI = 자를 uri, cropEndURI = 자르고 난뒤 uri
 
   ImageView imageView;
 
@@ -114,12 +116,23 @@ public class MainActivity extends AppCompatActivity
       case REQUEST_IMAGE_CROP:
         if(resultCode == Activity.RESULT_OK){
           galleryAddPic();
-          imageView.setImageURI(cropEndURI);
+          Intent intent = new Intent(getApplicationContext(), MakeStampActivity.class);
+          intent.setData(cropEndURI);
+          startActivityForResult(intent, REQUEST_MAKE_STAMP_ACTIVITY);
           Log.d(TAG, "IMAGE CROP OK");
         } else {
           Log.d(TAG, "IMAGE CROP FAIL");
         }
         break;
+
+      case REQUEST_MAKE_STAMP_ACTIVITY:
+        if(resultCode == Activity.RESULT_OK){
+          imageView.setImageURI(data.getData());
+          TextView textView = findViewById(R.id.tempTextView);
+          textView.setText(data.getStringExtra("STAMP_NAME"));
+        } else {
+
+        }
     }
   }
 
