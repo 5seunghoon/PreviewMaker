@@ -48,6 +48,8 @@ public class MainActivity extends AppCompatActivity
   String mCurrentPhotoPath;
   Uri cropSourceURI, cropEndURI; //  cropSourceURI = 자를 uri, cropEndURI = 자르고 난뒤 uri
 
+  long backPressedTime;
+
   ImageView imageView;
 
   @Override
@@ -68,6 +70,8 @@ public class MainActivity extends AppCompatActivity
         getStampFromAlbum();
       }
     });
+
+    setTitle("프리뷰 메이커");
 
     DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
     ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -130,8 +134,6 @@ public class MainActivity extends AppCompatActivity
           imageView.setImageURI(data.getData());
           TextView textView = findViewById(R.id.tempTextView);
           textView.setText(data.getStringExtra("STAMP_NAME"));
-        } else {
-
         }
     }
   }
@@ -142,7 +144,19 @@ public class MainActivity extends AppCompatActivity
     if (drawer.isDrawerOpen(GravityCompat.START)) {
       drawer.closeDrawer(GravityCompat.START);
     } else {
-      super.onBackPressed();
+      if(System.currentTimeMillis() - backPressedTime > 2000){
+        Snackbar.make(toolbar, "뒤로 버튼을 한번 더 누르시면 종료합니다", Snackbar.LENGTH_LONG)
+          .setAction("EXIT", new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+              finish();
+            }
+          })
+          .show();
+        backPressedTime = System.currentTimeMillis();
+      } else {
+        finish();
+      }
     }
   }
 
