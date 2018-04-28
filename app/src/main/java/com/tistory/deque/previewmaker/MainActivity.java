@@ -251,7 +251,7 @@ public class MainActivity extends AppCompatActivity
   public File createImageFile() throws IOException {
     Log.d(TAG, "createImageFile func");
     String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-    String imageFileName = "JPEG_" + timeStamp + ".jpg";
+    String imageFileName = "STAMP_" + timeStamp + ".png";
     File imageFile = null;
     File storageDir = new File(Environment.getExternalStorageDirectory() + "/Pictures", "Preview Maker");
     Log.d(TAG, "storageDir : " + storageDir);

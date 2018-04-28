@@ -44,12 +44,12 @@
   </LinearLayout>
 
   <LinearLayout
+    android:id="@+id/stampImageLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_marginBottom="8dp"
     android:layout_marginTop="8dp"
     android:layout_weight="3"
-    android:background="@android:color/white"
     android:gravity="center"
     android:orientation="vertical"
     android:padding="16dp">
@@ -58,7 +58,7 @@
       android:id="@+id/stampImageView"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      app:srcCompat="@android:color/background_dark" />
+      android:background="@android:color/transparent" />
 
   </LinearLayout>
 </LinearLayout>
