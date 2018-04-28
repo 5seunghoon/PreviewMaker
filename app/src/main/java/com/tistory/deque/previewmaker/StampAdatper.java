@@ -24,6 +24,7 @@ public class StampAdatper extends RecyclerView.Adapter<StampAdatper.ViewHolder> 
   private Activity mActivity;
   private ArrayList<StampItem> mStampItems;
   private final String TAG ="StampAdapter";
+  private DBOpenHelper mDBOpenHelper;
 
   public static class ViewHolder extends RecyclerView.ViewHolder {
     public TextView StampNameTextView;
@@ -40,9 +41,10 @@ public class StampAdatper extends RecyclerView.Adapter<StampAdatper.ViewHolder> 
     }
   }
 
-  public StampAdatper(ArrayList<StampItem> items, Activity activity){
+  public StampAdatper(ArrayList<StampItem> items, Activity activity, DBOpenHelper dbOpenHelper){
     mActivity = activity;
     mStampItems = items;
+    mDBOpenHelper = dbOpenHelper;
   }
   @NonNull
   @Override
@@ -73,7 +75,7 @@ public class StampAdatper extends RecyclerView.Adapter<StampAdatper.ViewHolder> 
   }
 
   private void clickItem(View v, int position){
-    Snackbar.make(v, position + " 선택", Snackbar.LENGTH_LONG).show();
+    Snackbar.make(v, "POS : " + position + ", ID " + mStampItems.get(position).getID(), Snackbar.LENGTH_LONG).show();
   }
 
   private void clickDel(final View v, final int position){
@@ -98,9 +100,11 @@ public class StampAdatper extends RecyclerView.Adapter<StampAdatper.ViewHolder> 
 
   private void deleteStampAndScan(View v, int position){
     //delete stamp and do media scan
+    int id = mStampItems.get(position).getID();
     Uri imageURI = mStampItems.get(position).getImageURI();
     String name = mStampItems.get(position).getStampName();
-    File file = new File(imageURI.getPath());if(file.delete()) {
+    File file = new File(imageURI.getPath());
+    if(file.delete()) {
 
       Log.d(TAG, "Stamp delete suc");
       Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
@@ -115,6 +119,8 @@ public class StampAdatper extends RecyclerView.Adapter<StampAdatper.ViewHolder> 
       }
 
       notifyDataSetChanged();
+
+      mDBOpenHelper.dbDeleteStamp(id);
 
       Snackbar.make(v, "낙관 [" + name + "] 삭제 완료", Snackbar.LENGTH_LONG).show();
     } else {

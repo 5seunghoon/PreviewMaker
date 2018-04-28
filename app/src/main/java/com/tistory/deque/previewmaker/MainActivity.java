@@ -40,6 +40,11 @@ public class MainActivity extends AppCompatActivity
   private final int REQUEST_MAKE_STAMP_ACTIVITY = 103;
   private final String TAG = "MainActivity";
 
+  DBOpenHelper dbOpenHelper;
+  int dbVersion = 1;
+  final String dpOpenHelperName = "DB_OPEN_HELPER_NAME";
+  int endOfID = 0; // db에 있는 id들의 값들 중 가장 큰 값
+
   Toolbar mToolbar;
   Permission mPermission;
 
@@ -57,10 +62,18 @@ public class MainActivity extends AppCompatActivity
 
   //ImageView imageView;
 
+  protected void onDestroy() {
+    if (dbOpenHelper != null) {
+      dbOpenHelper.dbClose();
+    }
+    super.onDestroy();
+  }
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
+
+    dbOpen();
 
     //setting toolbar
     mToolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -99,7 +112,38 @@ public class MainActivity extends AppCompatActivity
 
     mPermission.checkPermissions();
 
-    //imageView = findViewById(R.id.tempImageView);
+    stampsFromDBToList();
+  }
+
+
+  private void dbOpen(){
+    dbOpenHelper = DBOpenHelper.getDbOpenHelper(
+      getApplicationContext()
+    , dpOpenHelperName
+    , null
+    , dbVersion);
+    dbOpenHelper.dbOpen();
+  }
+
+  private void stampsFromDBToList() {
+    int id;
+    String imageURI;
+    String name;
+    String sql = "SELECT * FROM " + dbOpenHelper.TABLE_NAME_STAMPS + ";";
+    Cursor results = null;
+    results = dbOpenHelper.db.rawQuery(sql, null);
+    Log.d(TAG, "Cursor open");
+    results.moveToFirst();
+    while(!results.isAfterLast()) {
+      id = results.getInt(0);
+      name = results.getString(1);
+      imageURI = results.getString(2);
+      Log.d(TAG, "DB ITEM : id : " + id + " imageURI : " + imageURI + " name : " + name);
+      mStampItems.add(new StampItem(id, Uri.parse(imageURI), name));
+      if(id > endOfID) endOfID = id;
+
+      results.moveToNext();
+    }
   }
 
   private void setRecyclerView(){
@@ -116,7 +160,7 @@ public class MainActivity extends AppCompatActivity
     mRecyclerStampView.setItemAnimator(new DefaultItemAnimator());
 
     mStampItems = new ArrayList<>();
-    mStampAdapter = new StampAdatper(mStampItems, this);
+    mStampAdapter = new StampAdatper(mStampItems, this, dbOpenHelper);
     mRecyclerStampView.setAdapter(mStampAdapter);
 
 
@@ -175,7 +219,10 @@ public class MainActivity extends AppCompatActivity
           //imageView.setImageURI(data.getData());
           //TextView textView = findViewById(R.id.tempTextView);
           //textView.setText(data.getStringExtra("STAMP_NAME"));
-          mStampItems.add(new StampItem(data.getData(), data.getStringExtra("STAMP_NAME")));
+          endOfID++;
+          mStampItems.add(new StampItem(endOfID, data.getData(), data.getStringExtra("STAMP_NAME")));
+          dbOpenHelper.dbInsertStamp(data.getStringExtra("STAMP_NAME"), data.getData());
+          Log.d(TAG, "INSERT : ID : " + endOfID + " imageURI : " + data.getData() + " name : " + data.getStringExtra("STAMP_NAME"));
           mStampAdapter.notifyDataSetChanged();
         }
     }
