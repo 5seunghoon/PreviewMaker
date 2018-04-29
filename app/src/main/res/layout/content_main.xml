@@ -12,6 +12,21 @@
   tools:context=".MainActivity"
   tools:showIn="@layout/app_bar_main">
 
+  <TextView
+    android:id="@+id/mainActivityHintText"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/white"
+    android:ems="10"
+    android:gravity="center"
+    android:paddingBottom="200dp"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:paddingTop="200dp"
+    android:text="@string/tutorial_main_activity_text"
+    android:textColor="@color/colorAccent"
+    android:textSize="28sp" />
+
   <android.support.v7.widget.RecyclerView
     android:id="@+id/recyclerStampView"
     android:layout_width="match_parent"

@@ -129,6 +129,8 @@ public class StampAdatper extends RecyclerView.Adapter<StampAdatper.ViewHolder> 
 
       mDBOpenHelper.dbDeleteStamp(id);
 
+      mActivity.visiableHint();
+
       Snackbar.make(v, "낙관 [" + name + "] 삭제 완료", Snackbar.LENGTH_LONG).show();
     } else {
       Log.d(TAG, "Stamp delete fail" + imageURI);
