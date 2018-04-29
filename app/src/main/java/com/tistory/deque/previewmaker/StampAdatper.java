@@ -8,7 +8,6 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +22,7 @@ import java.util.ArrayList;
 public class StampAdatper extends RecyclerView.Adapter<StampAdatper.ViewHolder>  {
   private MainActivity mActivity;
   private ArrayList<StampItem> mStampItems;
-  private final String TAG ="StampAdapter";
+  private final String TAG ="MainActivity";
   private DBOpenHelper mDBOpenHelper;
 
   public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -75,14 +74,7 @@ public class StampAdatper extends RecyclerView.Adapter<StampAdatper.ViewHolder> 
   }
 
   private void clickItem(View v, int position){
-    //Snackbar.make(v, "POS : " + position + ", ID " + mStampItems.get(position).getID(), Snackbar.LENGTH_LONG).show();
-    //Intent intent = new Intent(mActivity.getApplicationContext(), PreviewEditActivity.class);
-    //intent.setData(mStampItems.get(position).getImageURI());
-    //intent.putExtra("STAMP_ID", mStampItems.get(position).getID());
-    //mActivity.startActivity(intent);
-
     mActivity.callFromListItem(position);
-
   }
 
   private void clickDel(final View v, final int position){
@@ -106,35 +98,7 @@ public class StampAdatper extends RecyclerView.Adapter<StampAdatper.ViewHolder> 
   }
 
   private void deleteStampAndScan(View v, int position){
-    //delete stamp and do media scan
-    int id = mStampItems.get(position).getID();
-    Uri imageURI = mStampItems.get(position).getImageURI();
-    String name = mStampItems.get(position).getStampName();
-    File file = new File(imageURI.getPath());
-    if(file.delete()) {
-
-      Log.d(TAG, "Stamp delete suc");
-      Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-      mediaScanIntent.setData(imageURI);
-      mActivity.sendBroadcast(mediaScanIntent);
-      Log.d(TAG, "media scanning end");
-
-      try{
-        mStampItems.remove(position);
-      } catch (IndexOutOfBoundsException e){
-        Log.d(TAG, "out ouf bound");
-      }
-
-      notifyDataSetChanged();
-
-      mDBOpenHelper.dbDeleteStamp(id);
-
-      mActivity.visiableHint();
-
-      Snackbar.make(v, "낙관 [" + name + "] 삭제 완료", Snackbar.LENGTH_LONG).show();
-    } else {
-      Log.d(TAG, "Stamp delete fail" + imageURI);
-    }
+    mActivity.callFromListItemToDelete(v, position);
   }
 
   @Override

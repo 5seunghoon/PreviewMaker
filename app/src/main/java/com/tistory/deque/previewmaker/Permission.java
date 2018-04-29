@@ -9,7 +9,6 @@ import android.provider.Settings;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.view.View;
 
 import java.util.ArrayList;
@@ -66,7 +65,7 @@ public class Permission {
   }
 
   public boolean checkPermissions() {
-    Log.d(TAG, "check permissions func in");
+    Logger.d(TAG, "check permissions func in");
     int result;
     List<String> permissionList = new ArrayList<>();
     for (String pm : permissions) {

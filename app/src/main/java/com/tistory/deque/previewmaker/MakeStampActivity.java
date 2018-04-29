@@ -6,7 +6,7 @@ import android.net.Uri;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
+import com.tistory.deque.previewmaker.Logger;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -61,16 +61,16 @@ public class MakeStampActivity extends AppCompatActivity {
     if(System.currentTimeMillis() - backPressedTime < 2000){
       File file = new File(imageURI.getPath());
       if(file.delete()) {
-        Log.d(TAG, "Stamp delete suc");
+        Logger.d(TAG, "Stamp delete suc");
         /**
          * Do media scan
          */
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
         mediaScanIntent.setData(imageURI);
         sendBroadcast(mediaScanIntent);
-        Log.d(TAG, "media scanning end");
+        Logger.d(TAG, "media scanning end");
       } else {
-        Log.d(TAG, "Stamp delete fail" + imageURI);
+        Logger.d(TAG, "Stamp delete fail" + imageURI);
       }
       Intent resultIntent = new Intent();
       setResult(RESULT_CANCELED, resultIntent);
