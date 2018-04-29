@@ -9,4 +9,6 @@
 
   <string name="hint_stamp_name">낙관 이름</string>
   <string name="tile_make_stamp_activity">낙관 이름 설정</string>
+
+  <string name="title_preview_make_activity">낙관 이름 설정</string>
 </resources>

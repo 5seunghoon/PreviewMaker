@@ -1,6 +1,7 @@
 package com.tistory.deque.previewmaker;
 
 import android.app.Activity;
+import android.content.ClipData;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -38,6 +39,7 @@ public class MainActivity extends AppCompatActivity
   private final int REQUEST_TAKE_STAMP_FROM_ALBUM = 101;
   private final int REQUEST_IMAGE_CROP = 102;
   private final int REQUEST_MAKE_STAMP_ACTIVITY = 103;
+  private final int REQUEST_TAKE_PREVIEW_FROM_ALBUM = 104;
   private final String TAG = "MainActivity";
 
   DBOpenHelper dbOpenHelper;
@@ -78,6 +80,7 @@ public class MainActivity extends AppCompatActivity
 
 
   long mBackPressedTime;
+  int position;
 
   //ImageView imageView;
 
@@ -244,6 +247,17 @@ public class MainActivity extends AppCompatActivity
           Log.d(TAG, "INSERT : ID : " + endOfID + " imageURI : " + data.getData() + " name : " + data.getStringExtra("STAMP_NAME"));
           mStampAdapter.notifyDataSetChanged();
         }
+        break;
+
+      case REQUEST_TAKE_PREVIEW_FROM_ALBUM:
+        if(resultCode == Activity.RESULT_OK){
+          Intent intent = new Intent(getApplicationContext(), PreviewEditActivity.class);
+          intent.setClipData(data.getClipData());
+          intent.setData(mStampItems.get(position).getImageURI());
+          intent.putExtra("STAMP_ID", mStampItems.get(position).getID());
+          startActivity(intent);
+        }
+        break;
     }
   }
 
@@ -425,5 +439,19 @@ public class MainActivity extends AppCompatActivity
     Log.d(TAG, "media scanning end");
   }
 
+  protected void callFromListItem(int position){
+    getPreviewsFromAlbum();
+    this.position = position;
+  }
+
+  private void getPreviewsFromAlbum(){
+    Log.d(TAG, "getPreviewsFromAlbum()");
+    Intent intent = new Intent(Intent.ACTION_PICK);
+    intent.setType("image/*");
+    intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+    intent.setType(MediaStore.Images.Media.CONTENT_TYPE);
+    Log.d(TAG, "start Activity : album intent");
+    startActivityForResult(intent, REQUEST_TAKE_PREVIEW_FROM_ALBUM);
+  }
 
 }

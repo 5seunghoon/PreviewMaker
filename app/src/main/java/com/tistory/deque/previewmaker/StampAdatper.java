@@ -21,7 +21,7 @@ import java.io.File;
 import java.util.ArrayList;
 
 public class StampAdatper extends RecyclerView.Adapter<StampAdatper.ViewHolder>  {
-  private Activity mActivity;
+  private MainActivity mActivity;
   private ArrayList<StampItem> mStampItems;
   private final String TAG ="StampAdapter";
   private DBOpenHelper mDBOpenHelper;
@@ -41,7 +41,7 @@ public class StampAdatper extends RecyclerView.Adapter<StampAdatper.ViewHolder> 
     }
   }
 
-  public StampAdatper(ArrayList<StampItem> items, Activity activity, DBOpenHelper dbOpenHelper){
+  public StampAdatper(ArrayList<StampItem> items, MainActivity activity, DBOpenHelper dbOpenHelper){
     mActivity = activity;
     mStampItems = items;
     mDBOpenHelper = dbOpenHelper;
@@ -75,7 +75,14 @@ public class StampAdatper extends RecyclerView.Adapter<StampAdatper.ViewHolder> 
   }
 
   private void clickItem(View v, int position){
-    Snackbar.make(v, "POS : " + position + ", ID " + mStampItems.get(position).getID(), Snackbar.LENGTH_LONG).show();
+    //Snackbar.make(v, "POS : " + position + ", ID " + mStampItems.get(position).getID(), Snackbar.LENGTH_LONG).show();
+    //Intent intent = new Intent(mActivity.getApplicationContext(), PreviewEditActivity.class);
+    //intent.setData(mStampItems.get(position).getImageURI());
+    //intent.putExtra("STAMP_ID", mStampItems.get(position).getID());
+    //mActivity.startActivity(intent);
+
+    mActivity.callFromListItem(position);
+
   }
 
   private void clickDel(final View v, final int position){
