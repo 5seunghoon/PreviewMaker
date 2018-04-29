@@ -1,6 +1,7 @@
 package com.tistory.deque.previewmaker;
 
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -12,6 +13,7 @@ import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -45,14 +47,15 @@ public class PreviewEditActivity extends AppCompatActivity {
     previewItems = new ArrayList<>();
     previewPaths = intent.getStringArrayListExtra(EXTRA_PREVIEW_LIST);
 
-    String thumbnailUriString;
+    Uri thumbnailUri;
     for (String previewPath : previewPaths) {
-      thumbnailUriString = thumbnailURIFromOriginalURI(Uri.parse(previewPath));
-      if(thumbnailUriString == URI_ERROR){
-        thumbnailUriString = previewPath;
-        Toast.makeText(getApplicationContext(), "썸네일 파싱 에러", Toast.LENGTH_LONG).show();
+      thumbnailUri = thumbnailURIFromOriginalURI(previewPath);
+      if(thumbnailUri == null){
+        thumbnailUri = Uri.parse(previewPath);
+        Logger.d(TAG, "Thumbnail parsing error");
       }
-      previewItems.add(new PreviewItem(Uri.parse(previewPath), Uri.parse(thumbnailUriString)));
+      Logger.d(TAG, "Thumbnail parsing success : " + thumbnailUri);
+      previewItems.add(new PreviewItem(Uri.parse(previewPath), thumbnailUri));
       Logger.d(TAG, previewPath);
     }
 
@@ -78,36 +81,48 @@ public class PreviewEditActivity extends AppCompatActivity {
     Snackbar.make(v, "POSITION : " + position, Snackbar.LENGTH_LONG).show();
   }
 
-  public String thumbnailURIFromOriginalURI(Uri originalImageURI){
-    String imageId = originalImageURI.getPath();
+  public Uri getUriFromPath(String filePath) {
+    Cursor cursor = getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+      null, "_data = '" + filePath + "'", null, null);
 
-    // DATA는 이미지 파일의 스트림 데이터 경로를 나타냅니다.
+    cursor.moveToNext();
+    int id = cursor.getInt(cursor.getColumnIndex("_id"));
+    Uri uri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
+
+    return uri;
+  }
+
+  public Uri thumbnailURIFromOriginalURI(String path) {
+    path = Uri.parse(path).getPath();
+    Uri selectedImageUri = getUriFromPath(path);
+    long rowId = Long.valueOf(selectedImageUri.getLastPathSegment());
+    Logger.d(TAG, "original uri : " + selectedImageUri + " , row ID : " + rowId);
+    return uriToThumbnail(""+ rowId);
+  }
+
+  public Uri uriToThumbnail(String imageId) {
     String[] projection = { MediaStore.Images.Thumbnails.DATA };
-    ContentResolver contentResolver = getApplicationContext().getContentResolver();
+    ContentResolver contentResolver = getContentResolver();
 
-    // 원본 이미지의 _ID가 매개변수 imageId인 썸네일을 출력
     Cursor thumbnailCursor = contentResolver.query(
-      MediaStore.Images.Thumbnails.EXTERNAL_CONTENT_URI, // 썸네일 컨텐트 테이블
-      projection, // DATA를 출력
-      MediaStore.Images.Thumbnails.IMAGE_ID + "=?", // IMAGE_ID는 원본 이미지의 _ID를 나타냅니다.
+      MediaStore.Images.Thumbnails.EXTERNAL_CONTENT_URI,
+      projection,
+      MediaStore.Images.Thumbnails.IMAGE_ID + "=?",
       new String[]{imageId},
       null);
     if (thumbnailCursor == null) {
-      return URI_ERROR;
+      return null;
     } else if (thumbnailCursor.moveToFirst()) {
       int thumbnailColumnIndex = thumbnailCursor.getColumnIndex(projection[0]);
 
       String thumbnailPath = thumbnailCursor.getString(thumbnailColumnIndex);
       thumbnailCursor.close();
-      return thumbnailPath;
+      return Uri.parse(thumbnailPath);
     } else {
-      // thumbnailCursor가 비었습니다.
-      // 이는 이미지 파일이 있더라도 썸네일이 존재하지 않을 수 있기 때문입니다.
-      // 보통 이미지가 생성된 지 얼마 되지 않았을 때 그렇습니다.
-      // 썸네일이 존재하지 않을 때에는 아래와 같이 썸네일을 생성하도록 요청합니다
       MediaStore.Images.Thumbnails.getThumbnail(contentResolver, Long.parseLong(imageId), MediaStore.Images.Thumbnails.MINI_KIND, null);
       thumbnailCursor.close();
-      return thumbnailURIFromOriginalURI(Uri.parse(imageId));
+      Logger.d(TAG, "No exist thumbnail, so make it");
+      return uriToThumbnail(imageId);
     }
   }
 }
