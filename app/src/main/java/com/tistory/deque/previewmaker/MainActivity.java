@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity
 
   RecyclerView mRecyclerStampView;
   ArrayList<StampItem> mStampItems;
-  StampAdatper mStampAdapter;
+  StampAdapter mStampAdapter;
   LinearLayoutManager mRecyclerViewLayoutManager;
 
   ArrayList<String> mSeletedPreviews;
@@ -504,7 +504,7 @@ public class MainActivity extends AppCompatActivity
     mRecyclerStampView.setItemAnimator(new DefaultItemAnimator());
 
     mStampItems = new ArrayList<>();
-    mStampAdapter = new StampAdatper(mStampItems, this, dbOpenHelper);
+    mStampAdapter = new StampAdapter(mStampItems, this, dbOpenHelper);
     mRecyclerStampView.setAdapter(mStampAdapter);
 
 
