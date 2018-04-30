@@ -31,13 +31,16 @@ public class PreviewItem {
       bitmap = MediaStore.Images.Media.getBitmap(activity.getContentResolver(), imageUri);
       width = bitmap.getWidth();
       height = bitmap.getHeight();
-      rate = width/height;
-      if(rate > 1) { // w > h
+      rate = (double) width / (double) height;
+      if(rate > 1 && width > bitmapMaxSize) { // w > h
+        Logger.d(TAG, "RATE : " + rate +" , W : " + bitmapMaxSize + " , H : " +  (int) (bitmapMaxSize * (1 / rate)));
         resizedBitmap = bitmap.createScaledBitmap(bitmap, bitmapMaxSize, (int) (bitmapMaxSize * (1 / rate)), true);
-        Logger.d(TAG, "W : " + bitmapMaxSize + " , H : " +  (int) (bitmapMaxSize * (1 / rate)));
-      } else { // h > w
+      } else if (rate <= 1 && height > bitmapMaxSize) { // h > w
+        Logger.d(TAG, "RATE : " + rate +" , W : " + (int) (bitmapMaxSize * (rate)) + " , H : " + bitmapMaxSize);
         resizedBitmap = bitmap.createScaledBitmap(bitmap, (int) (bitmapMaxSize * (rate)), bitmapMaxSize, true);
-        Logger.d(TAG, "W : " + (int) (bitmapMaxSize * (rate)) + " , H : " + bitmapMaxSize);
+      }
+      else {
+        resizedBitmap = bitmap;
       }
       Logger.d(TAG, "URI -> Bitmap success : URI : " + imageUri);
     } catch (FileNotFoundException e) {
