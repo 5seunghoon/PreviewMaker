@@ -59,19 +59,7 @@ public class MakeStampActivity extends AppCompatActivity {
   @Override
   public void onBackPressed() {
     if(System.currentTimeMillis() - backPressedTime < 2000){
-      File file = new File(imageURI.getPath());
-      if(file.delete()) {
-        Logger.d(TAG, "Stamp delete suc");
-        /**
-         * Do media scan
-         */
-        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-        mediaScanIntent.setData(imageURI);
-        sendBroadcast(mediaScanIntent);
-        Logger.d(TAG, "media scanning end");
-      } else {
-        Logger.d(TAG, "Stamp delete fail" + imageURI);
-      }
+      deleteFile(imageURI);
       Intent resultIntent = new Intent();
       setResult(RESULT_CANCELED, resultIntent);
       finish();
@@ -84,6 +72,21 @@ public class MakeStampActivity extends AppCompatActivity {
         .show();
       backPressedTime = System.currentTimeMillis();
     }
+  }
+
+  private void deleteFile(Uri uri){
+    File file = new File(uri.getPath());
+    if(file.delete()) {
+      Logger.d(TAG, "Stamp delete suc");
+      //Do media scan
+      Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+      mediaScanIntent.setData(uri);
+      sendBroadcast(mediaScanIntent);
+      Logger.d(TAG, "media scanning end");
+    } else {
+      Logger.d(TAG, "Stamp delete fail" + uri);
+    }
+
   }
 
   private void clkOkButton(String name){
