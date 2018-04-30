@@ -2,7 +2,6 @@ package com.tistory.deque.previewmaker;
 
 import android.content.ContentResolver;
 import android.content.ContentUris;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -13,9 +12,8 @@ import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
+import android.widget.LinearLayout;
 
 import java.util.ArrayList;
 
@@ -30,9 +28,12 @@ public class PreviewEditActivity extends AppCompatActivity {
 
   ArrayList<String> previewPaths;
   ArrayList<PreviewItem> previewItems;
-  RecyclerView mRecyclerPreviewView;
-  PreviewAdapter mPreviewAdapter;
-  LinearLayoutManager mRecyclerPreviewViewLayoutManager;
+  private RecyclerView mRecyclerPreviewView;
+  private PreviewAdapter mPreviewAdapter;
+  private LinearLayoutManager mRecyclerPreviewViewLayoutManager;
+
+  private LinearLayout mCanvasPerantLayout;
+  private PreviewCanvasView mPreviewCanvasView;
 
   StampItem stamp;
 
@@ -62,8 +63,16 @@ public class PreviewEditActivity extends AppCompatActivity {
     setTitle(R.string.title_preview_make_activity);
 
     setRecyclerView();
+
+    setPreviewCanvas();
+
   }
 
+  private void setPreviewCanvas(){
+    mCanvasPerantLayout = findViewById(R.id.canvasParentLayout);
+    mPreviewCanvasView = new PreviewCanvasView(this, this);
+    mCanvasPerantLayout.addView(mPreviewCanvasView);
+  }
   private void setRecyclerView(){
     mRecyclerPreviewView = findViewById(R.id.previewRecyclerView);
     mRecyclerPreviewView.setHasFixedSize(true);
