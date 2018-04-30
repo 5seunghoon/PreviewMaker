@@ -13,38 +13,33 @@ import android.view.View;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class PreviewCanvasView extends View {
   private final static String TAG = "PreviewEditActivity";
   private Canvas mCanvas;
   private Activity mActivity;
+  ArrayList<PreviewItem> previewItems;
 
-  public static Bitmap URIToBitmap(Uri imageUri, Activity activity){
-    Bitmap bitmap = null;
-    try {
-      bitmap = MediaStore.Images.Media.getBitmap(activity.getContentResolver(), imageUri);
-    } catch (FileNotFoundException e) {
-      Logger.d(TAG, "URI -> Bitmap : URI File not found" + imageUri);
-      e.printStackTrace();
-    } catch (IOException e) {
-      Logger.d(TAG, "URI -> Bitmap : IOException" + imageUri);
-      e.printStackTrace();
-    }
-    return bitmap;
-  }
-
-  public PreviewCanvasView(Context context, Activity activity) {
+  public PreviewCanvasView(Context context, Activity activity, ArrayList<PreviewItem> previewItems) {
     super(context);
     mActivity = activity;
+    this.previewItems = previewItems;
   }
   @Override
   protected void onDraw(Canvas canvas) {
     super.onDraw(canvas);
     mCanvas = canvas;
     setBackgroundColor(ContextCompat.getColor(getContext(), R.color.backgroundGray));
+    if(PreviewEditActivity.POSITION < 0) { // 프리뷰들중에서 아무런 프리뷰도 선택하지 않았을 때
+      setBackgroundColor(Color.BLUE);
+    } else {
+      mCanvas.drawBitmap(previewItems.get(PreviewEditActivity.POSITION).getmBitmap(), 0, 0, null);
+    }
   }
 
-  protected void setBackImage(Uri imageUri){
+  protected void callInvalidate(){
+    invalidate();
   }
 
 }
