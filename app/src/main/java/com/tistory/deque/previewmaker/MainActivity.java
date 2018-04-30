@@ -37,6 +37,9 @@ import me.nereo.multi_image_selector.MultiImageSelectorActivity;
 
 public class MainActivity extends AppCompatActivity
   implements NavigationView.OnNavigationItemSelectedListener {
+  public final static String PREVIEW_SAVED_DIRECTORY = "Preview Maker";
+  public final static String STAMP_SAVED_DIRECTORY = "Stamp";
+
   private final int REQUEST_TAKE_STAMP_FROM_ALBUM = 101;
   private final int REQUEST_IMAGE_CROP = 102;
   private final int REQUEST_MAKE_STAMP_ACTIVITY = 103;
@@ -130,11 +133,7 @@ public class MainActivity extends AppCompatActivity
       case REQUEST_TAKE_STAMP_FROM_ALBUM:
         if(resultCode == Activity.RESULT_OK){
           File albumFile = null;
-          try{
-            albumFile = createImageFile();
-          } catch (IOException e){
-            Logger.d(TAG, "Create dump image file IO Exception");
-          }
+          albumFile = createImageFile();
           mCropSourceURI = data.getData();
           Logger.d(TAG, "mCropSourceURI : " + mCropSourceURI);
           mCropEndURI = Uri.fromFile(albumFile);
@@ -285,26 +284,32 @@ public class MainActivity extends AppCompatActivity
     }
   }
 
-  public File createImageFile() throws IOException {
+  public File createImageFile() {
     Logger.d(TAG, "createImageFile func");
     String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
     String imageFileName = "STAMP_" + timeStamp + ".png";
+    Logger.d(TAG, "image file name : " + imageFileName
+    );
     File imageFile = null;
-    File storageDir = new File(Environment.getExternalStorageDirectory() + "/Pictures", "Preview Maker");
+    File storageParentDir = new File(Environment.getExternalStorageDirectory() + "/Pictures", PREVIEW_SAVED_DIRECTORY);
+    File storageDir = new File(Environment.getExternalStorageDirectory() + "/Pictures/" + PREVIEW_SAVED_DIRECTORY, STAMP_SAVED_DIRECTORY);
+    Logger.d(TAG, "storageParentDir : " + storageParentDir);
     Logger.d(TAG, "storageDir : " + storageDir);
-    if (!storageDir.exists()) {
-      Logger.d(TAG, storageDir.toString() + " is not exist");
+    if (!storageParentDir.exists()) {
+      storageParentDir.mkdir();
       storageDir.mkdir();
-      Logger.d(TAG, "storageDir make");
+    }
+    if(!storageDir.exists()){
+      storageDir.mkdir();
     }
     imageFile = new File(storageDir, imageFileName);
-    Logger.d(TAG, "imageFile init");
     mCurrentPhotoPath = imageFile.getAbsolutePath();
     Logger.d(TAG, "mCurrentPhotoPath : " + mCurrentPhotoPath);
 
     return imageFile;
   }
 
+  @Deprecated
   public void cropImage() {
     /**
      * mCropSourceURI = 자를 uri
@@ -494,7 +499,6 @@ public class MainActivity extends AppCompatActivity
   }
 
   private void setRecyclerView(){
-
     mRecyclerStampView = findViewById(R.id.recyclerStampView);
     mRecyclerStampView.setHasFixedSize(true);
 
@@ -506,8 +510,6 @@ public class MainActivity extends AppCompatActivity
     mStampItems = new ArrayList<>();
     mStampAdapter = new StampAdapter(mStampItems, this, dbOpenHelper);
     mRecyclerStampView.setAdapter(mStampAdapter);
-
-
   }
 
   private void getStampFromAlbum() {

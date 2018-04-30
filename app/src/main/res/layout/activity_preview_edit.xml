@@ -31,6 +31,8 @@
     android:layout_height="match_parent"
     android:layout_marginTop="8dp"
     android:background="@android:color/white"
-    android:orientation="vertical"></LinearLayout>
+    android:orientation="vertical">
+
+  </LinearLayout>
 
 </LinearLayout>
