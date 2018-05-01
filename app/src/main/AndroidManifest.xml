@@ -25,18 +25,22 @@
     <activity
       android:name=".MainActivity"
       android:label="@string/app_name"
-      android:theme="@style/AppTheme.NoActionBar">
+      android:theme="@style/AppTheme.NoActionBar"
+      android:screenOrientation="portrait">
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />
 
         <category android:name="android.intent.category.LAUNCHER" />
       </intent-filter>
     </activity>
-    <activity android:name=".MakeStampActivity" />
-    <activity android:name=".PreviewEditActivity" />
+    <activity android:name=".MakeStampActivity"
+      android:screenOrientation="portrait"/>
+    <activity android:name=".PreviewEditActivity"
+      android:screenOrientation="portrait"/>
     <activity
       android:name="me.nereo.multi_image_selector.MultiImageSelectorActivity"
-      android:configChanges="orientation|screenSize" />
+      android:configChanges="orientation|screenSize"
+      android:screenOrientation="portrait"/>
   </application>
 
 </manifest>

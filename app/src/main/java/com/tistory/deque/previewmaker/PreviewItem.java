@@ -20,6 +20,10 @@ public class PreviewItem {
   private Bitmap mBitmap;
   private Activity mActivity;
 
+  public static void changeBitmapMaxSize(int size){
+    bitmapMaxSize = size;
+  }
+
   public static Bitmap URIToBitmap(Uri imageUri, Activity activity){
     Bitmap bitmap = null;
     Bitmap resizedBitmap = null;
