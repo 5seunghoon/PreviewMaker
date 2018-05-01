@@ -13,4 +13,18 @@
   <string name="title_preview_make_activity">프리뷰 메이커</string>
 
   <string name="tutorial_main_activity_text">낙관을 먼저 추가해 주세요</string>
+  <string name="title_activity_main2">Main2Activity</string>
+  <string name="title_home">Home</string>
+  <string name="title_dashboard">Dashboard</string>
+  <string name="title_notifications">Notifications</string>
+
+
+  <string name="actionStampTitle">낙관 추가</string>
+  <string name="actionCropTitle">자르기</string>
+  <string name="actionSaveAllTitle">모두 저장</string>
+  <string name="actionStickerTitle">스티커</string>
+  <string name="actionDeleteTitle">삭제</string>
+
+
+
 </resources>
