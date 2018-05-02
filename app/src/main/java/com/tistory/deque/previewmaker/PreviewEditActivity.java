@@ -110,18 +110,23 @@ public class PreviewEditActivity extends AppCompatActivity {
       case UCrop.REQUEST_CROP:
         if (resultCode == RESULT_OK) {
           final Uri resultUri = UCrop.getOutput(data);
-          previewItems.get(POSITION).setOriginalImageURI(resultUri);
-          previewItems.get(POSITION).cropped();
+
+          Logger.d(TAG, "result URI : " + resultUri);
+          Logger.d(TAG, "result path : " + resultUri.getPath());
 
           Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
           mediaScanIntent.setData(resultUri);
           sendBroadcast(mediaScanIntent);
 
+          PreviewItem previewItem = previewItems.get(POSITION);
+          previewItem.setOriginalImageURI(resultUri);
+          previewItem.cropped();
+
         } else if (resultCode == UCrop.RESULT_ERROR) {
           final Throwable cropError = UCrop.getError(data);
           Logger.d(TAG, "CROP ERROR");
         } else {
-
+          Logger.d(TAG, "CROP CANCEL");
         }
     }
   }
@@ -176,25 +181,13 @@ public class PreviewEditActivity extends AppCompatActivity {
     Uri destURI = previewItems.get(POSITION).getResultImageURI();
     Uri origURI = previewItems.get(POSITION).getOriginalImageURI();
     int bitmapMaxSize = PreviewItem.getBitmapMaxSize();
-    UCrop.Options options = new UCrop.Options();
-    options.setToolbarColor(ContextCompat.getColor(this, R.color.colorPrimary));
-    options.setActiveWidgetColor(ContextCompat.getColor(this, R.color.colorAccent));
-    options.setToolbarWidgetColor(ContextCompat.getColor(this, R.color.black));
-    options.setStatusBarColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
 
-
-    options.setAspectRatioOptions(2,
-      new AspectRatio("2:3", 2, 3),
-      new AspectRatio("9:16", 9, 16),
-      new AspectRatio("ORIGINAL", CropImageView.DEFAULT_ASPECT_RATIO, CropImageView.DEFAULT_ASPECT_RATIO),
-      new AspectRatio("1:1", 1, 1),
-      new AspectRatio("16:9", 16, 9),
-      new AspectRatio("3:2", 3, 2));
-
+    UCrop.Options options = setCropViewOption();
     UCrop.of(origURI, destURI)
       .withMaxResultSize(bitmapMaxSize, bitmapMaxSize)
       .withOptions(options)
       .start(this);
+
     Logger.d(TAG, "crop start : orig : " + origURI +", dest : " + destURI);
   }
   public void clickButtonStamp(){
@@ -207,6 +200,25 @@ public class PreviewEditActivity extends AppCompatActivity {
 
   }
 
+  private UCrop.Options setCropViewOption(){
+    UCrop.Options options = new UCrop.Options();
+    options.setToolbarColor(ContextCompat.getColor(this, R.color.colorPrimary));
+    options.setActiveWidgetColor(ContextCompat.getColor(this, R.color.colorAccent));
+    options.setToolbarWidgetColor(ContextCompat.getColor(this, R.color.black));
+    options.setStatusBarColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
+
+
+    options.setAspectRatioOptions(1,
+      new AspectRatio("16:9", 16, 9),
+      new AspectRatio("3:2", 3, 2),
+      new AspectRatio("ORIGINAL", CropImageView.DEFAULT_ASPECT_RATIO, CropImageView.DEFAULT_ASPECT_RATIO),
+      new AspectRatio("1:1", 1, 1),
+      new AspectRatio("2:3", 2, 3),
+      new AspectRatio("9:16", 9, 16)
+    );
+
+    return options;
+  }
 
   private void setPreviewCanvas(){
     mCanvasPerantLayout = findViewById(R.id.canvasParentLayout);
@@ -259,6 +271,7 @@ public class PreviewEditActivity extends AppCompatActivity {
 
   public Uri thumbnailURIFromOriginalURI(String path) {
     path = Uri.parse(path).getPath();
+    Logger.d(TAG, "thumbnail path : " + path);
     Uri selectedImageUri = getUriFromPath(path);
     long rowId = Long.valueOf(selectedImageUri.getLastPathSegment());
     Logger.d(TAG, "original uri : " + selectedImageUri + " , row ID : " + rowId);
