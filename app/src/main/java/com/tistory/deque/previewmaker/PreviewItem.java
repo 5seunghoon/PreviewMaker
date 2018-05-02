@@ -22,7 +22,7 @@ public class PreviewItem {
   private Activity mActivity;
   private boolean isSaved;
 
-  public static void changeBitmapMaxSize(int size){
+  public static void setBitmapMaxSize(int size){
     bitmapMaxSize = size;
   }
   public static int getBitmapMaxSize(){ return bitmapMaxSize; }

@@ -15,6 +15,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -33,6 +34,8 @@ public class PreviewEditActivity extends AppCompatActivity {
   public static final String EXTRA_STAMP_ID = "STAMP_ID";
   public static final String EXTRA_PREVIEW_LIST = "PREVIEW_LIST";
 
+  public static int canvasGrandParentViewWidth, canvasGrandParentViewHeight;
+
   protected static int POSITION = -1;
   private boolean isClickPreviewFirst = false;
   long mBackPressedTime;
@@ -47,6 +50,7 @@ public class PreviewEditActivity extends AppCompatActivity {
   private LinearLayoutManager mRecyclerPreviewViewLayoutManager;
 
   private LinearLayout mCanvasPerantLayout;
+  private LinearLayout mCanvasGrandParentLayout;
   private PreviewCanvasView mPreviewCanvasView;
   protected ProgressBar previewLoadingProgressBar;
 
@@ -76,6 +80,8 @@ public class PreviewEditActivity extends AppCompatActivity {
     setRecyclerView();
     setPreviewCanvas();
     setButtonListener();
+
+
 
     LoadingPreviewThumbnail loadingPreviewThumbnail = new LoadingPreviewThumbnail();
     loadingPreviewThumbnail.execute(this);
@@ -216,9 +222,23 @@ public class PreviewEditActivity extends AppCompatActivity {
   }
 
   private void setPreviewCanvas(){
+    mCanvasGrandParentLayout = findViewById(R.id.canvasGrandParentLayout);
     mCanvasPerantLayout = findViewById(R.id.canvasParentLayout);
     mPreviewCanvasView = new PreviewCanvasView(this, this, previewItems);
     mCanvasPerantLayout.addView(mPreviewCanvasView);
+
+    mCanvasGrandParentLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+      @Override
+      public void onGlobalLayout() {
+        canvasGrandParentViewWidth = mCanvasGrandParentLayout.getWidth();
+        canvasGrandParentViewHeight = mCanvasGrandParentLayout.getHeight();
+        int min = canvasGrandParentViewWidth < canvasGrandParentViewHeight ? canvasGrandParentViewWidth : canvasGrandParentViewHeight;
+        min -= 50;
+        PreviewItem.setBitmapMaxSize(min);
+        Logger.d(TAG, "W : " + canvasGrandParentViewWidth + ", H : " + canvasGrandParentViewHeight + ", min : " + min);
+      }
+    });
+
   }
   private void setRecyclerView(){
     mRecyclerPreviewView = findViewById(R.id.previewRecyclerView);
@@ -239,18 +259,8 @@ public class PreviewEditActivity extends AppCompatActivity {
     if(!isClickPreviewFirst){
       isClickPreviewFirst = true;
       canvasviewHintTextView.setVisibility(View.GONE);
+      mCanvasPerantLayout.setVisibility(View.VISIBLE);
     }
-  }
-
-  protected void clickCropButton(){
-    /**
-     * 리스트에서 크롭을 클릭하면
-     * 1. 크롭 액티비티 호출해서 편집 후
-     * 2. 기존 이미지 삭제 및 편집한 사진 저장하고
-     * 3. 아이템 리스트에서 uri를 다시 세팅해준다음
-     * 4. 전역변수 position을 변경해주고
-     * 5. 캔버스의 invalidate를 호출
-     */
   }
 
   public Uri getUriFromPath(String filePath) {

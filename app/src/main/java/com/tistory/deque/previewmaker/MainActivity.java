@@ -524,7 +524,7 @@ public class MainActivity extends AppCompatActivity
     mRecyclerStampView.setItemAnimator(new DefaultItemAnimator());
 
     mStampItems = new ArrayList<>();
-    mStampAdapter = new StampAdapter(mStampItems, this, dbOpenHelper);
+    mStampAdapter = new StampAdapter(mStampItems, this);
     mRecyclerStampView.setAdapter(mStampAdapter);
   }
 

@@ -12,14 +12,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 public class StampAdapter extends RecyclerView.Adapter<StampAdapter.ViewHolder>  {
   private MainActivity mActivity;
   private ArrayList<StampItem> mStampItems;
   private final String TAG ="MainActivity";
-  private DBOpenHelper mDBOpenHelper;
 
   public static class ViewHolder extends RecyclerView.ViewHolder {
     public TextView StampNameTextView;
@@ -36,11 +34,11 @@ public class StampAdapter extends RecyclerView.Adapter<StampAdapter.ViewHolder> 
     }
   }
 
-  public StampAdapter(ArrayList<StampItem> items, MainActivity activity, DBOpenHelper dbOpenHelper){
-    mActivity = activity;
+  public StampAdapter(ArrayList<StampItem> items, MainActivity activity){
     mStampItems = items;
-    mDBOpenHelper = dbOpenHelper;
+    mActivity = activity;
   }
+
   @NonNull
   @Override
   public StampAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {

@@ -19,6 +19,7 @@ public class PreviewCanvasView extends View {
   private final static String TAG = "PreviewEditActivity";
   private Canvas mCanvas;
   private Activity mActivity;
+  private int canvasWidth, canvasHeight;
   ArrayList<PreviewItem> previewItems;
 
   public PreviewCanvasView(Context context, Activity activity, ArrayList<PreviewItem> previewItems) {
@@ -30,11 +31,19 @@ public class PreviewCanvasView extends View {
   protected void onDraw(Canvas canvas) {
     super.onDraw(canvas);
     mCanvas = canvas;
+    canvasWidth = PreviewEditActivity.canvasGrandParentViewWidth;
+    canvasHeight = PreviewEditActivity.canvasGrandParentViewHeight;
     setBackgroundColor(ContextCompat.getColor(getContext(), R.color.backgroundGray));
     if(PreviewEditActivity.POSITION < 0) { // 프리뷰들중에서 아무런 프리뷰도 선택하지 않았을 때
-      setBackgroundColor(Color.BLUE);
+      setBackgroundColor(Color.WHITE);
     } else {
-      mCanvas.drawBitmap(previewItems.get(PreviewEditActivity.POSITION).getmBitmap(), 0, 0, null);
+      Bitmap previewBitmap = previewItems.get(PreviewEditActivity.POSITION).getmBitmap();
+      canvasWidth = canvas.getWidth();
+      canvasHeight = canvas.getHeight();
+      int previewBitmapWidth = previewBitmap.getWidth();
+      int previewBitmapHeight = previewBitmap.getHeight();
+      Logger.d(TAG, "CANVAS : W : " + canvasWidth + " , H : " + canvasHeight);
+      mCanvas.drawBitmap(previewBitmap, (canvasWidth - previewBitmapWidth) / 2, (canvasHeight - previewBitmapHeight) / 2, null); // put center
     }
   }
 
