@@ -1,11 +1,12 @@
 package com.tistory.deque.previewmaker;
 
+import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.provider.MediaStore;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -15,16 +16,21 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
 public class PreviewEditActivity extends AppCompatActivity {
+
   private final String TAG = "PreviewEditActivity";
   public static final String URI_ERROR = "URI_ERROR";
   public static final String EXTRA_STAMP_ID = "STAMP_ID";
   public static final String EXTRA_PREVIEW_LIST = "PREVIEW_LIST";
 
   protected static int POSITION = -1;
+  private boolean isClickPreviewFirst = false;
+  long mBackPressedTime;
 
   int stampID;
   Uri stampImageURI;
@@ -37,6 +43,9 @@ public class PreviewEditActivity extends AppCompatActivity {
 
   private LinearLayout mCanvasPerantLayout;
   private PreviewCanvasView mPreviewCanvasView;
+  protected ProgressBar previewLoadingProgressBar;
+
+  private TextView canvasviewHintTextView;
 
   StampItem stamp;
 
@@ -44,33 +53,43 @@ public class PreviewEditActivity extends AppCompatActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_preview_edit);
+
+    canvasviewHintTextView = findViewById(R.id.canvasviewHintTextView);
+    previewLoadingProgressBar = findViewById(R.id.previewLoadingProgressBar);
+
     Intent intent = getIntent();
     stampID = intent.getExtras().getInt("STAMP_ID");
     stampImageURI = intent.getData();
     previewPaths = new ArrayList<>();
     previewItems = new ArrayList<>();
     previewPaths = intent.getStringArrayListExtra(EXTRA_PREVIEW_LIST);
-
-    Uri thumbnailUri, originalUri;
-    for (String previewPath : previewPaths) { // previewPaths -> previewItems
-      thumbnailUri = thumbnailURIFromOriginalURI(previewPath);
-      originalUri = getUriFromPath(previewPath);
-      if(thumbnailUri == null){
-        thumbnailUri = originalUri;
-        Logger.d(TAG, "Thumbnail parsing error");
-      }
-      Logger.d(TAG, "Thumbnail parsing success : " + thumbnailUri);
-      previewItems.add(new PreviewItem(originalUri, thumbnailUri, this));
-      Logger.d(TAG, "previewItem success : " + originalUri);
-    }
-
     setTitle(R.string.title_preview_make_activity);
 
     setRecyclerView();
-
     setPreviewCanvas();
 
+    LoadingPreviewThumbnail loadingPreviewThumbnail = new LoadingPreviewThumbnail();
+    loadingPreviewThumbnail.execute(this);
+
   }
+
+  @Override
+  public void onBackPressed() {
+    if (System.currentTimeMillis() - mBackPressedTime > 2000) {
+      Snackbar.make(getCurrentFocus(), "뒤로 버튼을 한번 더 누르시면 편집을 취소합니다.\n저장되지 않습니다.", Snackbar.LENGTH_LONG)
+        .setAction("EXIT", new View.OnClickListener() {
+          @Override
+          public void onClick(View v) {
+            finish();
+          }
+        })
+        .show();
+      mBackPressedTime = System.currentTimeMillis();
+    } else {
+      finish();
+    }
+  }
+
 
   private void setPreviewCanvas(){
     mCanvasPerantLayout = findViewById(R.id.canvasParentLayout);
@@ -94,6 +113,10 @@ public class PreviewEditActivity extends AppCompatActivity {
     //Snackbar.make(v, "POSITION : " + position, Snackbar.LENGTH_LONG).show();
     POSITION = position;
     mPreviewCanvasView.callInvalidate();
+    if(!isClickPreviewFirst){
+      isClickPreviewFirst = true;
+      canvasviewHintTextView.setVisibility(View.GONE);
+    }
   }
 
   protected void clickCropButton(){
@@ -151,4 +174,52 @@ public class PreviewEditActivity extends AppCompatActivity {
       return uriToThumbnail(imageId);
     }
   }
+
+  protected class LoadingPreviewThumbnail extends AsyncTask<PreviewEditActivity, Integer, Boolean>{
+
+    private int loadingCounter = 0;
+
+    @Override
+    protected void onPreExecute() { // 스레드 실행 전
+      super.onPreExecute();
+      previewLoadingProgressBar.setVisibility(View.VISIBLE);
+      previewLoadingProgressBar.setMax(100);
+      Logger.d(TAG, "async task execute");
+    }
+
+    @Override
+    protected Boolean doInBackground(PreviewEditActivity... param) { // 스래드 실행 중
+      Uri thumbnailUri, originalUri;
+
+      for (String previewPath : previewPaths) { // previewPaths -> previewItems
+        thumbnailUri = thumbnailURIFromOriginalURI(previewPath);
+        originalUri = getUriFromPath(previewPath);
+        if(thumbnailUri == null){
+          thumbnailUri = originalUri;
+          Logger.d(TAG, "Thumbnail parsing error");
+        }
+        Logger.d(TAG, "Thumbnail parsing success : " + thumbnailUri);
+        previewItems.add(new PreviewItem(originalUri, thumbnailUri, param[0]));
+        Logger.d(TAG, "previewItem success : " + originalUri);
+
+        publishProgress();
+      }
+      return Boolean.TRUE;
+    }
+
+    @Override
+    protected void onProgressUpdate(Integer... values) { // 중간 업데이트
+      super.onProgressUpdate(values);
+      loadingCounter++;
+      mPreviewAdapter.notifyDataSetChanged();
+      previewLoadingProgressBar.setProgress((loadingCounter / previewItems.size()) * 100);
+    }
+
+    @Override
+    protected void onPostExecute(Boolean result) { // 실행 완료
+      super.onPostExecute(result);
+      previewLoadingProgressBar.setVisibility(View.GONE);
+    }
+  }
+
 }
