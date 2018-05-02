@@ -177,7 +177,7 @@ public class PreviewEditActivity extends AppCompatActivity {
 
   protected class LoadingPreviewThumbnail extends AsyncTask<PreviewEditActivity, Integer, Boolean>{
 
-    private int loadingCounter = 0;
+    private double loadingCounter = 0;
 
     @Override
     protected void onPreExecute() { // 스레드 실행 전
@@ -202,6 +202,7 @@ public class PreviewEditActivity extends AppCompatActivity {
         previewItems.add(new PreviewItem(originalUri, thumbnailUri, param[0]));
         Logger.d(TAG, "previewItem success : " + originalUri);
 
+        loadingCounter++;
         publishProgress();
       }
       return Boolean.TRUE;
@@ -210,9 +211,11 @@ public class PreviewEditActivity extends AppCompatActivity {
     @Override
     protected void onProgressUpdate(Integer... values) { // 중간 업데이트
       super.onProgressUpdate(values);
-      loadingCounter++;
       mPreviewAdapter.notifyDataSetChanged();
-      previewLoadingProgressBar.setProgress((loadingCounter / previewItems.size()) * 100);
+      double size =  previewPaths.size();
+      double progress = loadingCounter / size;
+      previewLoadingProgressBar.setProgress((int)(100.0 * progress));
+      Logger.d(TAG + " async", + loadingCounter + ", " + (100.0 * progress) );
     }
 
     @Override
