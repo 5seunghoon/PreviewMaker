@@ -1,28 +1,31 @@
 package com.tistory.deque.previewmaker;
 
 import android.app.Activity;
-import android.content.Context;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.design.widget.Snackbar;
-import android.widget.Toast;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class PreviewItem {
   private final static String TAG = "PreviewEditActivity";
   private static int bitmapMaxSize = 1000;
   private Uri originalImageURI;
   private Uri thumbnailImageURI;
+  private Uri resultImageURI;
   private Bitmap mBitmap;
   private Activity mActivity;
+  private boolean isSaved;
 
   public static void changeBitmapMaxSize(int size){
     bitmapMaxSize = size;
   }
+  public static int getBitmapMaxSize(){ return bitmapMaxSize; }
 
   public static Bitmap URIToBitmap(Uri imageUri, Activity activity){
     Bitmap bitmap = null;
@@ -61,6 +64,8 @@ public class PreviewItem {
     this.originalImageURI = originalImageURI;
     this.thumbnailImageURI = thumbnailImageURI;
     this.mActivity = activity;
+    this.isSaved = false;
+    this.resultImageURI = makeResultImageFile();
     mBitmap = URIToBitmap(originalImageURI, mActivity);
   }
 
@@ -71,6 +76,24 @@ public class PreviewItem {
 
   public void setThumbnailImageURI(Uri thumbnailImageURI) {
     this.thumbnailImageURI = thumbnailImageURI;
+  }
+
+  private Uri makeResultImageFile(){
+    String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+    String imageFileName = "PREVIEW_" + timeStamp + ".png";
+    File imageFile = null;
+    File storageDir = new File(Environment.getExternalStorageDirectory() + "/Pictures", MainActivity.PREVIEW_SAVED_DIRECTORY);
+    if(!storageDir.exists()){
+      storageDir.mkdir();
+    }
+    imageFile = new File(storageDir, imageFileName);
+    Uri resultUri = Uri.fromFile(imageFile);
+
+    Logger.d(TAG, "storageDir : " + storageDir);
+    Logger.d(TAG, "image file name : " + imageFileName);
+    Logger.d(TAG, "image file uri : " + resultUri);
+
+    return resultUri;
   }
 
   public Uri getOriginalImageURI() {
@@ -85,4 +108,23 @@ public class PreviewItem {
     return mBitmap;
   }
 
+  public boolean getIsSaved() {
+    return isSaved;
+  }
+
+  public boolean getIsCropped(){
+    return isSaved;
+  }
+
+  public void cropped(){
+    isSaved = true;
+  }
+
+  public void saved(){
+    isSaved = true;
+  }
+
+  public Uri getResultImageURI() {
+    return resultImageURI;
+  }
 }

@@ -7,19 +7,29 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.yalantis.ucrop.UCrop;
+import com.yalantis.ucrop.model.AspectRatio;
+import com.yalantis.ucrop.view.CropImageView;
+
+import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class PreviewEditActivity extends AppCompatActivity {
 
@@ -47,6 +57,8 @@ public class PreviewEditActivity extends AppCompatActivity {
 
   private TextView canvasviewHintTextView;
 
+  private Button mButtonSaveAll, mButtonCrop, mButtonStamp, mButtonEmoticon, mButtonDelete;
+
   StampItem stamp;
 
   @Override
@@ -56,6 +68,7 @@ public class PreviewEditActivity extends AppCompatActivity {
 
     canvasviewHintTextView = findViewById(R.id.canvasviewHintTextView);
     previewLoadingProgressBar = findViewById(R.id.previewLoadingProgressBar);
+    POSITION = -1;
 
     Intent intent = getIntent();
     stampID = intent.getExtras().getInt("STAMP_ID");
@@ -67,6 +80,7 @@ public class PreviewEditActivity extends AppCompatActivity {
 
     setRecyclerView();
     setPreviewCanvas();
+    setButtonListener();
 
     LoadingPreviewThumbnail loadingPreviewThumbnail = new LoadingPreviewThumbnail();
     loadingPreviewThumbnail.execute(this);
@@ -76,7 +90,7 @@ public class PreviewEditActivity extends AppCompatActivity {
   @Override
   public void onBackPressed() {
     if (System.currentTimeMillis() - mBackPressedTime > 2000) {
-      Snackbar.make(getCurrentFocus(), "뒤로 버튼을 한번 더 누르시면 편집을 취소합니다.\n저장되지 않습니다.", Snackbar.LENGTH_LONG)
+      Snackbar.make(getCurrentFocus(), "편집을 취소하려면 뒤로 버튼을 한번 더 눌려주세요.\n저장되지 않을 수 있어요.", Snackbar.LENGTH_LONG)
         .setAction("EXIT", new View.OnClickListener() {
           @Override
           public void onClick(View v) {
@@ -88,6 +102,109 @@ public class PreviewEditActivity extends AppCompatActivity {
     } else {
       finish();
     }
+  }
+
+  @Override
+  protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    switch (requestCode){
+      case UCrop.REQUEST_CROP:
+        if (resultCode == RESULT_OK) {
+          final Uri resultUri = UCrop.getOutput(data);
+          previewItems.get(POSITION).setOriginalImageURI(resultUri);
+          previewItems.get(POSITION).cropped();
+
+          Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+          mediaScanIntent.setData(resultUri);
+          sendBroadcast(mediaScanIntent);
+
+        } else if (resultCode == UCrop.RESULT_ERROR) {
+          final Throwable cropError = UCrop.getError(data);
+          Logger.d(TAG, "CROP ERROR");
+        } else {
+
+        }
+    }
+  }
+
+  public void setButtonListener(){
+    mButtonSaveAll = findViewById(R.id.buttonSaveAll);
+    mButtonCrop = findViewById(R.id.buttonCrop);
+    mButtonStamp = findViewById(R.id.buttonStamp);
+    mButtonEmoticon = findViewById(R.id.buttonEmoticon);
+    mButtonDelete = findViewById(R.id.buttonDelete);
+
+    mButtonSaveAll.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        clickButtonSaveAll();
+      }
+    });
+    mButtonCrop.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        clickButtonCrop();
+      }
+    });
+    mButtonStamp.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        clickButtonStamp();
+      }
+    });
+    mButtonEmoticon.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        clickButtonEmoticon();
+      }
+    });
+    mButtonDelete.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        clickButtonDelete();
+      }
+    });
+  }
+
+  public void clickButtonSaveAll(){
+
+  }
+  public void clickButtonCrop(){
+    if(POSITION < 0 || POSITION >= previewItems.size()){
+      return;
+    }
+    Logger.d(TAG, "Click crop button");
+    Uri destURI = previewItems.get(POSITION).getResultImageURI();
+    Uri origURI = previewItems.get(POSITION).getOriginalImageURI();
+    int bitmapMaxSize = PreviewItem.getBitmapMaxSize();
+    UCrop.Options options = new UCrop.Options();
+    options.setToolbarColor(ContextCompat.getColor(this, R.color.colorPrimary));
+    options.setActiveWidgetColor(ContextCompat.getColor(this, R.color.colorAccent));
+    options.setToolbarWidgetColor(ContextCompat.getColor(this, R.color.black));
+    options.setStatusBarColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
+
+
+    options.setAspectRatioOptions(2,
+      new AspectRatio("2:3", 2, 3),
+      new AspectRatio("9:16", 9, 16),
+      new AspectRatio("ORIGINAL", CropImageView.DEFAULT_ASPECT_RATIO, CropImageView.DEFAULT_ASPECT_RATIO),
+      new AspectRatio("1:1", 1, 1),
+      new AspectRatio("16:9", 16, 9),
+      new AspectRatio("3:2", 3, 2));
+
+    UCrop.of(origURI, destURI)
+      .withMaxResultSize(bitmapMaxSize, bitmapMaxSize)
+      .withOptions(options)
+      .start(this);
+    Logger.d(TAG, "crop start : orig : " + origURI +", dest : " + destURI);
+  }
+  public void clickButtonStamp(){
+
+  }
+  public void clickButtonEmoticon(){
+
+  }
+  public void clickButtonDelete(){
+
   }
 
 
@@ -110,7 +227,6 @@ public class PreviewEditActivity extends AppCompatActivity {
   }
 
   protected void clickPreviewItem(View v, int position){
-    //Snackbar.make(v, "POSITION : " + position, Snackbar.LENGTH_LONG).show();
     POSITION = position;
     mPreviewCanvasView.callInvalidate();
     if(!isClickPreviewFirst){
@@ -211,11 +327,10 @@ public class PreviewEditActivity extends AppCompatActivity {
     @Override
     protected void onProgressUpdate(Integer... values) { // 중간 업데이트
       super.onProgressUpdate(values);
-      mPreviewAdapter.notifyDataSetChanged();
+      mPreviewAdapter.notifyItemInserted((int)loadingCounter);
       double size =  previewPaths.size();
       double progress = loadingCounter / size;
       previewLoadingProgressBar.setProgress((int)(100.0 * progress));
-      Logger.d(TAG + " async", + loadingCounter + ", " + (100.0 * progress) );
     }
 
     @Override

@@ -26,7 +26,11 @@ dependencies {
     implementation 'com.android.support.constraint:constraint-layout:1.1.0'
     implementation 'com.android.support:recyclerview-v7:27.1.1'
     implementation 'com.github.lovetuzitong:MultiImageSelector:1.2'
+    implementation 'com.github.yalantis:ucrop:2.2.2-native'
 }
 repositories {
-    maven { url "https://jitpack.io" }
+    jcenter()
+    maven {
+        url "https://jitpack.io"
+    }
 }

@@ -54,7 +54,7 @@
         android:drawableTop="@drawable/ic_save_black_48dp"
         android:paddingTop="4dp"
         android:text="@string/action_saveall_title"
-        android:textSize="12sp" />
+        android:textSize="12sp"/>
 
       <Button
         android:id="@+id/buttonCrop"
@@ -65,7 +65,7 @@
         android:drawableTop="@drawable/ic_crop_rotate_black_48dp"
         android:paddingTop="4dp"
         android:text="@string/action_crop_title"
-        android:textSize="12sp" />
+        android:textSize="12sp"/>
 
       <Button
         android:id="@+id/buttonStamp"
@@ -76,7 +76,7 @@
         android:drawableTop="@drawable/ic_attach_file_black_48dp"
         android:paddingTop="4dp"
         android:text="@string/action_stamp_title"
-        android:textSize="12sp" />
+        android:textSize="12sp"/>
 
       <Button
         android:id="@+id/buttonEmoticon"
@@ -87,7 +87,7 @@
         android:drawableTop="@drawable/ic_insert_emoticon_black_48dp"
         android:paddingTop="4dp"
         android:text="@string/action_sticker_title"
-        android:textSize="12sp" />
+        android:textSize="12sp"/>
 
       <Button
         android:id="@+id/buttonDelete"
@@ -98,7 +98,7 @@
         android:drawableTop="@drawable/ic_delete_black_48dp"
         android:paddingTop="4dp"
         android:text="@string/action_delete_title"
-        android:textSize="12sp" />
+        android:textSize="12sp"/>
     </LinearLayout>
 
     <TextView
