@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 public class StampAdapter extends RecyclerView.Adapter<StampAdapter.ViewHolder>  {
@@ -53,7 +54,6 @@ public class StampAdapter extends RecyclerView.Adapter<StampAdapter.ViewHolder> 
   public void onBindViewHolder(@NonNull StampAdapter.ViewHolder holder, final int position) {
     holder.StampNameTextView.setText(mStampItems.get(position).getStampName());
     holder.StampImageTextView.setImageURI(mStampItems.get(position).getImageURI());
-
     holder.deleteItemButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {

@@ -1,13 +1,11 @@
 package com.tistory.deque.previewmaker;
 
-import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
@@ -26,10 +24,7 @@ import com.yalantis.ucrop.UCrop;
 import com.yalantis.ucrop.model.AspectRatio;
 import com.yalantis.ucrop.view.CropImageView;
 
-import java.io.File;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 
 public class PreviewEditActivity extends AppCompatActivity {
 
@@ -275,10 +270,10 @@ public class PreviewEditActivity extends AppCompatActivity {
     Uri selectedImageUri = getUriFromPath(path);
     long rowId = Long.valueOf(selectedImageUri.getLastPathSegment());
     Logger.d(TAG, "original uri : " + selectedImageUri + " , row ID : " + rowId);
-    return uriToThumbnail(""+ rowId);
+    return imageIdToThumbnail(""+ rowId);
   }
 
-  public Uri uriToThumbnail(String imageId) {
+  public Uri imageIdToThumbnail(String imageId) {
     String[] projection = { MediaStore.Images.Thumbnails.DATA };
     ContentResolver contentResolver = getContentResolver();
 
@@ -300,7 +295,7 @@ public class PreviewEditActivity extends AppCompatActivity {
       MediaStore.Images.Thumbnails.getThumbnail(contentResolver, Long.parseLong(imageId), MediaStore.Images.Thumbnails.MINI_KIND, null);
       thumbnailCursor.close();
       Logger.d(TAG, "No exist thumbnail, so make it");
-      return uriToThumbnail(imageId);
+      return imageIdToThumbnail(imageId);
     }
   }
 

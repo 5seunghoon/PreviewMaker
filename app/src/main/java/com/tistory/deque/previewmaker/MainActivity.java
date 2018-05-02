@@ -423,31 +423,36 @@ public class MainActivity extends AppCompatActivity
     Uri imageURI = mStampItems.get(position).getImageURI();
     String name = mStampItems.get(position).getStampName();
     File file = new File(imageURI.getPath());
-    if(file.delete()) {
-
-      Logger.d(TAG, "Stamp delete suc");
-      Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-      mediaScanIntent.setData(imageURI);
-      sendBroadcast(mediaScanIntent);
-      Logger.d(TAG, "media scanning end");
-
-      try{
-        mStampItems.remove(position);
-      } catch (IndexOutOfBoundsException e){
-        Logger.d(TAG, "out ouf bound");
-      }
-
+    if(!file.exists()) {
       mStampAdapter.notifyDataSetChanged();
-
       dbOpenHelper.dbDeleteStamp(id);
-
-      viewEveryItemInDB();
-
-      visibleHint();
-
-      Snackbar.make(v, "낙관 [" + name + "] 삭제 완료", Snackbar.LENGTH_LONG).show();
     } else {
-      Logger.d(TAG, "Stamp delete fail" + imageURI);
+      if(file.delete()) {
+
+        Logger.d(TAG, "Stamp delete suc");
+        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        mediaScanIntent.setData(imageURI);
+        sendBroadcast(mediaScanIntent);
+        Logger.d(TAG, "media scanning end");
+
+        try{
+          mStampItems.remove(position);
+        } catch (IndexOutOfBoundsException e){
+          Logger.d(TAG, "out ouf bound");
+        }
+
+        mStampAdapter.notifyDataSetChanged();
+
+        dbOpenHelper.dbDeleteStamp(id);
+
+        viewEveryItemInDB();
+
+        visibleHint();
+
+        Snackbar.make(v, "낙관 [" + name + "] 삭제 완료", Snackbar.LENGTH_LONG).show();
+      } else {
+        Logger.d(TAG, "Stamp delete fail : " + imageURI);
+      }
     }
   }
 
@@ -468,7 +473,7 @@ public class MainActivity extends AppCompatActivity
 
   private void stampsFromDBToList() {
     int id;
-    String imageURI;
+    String imageURIPath;
     String name;
     String sql = "SELECT * FROM " + dbOpenHelper.TABLE_NAME_STAMPS + ";";
     Cursor results = null;
@@ -478,9 +483,20 @@ public class MainActivity extends AppCompatActivity
     while(!results.isAfterLast()) {
       id = results.getInt(0);
       name = results.getString(1);
-      imageURI = results.getString(2);
-      Logger.d(TAG, "DB ITEM : id : " + id + " imageURI : " + imageURI + " name : " + name);
-      mStampItems.add(new StampItem(id, Uri.parse(imageURI), name));
+      imageURIPath = results.getString(2);
+      Logger.d(TAG, "DB ITEM : id : " + id + " imageURIPath : " + imageURIPath + " name : " + name);
+
+      //if there is not exist stamp file, delete it in db
+      String imageURIFilePath = Uri.parse(imageURIPath).getPath();
+      File stampFile = new File(imageURIFilePath);
+
+      Logger.d(TAG, " imageURIPath : " + imageURIPath );
+      if (!stampFile.exists()) {
+        dbOpenHelper.dbDeleteStamp(id);
+      } else {
+        mStampItems.add(new StampItem(id, Uri.parse(imageURIPath), name));
+      }
+
       //if(id > endOfID) endOfID = id;
 
       results.moveToNext();
