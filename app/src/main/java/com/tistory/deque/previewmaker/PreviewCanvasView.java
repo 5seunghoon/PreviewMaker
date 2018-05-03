@@ -82,7 +82,6 @@ public class PreviewCanvasView extends View {
       movePrevX = x;
       movePrevY = y;
       canMoveStamp = true;
-      //Logger.d(TAG, "DOWN X : " + x + ", Y : " + y);
     }
   }
   private void touchMove(MotionEvent event){
@@ -97,9 +96,6 @@ public class PreviewCanvasView extends View {
       movePrevX = x;
       movePrevY = y;
       invalidate();
-      //Logger.d(TAG, "MOVE X : " + x + ", Y : " + y);
-      //Logger.d(TAG, "MOVE deltaX : " + deltaX + ", deltaY : " + deltaY);
-      //Logger.d(TAG, "MOVE stampWidthPos : " + stampWidthPos + ", stampHeightPos : " + stampHeightPos);
     }
   }
   private void touchUp(MotionEvent event){
@@ -107,8 +103,12 @@ public class PreviewCanvasView extends View {
   }
 
   private boolean isTouchInStamp(int x, int y){
+    Logger.d("TOUCH", "x : " + x + " , y : " + y);
+    Logger.d("TOUCH", "stampWidthPos : " + stampWidthPos + " , stampWidth : " + stampWidth);
+    Logger.d("TOUCH", "stampHeightPos : " + stampHeightPos + " , stampHeight : " + stampHeight);
     if(x < stampWidthPos + stampWidth && x > stampWidthPos){
-      if(y < stampHeightPos + stampHeight && y > stampHeight){
+      if(y < stampHeightPos + stampHeight && y > stampHeightPos){
+        Logger.d("TOUCH", " : TRUE");
         return true;
       }
     }
