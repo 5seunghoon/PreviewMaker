@@ -25,14 +25,19 @@ import com.yalantis.ucrop.UCrop;
 import com.yalantis.ucrop.model.AspectRatio;
 import com.yalantis.ucrop.view.CropImageView;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 public class PreviewEditActivity extends AppCompatActivity {
 
   private final String TAG = "PreviewEditActivity";
+
   public static final String URI_ERROR = "URI_ERROR";
   public static final String EXTRA_STAMP_ID = "STAMP_ID";
+  public static final String EXTRA_STAMP_POSITION = "STAMP_POSITION";
   public static final String EXTRA_PREVIEW_LIST = "PREVIEW_LIST";
+  final String dpOpenHelperName = "DB_OPEN_HELPER_NAME";
 
   public static int canvasGrandParentViewWidth, canvasGrandParentViewHeight;
 
@@ -42,6 +47,9 @@ public class PreviewEditActivity extends AppCompatActivity {
 
   int stampID;
   Uri stampImageURI;
+
+  private DBOpenHelper dbOpenHelper;
+  private StampItem selectedStamp;
 
   ArrayList<String> previewPaths;
   ArrayList<PreviewItem> previewItems;
@@ -80,7 +88,7 @@ public class PreviewEditActivity extends AppCompatActivity {
     setRecyclerView();
     setPreviewCanvas();
     setButtonListener();
-
+    setStamp(stampID);
 
 
     LoadingPreviewThumbnail loadingPreviewThumbnail = new LoadingPreviewThumbnail();
@@ -132,6 +140,74 @@ public class PreviewEditActivity extends AppCompatActivity {
     }
   }
 
+  private void setStamp(int stampID){
+    dbOpenHelper = DBOpenHelper.getDbOpenHelper(
+      getApplicationContext()
+      , DBOpenHelper.dpOpenHelperName
+      , null
+      , DBOpenHelper.dbVersion);
+    dbOpenHelper.dbOpen();
+
+    try{
+      selectedStamp = stampsFromDB(stampID);
+    } catch (FileNotFoundException e){
+      e.printStackTrace();
+    }
+  }
+
+  public void stampUpdate(int id, int width, int height, int posWidthPer, int posHeightPer){
+    String sql = "UPDATE " + dbOpenHelper.TABLE_NAME_STAMPS + " SET "
+      + dbOpenHelper.STAMP_WIDTH_KEY + " = " + width
+      + ", "
+      + dbOpenHelper.STAMP_HEIGHT_KEY + " = " + height
+      + ", "
+      + dbOpenHelper.STAMP_POS_WIDTH_PERCENT_KEY + " = " + posWidthPer
+      + ", "
+      + dbOpenHelper.STAMP_POS_HEIGHT_PERCENT_KEY + " = " + posHeightPer
+      + " WHERE _ID IN(" + stampID + ")" + ";";
+    dbOpenHelper.db.rawQuery(sql, null);
+  }
+
+  public void stampWidthHeightUpdate(int id, int width, int height){
+    String sql = "UPDATE " + dbOpenHelper.TABLE_NAME_STAMPS + " SET "
+      + dbOpenHelper.STAMP_WIDTH_KEY + " = " + width
+      + ", "
+      + dbOpenHelper.STAMP_HEIGHT_KEY + " = " + height
+      + " WHERE _ID IN(" + stampID + ")" + ";";
+    dbOpenHelper.db.rawQuery(sql, null);
+  }
+
+  private StampItem stampsFromDB(int stampID) throws FileNotFoundException{
+    int id;
+    String imageURIPath;
+    String name;
+    int width, height, posWidthPer, posHeightPer;
+    String sql = "SELECT * FROM " + dbOpenHelper.TABLE_NAME_STAMPS + " WHERE _ID IN(" + stampID + ")" + ";";
+    Cursor results = null;
+    results = dbOpenHelper.db.rawQuery(sql, null);
+    Logger.d(TAG, "Cursor open sql : " + sql);
+
+    results.moveToFirst();
+    id = results.getInt(0);
+    name = results.getString(1);
+    imageURIPath = results.getString(2);
+    width = results.getInt(3);
+    height = results.getInt(4);
+    posWidthPer = results.getInt(5);
+    posHeightPer = results.getInt(6);
+    Logger.d(TAG, "STAMP FIND SUCCESS : id : " + id + " imageURIPath : " + imageURIPath + " name : " + name);
+
+    String imageURIFilePath = Uri.parse(imageURIPath).getPath();
+    File stampFile = new File(imageURIFilePath);
+
+    if (stampFile.exists()) {
+      return new StampItem(id, Uri.parse(imageURIPath), name, width, height, posWidthPer, posHeightPer);
+    } else {
+      throw new FileNotFoundException();
+    }
+
+  }
+
   public void setButtonListener(){
     mButtonSaveAll = findViewById(R.id.buttonSaveAll);
     mButtonCrop = findViewById(R.id.buttonCrop);
@@ -181,18 +257,18 @@ public class PreviewEditActivity extends AppCompatActivity {
     Logger.d(TAG, "Click crop button");
     Uri destURI = previewItems.get(POSITION).getResultImageURI();
     Uri origURI = previewItems.get(POSITION).getOriginalImageURI();
-    int bitmapMaxSize = PreviewItem.getBitmapMaxSize();
 
     UCrop.Options options = setCropViewOption();
     UCrop.of(origURI, destURI)
-      .withMaxResultSize(bitmapMaxSize, bitmapMaxSize)
       .withOptions(options)
       .start(this);
 
     Logger.d(TAG, "crop start : orig : " + origURI +", dest : " + destURI);
   }
   public void clickButtonStamp(){
-
+    mPreviewCanvasView.setStampShown(true);
+    if(selectedStamp != null) mPreviewCanvasView.setStampItem(selectedStamp);
+    mPreviewCanvasView.callInvalidate();
   }
   public void clickButtonEmoticon(){
 

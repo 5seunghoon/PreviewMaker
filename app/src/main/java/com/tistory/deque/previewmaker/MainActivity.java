@@ -47,8 +47,6 @@ public class MainActivity extends AppCompatActivity
   private final String TAG = "MainActivity";
 
   DBOpenHelper dbOpenHelper;
-  int dbVersion = 1;
-  final String dpOpenHelperName = "DB_OPEN_HELPER_NAME";
 
   Toolbar mToolbar;
   Permission mPermission;
@@ -258,9 +256,9 @@ public class MainActivity extends AppCompatActivity
   private void dbOpen(){
     dbOpenHelper = DBOpenHelper.getDbOpenHelper(
       getApplicationContext()
-      , dpOpenHelperName
+      , DBOpenHelper.dpOpenHelperName
       , null
-      , dbVersion);
+      , DBOpenHelper.dbVersion);
     dbOpenHelper.dbOpen();
   }
 
@@ -398,12 +396,14 @@ public class MainActivity extends AppCompatActivity
   private void addStampToListAndDB(int requestCode, int resultCode, Intent data){
     dbOpenHelper.dbInsertStamp(data.getStringExtra("STAMP_NAME"), data.getData());
 
+    int width, height, posWidthPer, posHeightPer;
+
     final String MY_QUERY = "SELECT MAX(_id) FROM " + dbOpenHelper.TABLE_NAME_STAMPS;
     Cursor cur = dbOpenHelper.db.rawQuery(MY_QUERY, null);
     cur.moveToFirst();
     int maxID = cur.getInt(0);
 
-    mStampItems.add(new StampItem(maxID, data.getData(), data.getStringExtra("STAMP_NAME")));
+    mStampItems.add(new StampItem(maxID, data.getData(), data.getStringExtra("STAMP_NAME"), -1, -1, 50, 50));
     Logger.d(TAG, "INSERT : ID : " + maxID + " imageURI : " + data.getData() + " name : " + data.getStringExtra("STAMP_NAME"));
 
     viewEveryItemInDB();
@@ -473,6 +473,7 @@ public class MainActivity extends AppCompatActivity
 
   private void stampsFromDBToList() {
     int id;
+    int width, height, posWidthPer, posHeightPer;
     String imageURIPath;
     String name;
     String sql = "SELECT * FROM " + dbOpenHelper.TABLE_NAME_STAMPS + ";";
@@ -484,6 +485,11 @@ public class MainActivity extends AppCompatActivity
       id = results.getInt(0);
       name = results.getString(1);
       imageURIPath = results.getString(2);
+      width = results.getInt(3);
+      height = results.getInt(4);
+      posWidthPer = results.getInt(5);
+      posHeightPer = results.getInt(6);
+
       Logger.d(TAG, "DB ITEM : id : " + id + " imageURIPath : " + imageURIPath + " name : " + name);
 
       //if there is not exist stamp file, delete it in db
@@ -494,7 +500,7 @@ public class MainActivity extends AppCompatActivity
       if (!stampFile.exists()) {
         dbOpenHelper.dbDeleteStamp(id);
       } else {
-        mStampItems.add(new StampItem(id, Uri.parse(imageURIPath), name));
+        mStampItems.add(new StampItem(id, Uri.parse(imageURIPath), name, width, height, posWidthPer, posHeightPer));
       }
 
       //if(id > endOfID) endOfID = id;

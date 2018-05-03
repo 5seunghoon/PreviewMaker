@@ -41,10 +41,10 @@ public class PreviewItem {
       rate = (double) width / (double) height;
       if(rate > 1 && width > bitmapMaxSize) { // w > h
         Logger.d(TAG, "RATE : " + rate +" , W : " + bitmapMaxSize + " , H : " +  (int) (bitmapMaxSize * (1 / rate)));
-        resizedBitmap = bitmap.createScaledBitmap(bitmap, bitmapMaxSize, (int) (bitmapMaxSize * (1 / rate)), true);
+        resizedBitmap = Bitmap.createScaledBitmap(bitmap, bitmapMaxSize, (int) (bitmapMaxSize * (1 / rate)), true);
       } else if (rate <= 1 && height > bitmapMaxSize) { // h > w
         Logger.d(TAG, "RATE : " + rate +" , W : " + (int) (bitmapMaxSize * (rate)) + " , H : " + bitmapMaxSize);
-        resizedBitmap = bitmap.createScaledBitmap(bitmap, (int) (bitmapMaxSize * (rate)), bitmapMaxSize, true);
+        resizedBitmap = Bitmap.createScaledBitmap(bitmap, (int) (bitmapMaxSize * (rate)), bitmapMaxSize, true);
       }
       else {
         resizedBitmap = bitmap;

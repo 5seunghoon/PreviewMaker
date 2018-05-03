@@ -6,15 +6,19 @@ public class StampItem {
   int ID;
   Uri imageURI;
   String stampName;
-  int width;
-  int height;
-  int pos_width_per;
-  int pos_height_per;
+  private int width;
+  private int height;
+  private int pos_width_per;
+  private int pos_height_per;
 
-  public StampItem(int ID, Uri imageURI, String stampName) {
+  public StampItem(int ID, Uri imageURI, String stampName, int width, int height, int pos_width_per, int pos_height_per) {
     this.ID = ID;
     this.imageURI = imageURI;
     this.stampName = stampName;
+    this.width = width;
+    this.height = height;
+    this.pos_width_per = pos_width_per;
+    this.pos_height_per = pos_height_per;
   }
 
   public Uri getImageURI() {
