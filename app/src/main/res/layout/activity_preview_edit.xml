@@ -87,7 +87,8 @@
         android:drawableTop="@drawable/ic_insert_emoticon_black_48dp"
         android:paddingTop="4dp"
         android:text="@string/action_sticker_title"
-        android:textSize="12sp"/>
+        android:textSize="12sp"
+        android:visibility="gone" />
 
       <Button
         android:id="@+id/buttonDelete"
