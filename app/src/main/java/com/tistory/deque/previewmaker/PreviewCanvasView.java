@@ -222,4 +222,30 @@ public class PreviewCanvasView extends View {
     }
   }
 
+  public void savePreview(){
+    Bitmap screenshot = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
+    Canvas canvas = new Canvas(screenshot);
+    draw(canvas);
+
+    String resultFilePath = previewItems.get(PreviewEditActivity.POSITION).getResultImageURI().getPath();
+    File resultFile = new File(resultFilePath);
+    FileOutputStream fos;
+    try{
+      fos = new FileOutputStream(resultFile);
+      screenshot.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+      fos.close();
+      Snackbar.make(this, "저장 성공 : " + resultFilePath, Snackbar.LENGTH_LONG).show();
+
+      Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+      mediaScanIntent.setData(previewItems.get(PreviewEditActivity.POSITION).getResultImageURI());
+      mActivity.sendBroadcast(mediaScanIntent);
+
+    } catch (FileNotFoundException e) {
+      e.printStackTrace();
+      Snackbar.make(this, "저장 실패...", Snackbar.LENGTH_LONG).show();
+    } catch (IOException e) {
+      e.printStackTrace();
+      Snackbar.make(this, "저장 실패...", Snackbar.LENGTH_LONG).show();
+    }
+  }
 }
