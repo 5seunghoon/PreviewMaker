@@ -14,7 +14,7 @@ import java.util.Date;
 
 public class PreviewItem {
   private final static String TAG = "PreviewEditActivity";
-  private static int bitmapMaxSize = 1000;
+  private static int bitmapMaxSize = 3000;
   private Uri originalImageURI;
   private Uri thumbnailImageURI;
   private Uri resultImageURI;
@@ -79,7 +79,7 @@ public class PreviewItem {
   }
 
   private Uri makeResultImageFile(){
-    String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+    String timeStamp = new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date());
     String imageFileName = "PREVIEW_" + timeStamp + ".png";
     File imageFile = null;
     File storageDir = new File(Environment.getExternalStorageDirectory() + "/Pictures", MainActivity.PREVIEW_SAVED_DIRECTORY);

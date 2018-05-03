@@ -284,7 +284,7 @@ public class MainActivity extends AppCompatActivity
 
   public File createImageFile() {
     Logger.d(TAG, "createImageFile func");
-    String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+    String timeStamp = new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date());
     String imageFileName = "STAMP_" + timeStamp + ".png";
     Logger.d(TAG, "image file name : " + imageFileName
     );

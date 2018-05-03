@@ -2,17 +2,22 @@ package com.tistory.deque.previewmaker;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.view.MotionEvent;
 import android.view.View;
 
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -21,6 +26,7 @@ public class PreviewCanvasView extends View {
   private Canvas mCanvas;
   private PreviewEditActivity mActivity;
   private int canvasWidth, canvasHeight;
+  public static int grandParentWidth, grandParentHeight;
 
   private int previewPosWidth, previewPosHeight;
 
@@ -55,6 +61,13 @@ public class PreviewCanvasView extends View {
         drawStamp();
       }
     }
+  }
+
+  @Override
+  protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+    super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+
+    this.setMeasuredDimension(3000, 3000);
   }
 
   @Override
@@ -103,12 +116,8 @@ public class PreviewCanvasView extends View {
   }
 
   private boolean isTouchInStamp(int x, int y){
-    Logger.d("TOUCH", "x : " + x + " , y : " + y);
-    Logger.d("TOUCH", "stampWidthPos : " + stampWidthPos + " , stampWidth : " + stampWidth);
-    Logger.d("TOUCH", "stampHeightPos : " + stampHeightPos + " , stampHeight : " + stampHeight);
     if(x < stampWidthPos + stampWidth && x > stampWidthPos){
       if(y < stampHeightPos + stampHeight && y > stampHeightPos){
-        Logger.d("TOUCH", " : TRUE");
         return true;
       }
     }
@@ -117,14 +126,33 @@ public class PreviewCanvasView extends View {
 
   private void drawBellowBitmap() {
     Bitmap previewBitmap = previewItems.get(PreviewEditActivity.POSITION).getmBitmap();
-    canvasWidth = mCanvas.getWidth();
-    canvasHeight = mCanvas.getHeight();
+    //canvasWidth = mCanvas.getWidth();
+    //canvasHeight = mCanvas.getHeight();
+    canvasWidth = grandParentWidth;
+    canvasHeight = grandParentHeight;
     int previewBitmapWidth = previewBitmap.getWidth();
     int previewBitmapHeight = previewBitmap.getHeight();
     Logger.d(TAG, "CANVAS : W : " + canvasWidth + " , H : " + canvasHeight);
-    previewPosWidth = (canvasWidth - previewBitmapWidth) / 2;
-    previewPosHeight = (canvasHeight - previewBitmapHeight) / 2;
-    mCanvas.drawBitmap(previewBitmap, previewPosWidth, previewPosHeight, null); // put center
+
+    int canvasMinSize = (canvasWidth < canvasHeight) ? canvasWidth : canvasHeight;
+    double rate = (double) previewBitmapWidth / (double) previewBitmapHeight;
+    Rect dst;
+
+    if(rate > 1 && previewBitmapWidth > previewBitmapHeight) { // w > h
+      previewPosWidth = (canvasWidth - canvasMinSize) / 2;
+      previewPosHeight = (canvasHeight - (int) (canvasMinSize * (1 / rate))) / 2;
+      dst = new Rect(previewPosWidth, previewPosHeight, previewPosWidth + canvasMinSize, previewPosHeight + (int) (canvasMinSize * (1 / rate)));
+    } else if (rate <= 1 && previewBitmapWidth < previewBitmapHeight) { // w < h
+      previewPosWidth = (canvasWidth -(int) (canvasMinSize * (rate))) / 2;
+      previewPosHeight = (canvasHeight - canvasMinSize) / 2;
+      dst = new Rect(previewPosWidth, previewPosHeight, previewPosWidth + (int) (canvasMinSize * (rate)), previewPosHeight + canvasMinSize);
+    } else {
+      previewPosWidth = (canvasWidth - previewBitmapWidth) / 2;
+      previewPosHeight = (canvasHeight - previewBitmapHeight) / 2;
+      dst = new Rect(previewPosWidth, previewPosHeight, previewPosWidth + previewBitmapWidth, previewPosHeight + previewBitmapHeight);
+    }
+    //mCanvas.drawBitmap(previewBitmap, previewPosWidth, previewPosHeight, null); // put center
+    mCanvas.drawBitmap(previewBitmap, null, dst, null);
   }
 
   private void drawStamp(){
@@ -136,8 +164,10 @@ public class PreviewCanvasView extends View {
       stampWidth + ", " + stampHeight + ", " +
       stampPosWidthPer + ", " + stampPosHeightPer + ", " + stampURI);
 
-    Bitmap resizedStampBitmap = Bitmap.createScaledBitmap(stampOriginalBitmap, stampWidth, stampHeight,true);
-    mCanvas.drawBitmap(resizedStampBitmap, stampWidthPos, stampHeightPos, null);
+    //Bitmap resizedStampBitmap = Bitmap.createScaledBitmap(stampOriginalBitmap, stampWidth, stampHeight,true);
+    //mCanvas.drawBitmap(resizedStampBitmap, stampWidthPos, stampHeightPos, null);
+    Rect dst =  new Rect(stampWidthPos, stampHeightPos, stampWidthPos + stampWidth, stampHeightPos + stampHeight);
+    mCanvas.drawBitmap(stampOriginalBitmap, null, dst,null);
   }
 
   protected void callInvalidate(){
@@ -191,4 +221,5 @@ public class PreviewCanvasView extends View {
       return null;
     }
   }
+
 }

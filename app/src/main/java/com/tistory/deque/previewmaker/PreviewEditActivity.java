@@ -248,7 +248,7 @@ public class PreviewEditActivity extends AppCompatActivity {
   }
 
   public void clickButtonSaveAll(){
-
+    mPreviewCanvasView.savePreview();
   }
   public void clickButtonCrop(){
     if(POSITION < 0 || POSITION >= previewItems.size()){
@@ -271,7 +271,6 @@ public class PreviewEditActivity extends AppCompatActivity {
     mPreviewCanvasView.callInvalidate();
   }
   public void clickButtonEmoticon(){
-
   }
   public void clickButtonDelete(){
 
@@ -303,15 +302,17 @@ public class PreviewEditActivity extends AppCompatActivity {
     mPreviewCanvasView = new PreviewCanvasView(this, this, previewItems);
     mCanvasPerantLayout.addView(mPreviewCanvasView);
 
+
     mCanvasGrandParentLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
       @Override
       public void onGlobalLayout() {
         canvasGrandParentViewWidth = mCanvasGrandParentLayout.getWidth();
         canvasGrandParentViewHeight = mCanvasGrandParentLayout.getHeight();
-        int min = canvasGrandParentViewWidth < canvasGrandParentViewHeight ? canvasGrandParentViewWidth : canvasGrandParentViewHeight;
-        min -= 50;
-        PreviewItem.setBitmapMaxSize(min);
-        Logger.d(TAG, "W : " + canvasGrandParentViewWidth + ", H : " + canvasGrandParentViewHeight + ", min : " + min);
+        //int min = canvasGrandParentViewWidth < canvasGrandParentViewHeight ? canvasGrandParentViewWidth : canvasGrandParentViewHeight;
+        //min -= 50;
+        PreviewCanvasView.grandParentWidth = canvasGrandParentViewWidth;
+        PreviewCanvasView.grandParentHeight = canvasGrandParentViewHeight;
+        //Logger.d(TAG, "W : " + canvasGrandParentViewWidth + ", H : " + canvasGrandParentViewHeight + ", min : " + min);
       }
     });
 
