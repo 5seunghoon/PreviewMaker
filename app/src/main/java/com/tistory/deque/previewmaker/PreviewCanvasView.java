@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v4.content.ContextCompat;
+import android.view.MotionEvent;
 import android.view.View;
 
 import java.io.FileNotFoundException;
@@ -30,6 +31,8 @@ public class PreviewCanvasView extends View {
   private Bitmap stampOriginalBitmap;
   private int stampWidthPos, stampHeightPos;
 
+  private int movePrevX, movePrevY;
+  private boolean canMoveStamp = false;
 
   ArrayList<PreviewItem> previewItems;
 
@@ -54,6 +57,64 @@ public class PreviewCanvasView extends View {
     }
   }
 
+  @Override
+  public boolean onTouchEvent(MotionEvent event) {
+    switch (event.getAction()){
+      case MotionEvent.ACTION_DOWN :
+        touchDown(event);
+        break;
+      case MotionEvent.ACTION_MOVE :
+        touchMove(event);
+        break;
+      case MotionEvent.ACTION_UP :
+        touchUp(event);
+        break;
+    }
+    return true;
+  }
+
+  private void touchDown(MotionEvent event){
+    int x, y;
+    x = (int) event.getX();
+    y = (int) event.getY();
+
+    if(isTouchInStamp(x,y)){
+      movePrevX = x;
+      movePrevY = y;
+      canMoveStamp = true;
+      //Logger.d(TAG, "DOWN X : " + x + ", Y : " + y);
+    }
+  }
+  private void touchMove(MotionEvent event){
+    if(canMoveStamp){
+      int x, y;
+      x = (int) event.getX();
+      y = (int) event.getY();
+      int deltaX = x - movePrevX;
+      int deltaY = y - movePrevY;
+      stampWidthPos += deltaX;
+      stampHeightPos += deltaY;
+      movePrevX = x;
+      movePrevY = y;
+      invalidate();
+      //Logger.d(TAG, "MOVE X : " + x + ", Y : " + y);
+      //Logger.d(TAG, "MOVE deltaX : " + deltaX + ", deltaY : " + deltaY);
+      //Logger.d(TAG, "MOVE stampWidthPos : " + stampWidthPos + ", stampHeightPos : " + stampHeightPos);
+    }
+  }
+  private void touchUp(MotionEvent event){
+    canMoveStamp = false;
+  }
+
+  private boolean isTouchInStamp(int x, int y){
+    if(x < stampWidthPos + stampWidth && x > stampWidthPos){
+      if(y < stampHeightPos + stampHeight && y > stampHeight){
+        return true;
+      }
+    }
+    return false;
+  }
+
   private void drawBellowBitmap() {
     Bitmap previewBitmap = previewItems.get(PreviewEditActivity.POSITION).getmBitmap();
     canvasWidth = mCanvas.getWidth();
@@ -76,12 +137,7 @@ public class PreviewCanvasView extends View {
       stampPosWidthPer + ", " + stampPosHeightPer + ", " + stampURI);
 
     Bitmap resizedStampBitmap = Bitmap.createScaledBitmap(stampOriginalBitmap, stampWidth, stampHeight,true);
-
-    stampWidthPos = (stampPosWidthPer * canvasWidth / 100) - (stampWidth / 2);
-    stampHeightPos = (stampPosHeightPer * canvasHeight / 100) - (stampHeight / 2);
-
     mCanvas.drawBitmap(resizedStampBitmap, stampWidthPos, stampHeightPos, null);
-
   }
 
   protected void callInvalidate(){
@@ -102,12 +158,13 @@ public class PreviewCanvasView extends View {
 
   public void setStampItem(StampItem stampItem) {
     this.stampItem = stampItem;
-    stampWidth = stampItem.getWidth();
-    stampHeight = stampItem.getHeight();
     stampPosWidthPer = stampItem.getPos_width_per();
     stampPosHeightPer = stampItem.getPos_height_per();
     stampURI = stampItem.getImageURI();
     stampOriginalBitmap = stampURIToBitmap(stampURI, mActivity);
+
+    stampWidth = stampItem.getWidth();
+    stampHeight = stampItem.getHeight();
 
     if(stampWidth < 0 || stampHeight < 0){
       int id = stampItem.getID();
@@ -115,6 +172,9 @@ public class PreviewCanvasView extends View {
       stampHeight = stampOriginalBitmap.getHeight();
       mActivity.stampWidthHeightUpdate(id, stampWidth, stampHeight);
     }
+
+    stampWidthPos = (stampPosWidthPer * canvasWidth / 100) - (stampWidth / 2);
+    stampHeightPos = (stampPosHeightPer * canvasHeight / 100) - (stampHeight / 2);
 
     Logger.d(TAG, "STAMP set : w, h, pw, ph, uri : " +
       stampWidth + ", " + stampHeight + ", " +
