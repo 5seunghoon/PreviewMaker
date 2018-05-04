@@ -331,6 +331,7 @@ public class PreviewEditActivity extends AppCompatActivity {
   }
 
   protected void clickPreviewItem(View v, int position){
+    if(POSITION != position) mPreviewCanvasView.clickNewPreview();
     POSITION = position;
     mPreviewCanvasView.callInvalidate();
     if(!isClickPreviewFirst){

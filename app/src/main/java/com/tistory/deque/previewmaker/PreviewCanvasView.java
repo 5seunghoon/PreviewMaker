@@ -21,14 +21,31 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
+enum ClickState {
+  STATE_NONE_CLICK,
+  STATE_STAMP_CLICK,
+  STATE_PREVIEW_CLICK
+}
+
 public class PreviewCanvasView extends View {
   private final static String TAG = "PreviewEditActivity";
+
+
+  private static String STATE_NONE_CLICK = "NONE_CLICK_STATE";
+  private static String STATE_STAMP_CLICK = "STAMP_CLICK_STATE";
+  private static String STATE_PREVIEW_CLICK = "PREVIEW_CLICK_STATE";
+  private static ClickState CLICK_STATE;
+
   private Canvas mCanvas;
   private PreviewEditActivity mActivity;
   private int canvasWidth, canvasHeight;
   public static int grandParentWidth, grandParentHeight;
 
+  ArrayList<PreviewItem> previewItems;
   private int previewPosWidth, previewPosHeight;
+  private int previewPosWidthDelta, previewPosHeightDelta;
+  private int previewWidth, previewHeight;
+  private double previewZoomRate = 1;
 
   private boolean isStampShown = false;
   private StampItem stampItem;
@@ -40,12 +57,12 @@ public class PreviewCanvasView extends View {
   private int movePrevX, movePrevY;
   private boolean canMoveStamp = false;
 
-  ArrayList<PreviewItem> previewItems;
 
   public PreviewCanvasView(Context context, PreviewEditActivity activity, ArrayList<PreviewItem> previewItems) {
     super(context);
     mActivity = activity;
     this.previewItems = previewItems;
+    CLICK_STATE = ClickState.STATE_NONE_CLICK;
   }
   @Override
   protected void onDraw(Canvas canvas) {
@@ -72,6 +89,11 @@ public class PreviewCanvasView extends View {
 
   @Override
   public boolean onTouchEvent(MotionEvent event) {
+    /**
+     * 멀티터치를 통한 확대/회전 구현해야함
+     * 프리뷰는 확대만, 스탬프는 확대 회전 둘다
+     * 스탬프의경우 삭제도 만들어야됨
+     */
     switch (event.getAction()){
       case MotionEvent.ACTION_DOWN :
         touchDown(event);
@@ -94,25 +116,45 @@ public class PreviewCanvasView extends View {
     if(isTouchInStamp(x,y)){
       movePrevX = x;
       movePrevY = y;
-      canMoveStamp = true;
-    }
-  }
-  private void touchMove(MotionEvent event){
-    if(canMoveStamp){
-      int x, y;
-      x = (int) event.getX();
-      y = (int) event.getY();
-      int deltaX = x - movePrevX;
-      int deltaY = y - movePrevY;
-      stampWidthPos += deltaX;
-      stampHeightPos += deltaY;
+      CLICK_STATE = ClickState.STATE_STAMP_CLICK;
+    } else if(isTouchInPreview(x,y)) {
       movePrevX = x;
       movePrevY = y;
-      invalidate();
+      CLICK_STATE = ClickState.STATE_PREVIEW_CLICK;
     }
   }
+
+
+  private void touchMove(MotionEvent event){
+    int x, y;
+    x = (int) event.getX();
+    y = (int) event.getY();
+    int deltaX = x - movePrevX;
+    int deltaY = y - movePrevY;
+
+    switch (CLICK_STATE){
+      case STATE_STAMP_CLICK:
+
+        stampWidthPos += deltaX;
+        stampHeightPos += deltaY;
+        movePrevX = x;
+        movePrevY = y;
+        invalidate();
+        break;
+
+      case STATE_PREVIEW_CLICK:
+
+        previewPosWidthDelta += deltaX;
+        previewPosHeightDelta += deltaY;
+        movePrevX = x;
+        movePrevY = y;
+        invalidate();
+        break;
+    }
+
+  }
   private void touchUp(MotionEvent event){
-    canMoveStamp = false;
+    CLICK_STATE = ClickState.STATE_NONE_CLICK;
   }
 
   private boolean isTouchInStamp(int x, int y){
@@ -124,34 +166,56 @@ public class PreviewCanvasView extends View {
     return false;
   }
 
+  private boolean isTouchInPreview(int x, int y) {
+    if(x < previewPosWidth + previewWidth && x > previewPosWidth){
+      if( y < previewPosHeight + previewHeight && y > previewPosHeight){
+        return true;
+      }
+    }
+    return false;
+  }
+
   private void drawBellowBitmap() {
     Bitmap previewBitmap = previewItems.get(PreviewEditActivity.POSITION).getmBitmap();
     //canvasWidth = mCanvas.getWidth();
     //canvasHeight = mCanvas.getHeight();
-    canvasWidth = grandParentWidth;
-    canvasHeight = grandParentHeight;
+    canvasWidth = grandParentWidth - 16;
+    canvasHeight = grandParentHeight - 16; // layout margin
     int previewBitmapWidth = previewBitmap.getWidth();
     int previewBitmapHeight = previewBitmap.getHeight();
     Logger.d(TAG, "CANVAS : W : " + canvasWidth + " , H : " + canvasHeight);
 
-    int canvasMinSize = (canvasWidth < canvasHeight) ? canvasWidth : canvasHeight;
     double rate = (double) previewBitmapWidth / (double) previewBitmapHeight;
     Rect dst;
 
-    if(rate > 1 && previewBitmapWidth > previewBitmapHeight) { // w > h
-      previewPosWidth = (canvasWidth - canvasMinSize) / 2;
-      previewPosHeight = (canvasHeight - (int) (canvasMinSize * (1 / rate))) / 2;
-      dst = new Rect(previewPosWidth, previewPosHeight, previewPosWidth + canvasMinSize, previewPosHeight + (int) (canvasMinSize * (1 / rate)));
-    } else if (rate <= 1 && previewBitmapWidth < previewBitmapHeight) { // w < h
-      previewPosWidth = (canvasWidth -(int) (canvasMinSize * (rate))) / 2;
-      previewPosHeight = (canvasHeight - canvasMinSize) / 2;
-      dst = new Rect(previewPosWidth, previewPosHeight, previewPosWidth + (int) (canvasMinSize * (rate)), previewPosHeight + canvasMinSize);
+    if(rate > 1 && previewBitmapWidth > canvasWidth) { // w > h
+
+      previewPosWidth = 0;
+      previewPosHeight = (canvasHeight - (int) (canvasWidth * (1 / rate))) / 2;
+      previewWidth = canvasWidth;
+      previewHeight = (int) (canvasWidth * (1 / rate));
+
+    } else if (rate <= 1 && previewBitmapHeight > canvasHeight) { // w < h
+
+      previewPosWidth = (canvasWidth -(int) (canvasHeight * (rate))) / 2;
+      previewPosHeight = 0;
+      previewWidth = (int) (canvasHeight * (rate));
+      previewHeight = canvasHeight;
+
     } else {
+
       previewPosWidth = (canvasWidth - previewBitmapWidth) / 2;
       previewPosHeight = (canvasHeight - previewBitmapHeight) / 2;
-      dst = new Rect(previewPosWidth, previewPosHeight, previewPosWidth + previewBitmapWidth, previewPosHeight + previewBitmapHeight);
+      previewWidth = previewBitmapWidth;
+      previewHeight = previewBitmapHeight;
+
     }
+
+    previewPosWidth += previewPosWidthDelta;
+    previewPosHeight += previewPosHeightDelta;
+
     //mCanvas.drawBitmap(previewBitmap, previewPosWidth, previewPosHeight, null); // put center
+    dst = new Rect(previewPosWidth, previewPosHeight, previewPosWidth + previewWidth, previewPosHeight + previewHeight);
     mCanvas.drawBitmap(previewBitmap, null, dst, null);
   }
 
@@ -223,6 +287,14 @@ public class PreviewCanvasView extends View {
   }
 
   public void savePreview(){
+    /**
+     * 저장시 할 일
+     * 1. 이미지를 원래 크기로 다시 확대(or 축소)
+     * 2. 그 확대된 비율과, 낙관이 원래 붙어있던 위치에 맞춰서 확대된 이미지에도 제대로 낙관 붙이고
+     * 3. 크기 맞춰서 자르고 (3000*3000을 프리뷰 원래 크기에 맞춰서 자른다는 뜻)
+     * 4. 그 상태로 이미지로 저장
+     * 5. 다시 축소해서 되돌리기
+     */
     Bitmap screenshot = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
     Canvas canvas = new Canvas(screenshot);
     draw(canvas);
@@ -247,5 +319,15 @@ public class PreviewCanvasView extends View {
       e.printStackTrace();
       Snackbar.make(this, "저장 실패...", Snackbar.LENGTH_LONG).show();
     }
+  }
+
+  public void clickNewPreview() {
+    previewPosWidth = 0;
+    previewPosHeight = 0;
+    previewPosWidthDelta = 0;
+    previewPosHeightDelta = 0;
+    previewWidth = 0;
+    previewHeight = 0;
+    previewZoomRate = 1;
   }
 }
