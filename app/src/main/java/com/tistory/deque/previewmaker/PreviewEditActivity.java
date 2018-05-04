@@ -248,7 +248,7 @@ public class PreviewEditActivity extends AppCompatActivity {
   }
 
   public void clickButtonSaveAll(){
-    mPreviewCanvasView.savePreview();
+    mPreviewCanvasView.savePreviewAll();
   }
   public void clickButtonCrop(){
     if(POSITION < 0 || POSITION >= previewItems.size()){
@@ -331,13 +331,18 @@ public class PreviewEditActivity extends AppCompatActivity {
   }
 
   protected void clickPreviewItem(View v, int position){
-    if(POSITION != position) mPreviewCanvasView.clickNewPreview();
-    POSITION = position;
-    mPreviewCanvasView.callInvalidate();
+    if (POSITION != position) {
+      mPreviewCanvasView.clickNewPreview(position);
+    }
+
+
     if(!isClickPreviewFirst){
+
       isClickPreviewFirst = true;
       canvasviewHintTextView.setVisibility(View.GONE);
       mCanvasPerantLayout.setVisibility(View.VISIBLE);
+
+      mPreviewCanvasView.changePreviewInCanvas(position);
     }
   }
 

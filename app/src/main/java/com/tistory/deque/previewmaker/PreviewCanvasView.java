@@ -2,6 +2,7 @@ package com.tistory.deque.previewmaker;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -9,9 +10,11 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.provider.MediaStore;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -21,19 +24,15 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
-enum ClickState {
-  STATE_NONE_CLICK,
-  STATE_STAMP_CLICK,
-  STATE_PREVIEW_CLICK
-}
-
 public class PreviewCanvasView extends View {
   private final static String TAG = "PreviewEditActivity";
 
 
   private static String STATE_NONE_CLICK = "NONE_CLICK_STATE";
   private static String STATE_STAMP_CLICK = "STAMP_CLICK_STATE";
+  private static String STATE_STAMP_CLICK_EDIT = "STAMP_EDIT_STATE";
   private static String STATE_PREVIEW_CLICK = "PREVIEW_CLICK_STATE";
+  private static String STATE_PREVIEW_CLICK_EDIT = "PREVIEW_EDIT_STATE";
   private static ClickState CLICK_STATE;
 
   private Canvas mCanvas;
@@ -62,7 +61,8 @@ public class PreviewCanvasView extends View {
     super(context);
     mActivity = activity;
     this.previewItems = previewItems;
-    CLICK_STATE = ClickState.STATE_NONE_CLICK;
+    CLICK_STATE = ClickState.getClickState();
+    CLICK_STATE.start();
   }
   @Override
   protected void onDraw(Canvas canvas) {
@@ -116,11 +116,11 @@ public class PreviewCanvasView extends View {
     if(isTouchInStamp(x,y)){
       movePrevX = x;
       movePrevY = y;
-      CLICK_STATE = ClickState.STATE_STAMP_CLICK;
+      CLICK_STATE.clickStamp();
     } else if(isTouchInPreview(x,y)) {
       movePrevX = x;
       movePrevY = y;
-      CLICK_STATE = ClickState.STATE_PREVIEW_CLICK;
+      CLICK_STATE.clickPreview();
     }
   }
 
@@ -132,8 +132,8 @@ public class PreviewCanvasView extends View {
     int deltaX = x - movePrevX;
     int deltaY = y - movePrevY;
 
-    switch (CLICK_STATE){
-      case STATE_STAMP_CLICK:
+    switch (CLICK_STATE.getClickStateEnum()){
+      case STATE_STAMP_CLICK_EDIT:
 
         stampWidthPos += deltaX;
         stampHeightPos += deltaY;
@@ -141,20 +141,22 @@ public class PreviewCanvasView extends View {
         movePrevY = y;
         invalidate();
         break;
+      /**
+       *
+       case STATE_PREVIEW_CLICK:
 
-      case STATE_PREVIEW_CLICK:
-
-        previewPosWidthDelta += deltaX;
-        previewPosHeightDelta += deltaY;
-        movePrevX = x;
-        movePrevY = y;
-        invalidate();
-        break;
+       previewPosWidthDelta += deltaX;
+       previewPosHeightDelta += deltaY;
+       movePrevX = x;
+       movePrevY = y;
+       invalidate();
+       break;
+       */
     }
 
   }
   private void touchUp(MotionEvent event){
-    CLICK_STATE = ClickState.STATE_NONE_CLICK;
+    //CLICK_STATE = ClickState.STATE_NONE_CLICK;
   }
 
   private boolean isTouchInStamp(int x, int y){
@@ -286,7 +288,17 @@ public class PreviewCanvasView extends View {
     }
   }
 
-  public void savePreview(){
+  public void savePreviewAll(){
+    SaveAllAsyncTask saveAllAsyncTask = new SaveAllAsyncTask();
+    saveAllAsyncTask.execute(previewItems.size());
+  }
+
+  public void savePreview(int previewPosition){
+    SaveAsyncTask saveAsyncTask = new SaveAsyncTask();
+    saveAsyncTask.execute(previewPosition);
+  }
+
+  public void savePreviewEach(int previewPosition){
     /**
      * 저장시 할 일
      * 1. 이미지를 원래 크기로 다시 확대(or 축소)
@@ -295,11 +307,15 @@ public class PreviewCanvasView extends View {
      * 4. 그 상태로 이미지로 저장
      * 5. 다시 축소해서 되돌리기
      */
+    PreviewEditActivity.POSITION = previewPosition;
+    callInvalidate();
+    
     Bitmap screenshot = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
     Canvas canvas = new Canvas(screenshot);
     draw(canvas);
 
-    String resultFilePath = previewItems.get(PreviewEditActivity.POSITION).getResultImageURI().getPath();
+    Uri resultUri = previewItems.get(previewPosition).getResultImageURI();
+    String resultFilePath = resultUri.getPath();
     File resultFile = new File(resultFilePath);
     FileOutputStream fos;
     try{
@@ -309,7 +325,7 @@ public class PreviewCanvasView extends View {
       Snackbar.make(this, "저장 성공 : " + resultFilePath, Snackbar.LENGTH_LONG).show();
 
       Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-      mediaScanIntent.setData(previewItems.get(PreviewEditActivity.POSITION).getResultImageURI());
+      mediaScanIntent.setData(resultUri);
       mActivity.sendBroadcast(mediaScanIntent);
 
     } catch (FileNotFoundException e) {
@@ -319,9 +335,46 @@ public class PreviewCanvasView extends View {
       e.printStackTrace();
       Snackbar.make(this, "저장 실패...", Snackbar.LENGTH_LONG).show();
     }
+
+    CLICK_STATE.clickSave();
+
+    PreviewItem previewItem = previewItems.get(PreviewEditActivity.POSITION);
+    previewItem.setOriginalImageURI(resultUri);
+    previewItem.saved();
   }
 
-  public void clickNewPreview() {
+  public void clickNewPreview(final int nextPosition) {
+    AlertDialog.Builder stampDeleteAlert = new AlertDialog.Builder(mActivity);
+    stampDeleteAlert.setMessage("편집 중인 프리뷰를 저장하시겠어요?").setCancelable(true)
+      .setPositiveButton("YES", new DialogInterface.OnClickListener() {
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+          savePreviewEach(PreviewEditActivity.POSITION);
+          changePreviewInCanvas(nextPosition);
+          return;
+        }
+      })
+      .setNegativeButton("NO",
+        new DialogInterface.OnClickListener() {
+          @Override
+          public void onClick(DialogInterface dialog, int which) {
+            changePreviewInCanvas(nextPosition);
+            return;
+          }
+        });
+
+    if(PreviewEditActivity.POSITION != -1){
+      AlertDialog alert = stampDeleteAlert.create();
+      alert.show();
+    }
+  }
+
+  public void changePreviewInCanvas(int nextPosition){
+    previewValueInit();
+    PreviewEditActivity.POSITION = nextPosition;
+    invalidate();
+  }
+  public void previewValueInit(){
     previewPosWidth = 0;
     previewPosHeight = 0;
     previewPosWidthDelta = 0;
@@ -329,5 +382,22 @@ public class PreviewCanvasView extends View {
     previewWidth = 0;
     previewHeight = 0;
     previewZoomRate = 1;
+  }
+
+  protected class SaveAsyncTask extends AsyncTask<Integer, Integer, Integer>{
+    @Override
+    protected Integer doInBackground(Integer... integers) {
+      savePreviewEach(integers[0]);
+      return null;
+    }
+  }
+  protected class SaveAllAsyncTask extends AsyncTask<Integer, Integer, Integer>{
+    @Override
+    protected Integer doInBackground(Integer... integers) {
+      for(int i = 0 ; i < integers[0] ; i ++){
+        savePreviewEach(i);
+      }
+      return null;
+    }
   }
 }
