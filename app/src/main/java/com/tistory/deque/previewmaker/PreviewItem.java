@@ -14,7 +14,7 @@ import java.util.Date;
 
 public class PreviewItem {
   private final static String TAG = "PreviewEditActivity";
-  private static int bitmapMaxSize = 3000;
+  private static int bitmapMaxSize = 2000;
   private Uri originalImageURI;
   private Uri thumbnailImageURI;
   private Uri resultImageURI;

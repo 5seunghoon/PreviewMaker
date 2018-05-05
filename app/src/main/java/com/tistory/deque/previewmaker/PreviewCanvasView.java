@@ -289,16 +289,11 @@ public class PreviewCanvasView extends View {
   }
 
   public void savePreviewAll(){
-    SaveAllAsyncTask saveAllAsyncTask = new SaveAllAsyncTask();
-    saveAllAsyncTask.execute(previewItems.size());
+    //SaveAllAsyncTask saveAllAsyncTask = new SaveAllAsyncTask();
+    //saveAllAsyncTask.execute(previewItems.size());
   }
 
-  public void savePreview(int previewPosition){
-    SaveAsyncTask saveAsyncTask = new SaveAsyncTask();
-    saveAsyncTask.execute(previewPosition);
-  }
-
-  public void savePreviewEach(int previewPosition){
+  public void savePreviewEach(int previewPosition, PreviewCanvasView v){
     /**
      * 저장시 할 일
      * 1. 이미지를 원래 크기로 다시 확대(or 축소)
@@ -308,11 +303,11 @@ public class PreviewCanvasView extends View {
      * 5. 다시 축소해서 되돌리기
      */
     PreviewEditActivity.POSITION = previewPosition;
-    callInvalidate();
-    
+    v.callInvalidate();
+
     Bitmap screenshot = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
     Canvas canvas = new Canvas(screenshot);
-    draw(canvas);
+    v.draw(canvas);
 
     Uri resultUri = previewItems.get(previewPosition).getResultImageURI();
     String resultFilePath = resultUri.getPath();
@@ -349,7 +344,7 @@ public class PreviewCanvasView extends View {
       .setPositiveButton("YES", new DialogInterface.OnClickListener() {
         @Override
         public void onClick(DialogInterface dialog, int which) {
-          savePreviewEach(PreviewEditActivity.POSITION);
+          savePreviewEach(PreviewEditActivity.POSITION, PreviewCanvasView.this);
           changePreviewInCanvas(nextPosition);
           return;
         }
@@ -384,18 +379,11 @@ public class PreviewCanvasView extends View {
     previewZoomRate = 1;
   }
 
-  protected class SaveAsyncTask extends AsyncTask<Integer, Integer, Integer>{
-    @Override
-    protected Integer doInBackground(Integer... integers) {
-      savePreviewEach(integers[0]);
-      return null;
-    }
-  }
   protected class SaveAllAsyncTask extends AsyncTask<Integer, Integer, Integer>{
     @Override
     protected Integer doInBackground(Integer... integers) {
       for(int i = 0 ; i < integers[0] ; i ++){
-        savePreviewEach(i);
+        savePreviewEach(i, PreviewCanvasView.this);
       }
       return null;
     }
