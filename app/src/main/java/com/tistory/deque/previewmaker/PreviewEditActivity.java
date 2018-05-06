@@ -136,7 +136,7 @@ public class PreviewEditActivity extends AppCompatActivity {
 
           PreviewItem previewItem = previewItems.get(POSITION);
           previewItem.setOriginalImageURI(resultUri);
-          previewItem.cropped();
+          previewItem.editted();
 
         } else if (resultCode == UCrop.RESULT_ERROR) {
           final Throwable cropError = UCrop.getError(data);
@@ -372,10 +372,11 @@ public class PreviewEditActivity extends AppCompatActivity {
   }
 
   protected void clickPreviewItem(View v, int position){
+    if (mPreviewCanvasView.isNowEditingStamp()) return;
+
     if (POSITION != position) {
       mPreviewCanvasView.clickNewPreview(position);
     }
-
 
     if(!isClickPreviewFirst){
 

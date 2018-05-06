@@ -64,7 +64,7 @@ public class PreviewItem {
     this.originalImageURI = originalImageURI;
     this.thumbnailImageURI = thumbnailImageURI;
     this.mActivity = activity;
-    this.isSaved = false;
+    this.isSaved = true;
     this.resultImageURI = makeResultImageFile();
     mBitmap = URIToBitmap(originalImageURI, mActivity);
   }
@@ -112,16 +112,12 @@ public class PreviewItem {
     return isSaved;
   }
 
-  public boolean getIsCropped(){
-    return isSaved;
-  }
-
-  public void cropped(){
-    isSaved = true;
-  }
-
   public void saved(){
     isSaved = true;
+  }
+
+  public void editted(){
+    isSaved = false;
   }
 
   public Uri getResultImageURI() {

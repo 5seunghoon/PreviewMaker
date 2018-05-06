@@ -27,14 +27,6 @@ import java.util.ArrayList;
 
 public class PreviewCanvasView extends View {
   private final static String TAG = "PreviewEditActivity";
-  private enum ZoomClickWhere {
-    NONE,
-    RIGHT_TOP,
-    RIGHT_BOTTOM,
-    LEFT_TOP,
-    LEFT_BOTTOM
-  }
-  private static ZoomClickWhere ZOOM_CLICK_WHERE = ZoomClickWhere.NONE;
 
   private static ClickState CLICK_STATE;
 
@@ -45,9 +37,7 @@ public class PreviewCanvasView extends View {
 
   ArrayList<PreviewItem> previewItems;
   private int previewPosWidth, previewPosHeight;
-  private int previewPosWidthDelta, previewPosHeightDelta;
   private int previewWidth, previewHeight;
-  private double previewZoomRate = 1;
 
   private boolean isStampShown = false;
   private StampItem stampItem;
@@ -62,7 +52,6 @@ public class PreviewCanvasView extends View {
   private float stampGuideCircleRadius = 15f;
 
   private int movePrevX, movePrevY;
-  private boolean canMoveStamp = false;
 
 
   public PreviewCanvasView(Context context, PreviewEditActivity activity, ArrayList<PreviewItem> previewItems) {
@@ -133,7 +122,7 @@ public class PreviewCanvasView extends View {
     if(isTouchInStamp(x,y)){
       CLICK_STATE.clickStamp();
     }
-    if((ZOOM_CLICK_WHERE = isTouchStampZoom(x,y)) != ZoomClickWhere.NONE){
+    if(isTouchStampZoom(x,y)){
       CLICK_STATE.clickStampZoomStart();
     }
     mActivity.editButtonGoneOrVisible(CLICK_STATE);
@@ -188,7 +177,6 @@ public class PreviewCanvasView extends View {
   }
   private void touchUp(MotionEvent event){
     CLICK_STATE.clickStampZoomEnd();
-    ZOOM_CLICK_WHERE = ZoomClickWhere.NONE;
   }
 
   private boolean isInBox(int x, int y, int x1, int y1, int x2, int y2){
@@ -210,23 +198,20 @@ public class PreviewCanvasView extends View {
     return isInBoxWithWidth(x, y, stampWidthPos, stampHeightPos, stampWidth, stampHeight);
   }
 
-  private ZoomClickWhere isTouchStampZoom(int x, int y){
+  private boolean isTouchStampZoom(int x, int y){
     int radius = (int) (stampGuideCircleRadius + 15);
     int x_s = stampWidthPos; //x start
     int x_e = stampWidthPos + stampWidth; //x end
     int y_s = stampHeightPos; // y start
     int y_e = stampHeightPos + stampHeight; // y end
 
-    if (isInBoxWithRadius(x, y, x_s, y_s, radius)) {
-      return ZoomClickWhere.LEFT_TOP;
-    } else if (isInBoxWithRadius(x, y, x_s, y_e, radius)) {
-      return ZoomClickWhere.LEFT_BOTTOM;
-    } else if (isInBoxWithRadius(x, y, x_e, y_s, radius)) {
-      return ZoomClickWhere.RIGHT_TOP;
-    } else if (isInBoxWithRadius(x, y, x_e, y_e, radius)) {
-      return ZoomClickWhere.RIGHT_BOTTOM;
+    if (isInBoxWithRadius(x, y, x_s, y_s, radius)
+      || isInBoxWithRadius(x, y, x_s, y_e, radius)
+      || isInBoxWithRadius(x, y, x_e, y_s, radius)
+      || isInBoxWithRadius(x, y, x_e, y_e, radius)) {
+      return true;
     } else {
-      return ZoomClickWhere.NONE;
+      return false;
     }
   }
   private boolean isTouchInPreview(int x, int y) {
@@ -244,14 +229,14 @@ public class PreviewCanvasView extends View {
     double rate = (double) previewBitmapWidth / (double) previewBitmapHeight;
     Rect dst;
 
-    if(rate > 1 && previewBitmapWidth > canvasWidth) { // w > h
+    if(rate > 1 && previewBitmapWidth >= canvasWidth) { // w > h
 
       previewPosWidth = 0;
       previewPosHeight = (canvasHeight - (int) (canvasWidth * (1 / rate))) / 2;
       previewWidth = canvasWidth;
       previewHeight = (int) (canvasWidth * (1 / rate));
 
-    } else if (rate <= 1 && previewBitmapHeight > canvasHeight) { // w < h
+    } else if (rate <= 1 && previewBitmapHeight >= canvasHeight) { // w < h
 
       previewPosWidth = (canvasWidth -(int) (canvasHeight * (rate))) / 2;
       previewPosHeight = 0;
@@ -266,11 +251,8 @@ public class PreviewCanvasView extends View {
       previewHeight = previewBitmapHeight;
 
     }
-
-    previewPosWidth += previewPosWidthDelta;
-    previewPosHeight += previewPosHeightDelta;
-
     dst = new Rect(previewPosWidth, previewPosHeight, previewPosWidth + previewWidth, previewPosHeight + previewHeight);
+    Logger.d(TAG, previewPosWidth +","+ previewPosHeight +","+ (previewPosWidth + previewWidth)+","+ (previewPosHeight + previewHeight));
     mCanvas.drawBitmap(previewBitmap, null, dst, null);
   }
 
@@ -342,6 +324,7 @@ public class PreviewCanvasView extends View {
   protected void showStamp(){
     setStampShown(true);
     CLICK_STATE.clickStampButton();
+    previewItems.get(PreviewEditActivity.POSITION).editted();
     mActivity.editButtonGoneOrVisible(CLICK_STATE);
   }
 
@@ -449,10 +432,16 @@ public class PreviewCanvasView extends View {
     previewItem.saved();
   }
 
+  public boolean isNowEditingStamp() {
+    if(CLICK_STATE.getClickStateEnum() == ClickStateEnum.STATE_NONE_CLICK) return false;
+    else return true;
+  }
+
   public void clickNewPreview(final int nextPosition) {
     AlertDialog.Builder stampDeleteAlert = new AlertDialog.Builder(mActivity);
     stampDeleteAlert.setMessage("편집 중인 프리뷰를 저장하시겠어요?").setCancelable(true)
-      .setPositiveButton("YES", new DialogInterface.OnClickListener() {
+      .setPositiveButton("YES",
+        new DialogInterface.OnClickListener() {
         @Override
         public void onClick(DialogInterface dialog, int which) {
           savePreviewEach(PreviewEditActivity.POSITION);
@@ -470,8 +459,15 @@ public class PreviewCanvasView extends View {
         });
 
     if(PreviewEditActivity.POSITION != -1){
-      AlertDialog alert = stampDeleteAlert.create();
-      alert.show();
+      Logger.d(TAG, "is Saved [" + PreviewEditActivity.POSITION + "] : " + previewItems.get(PreviewEditActivity.POSITION).getIsSaved() );
+      if(!previewItems.get(PreviewEditActivity.POSITION).getIsSaved()) {
+        Logger.d(TAG, "FALSE");
+        AlertDialog alert = stampDeleteAlert.create();
+        alert.show();
+      } else {
+        Logger.d(TAG, "TRUE");
+        changePreviewInCanvas(nextPosition);
+      }
     }
   }
 
@@ -479,16 +475,15 @@ public class PreviewCanvasView extends View {
     previewValueInit();
     PreviewEditActivity.POSITION = nextPosition;
     isStampShown = false;
+    CLICK_STATE.finish();
+    previewItems.get(nextPosition).saved();
     invalidate();
   }
   public void previewValueInit(){
     previewPosWidth = 0;
     previewPosHeight = 0;
-    previewPosWidthDelta = 0;
-    previewPosHeightDelta = 0;
     previewWidth = 0;
     previewHeight = 0;
-    previewZoomRate = 1;
   }
 
   public boolean backPressed() {
