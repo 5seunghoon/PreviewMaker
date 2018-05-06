@@ -61,10 +61,12 @@ public class PreviewEditActivity extends AppCompatActivity {
   private LinearLayout mCanvasGrandParentLayout;
   private PreviewCanvasView mPreviewCanvasView;
   protected ProgressBar previewLoadingProgressBar;
+  private LinearLayout layoutEditButton;
+  private LinearLayout layoutStampFinishButton;
 
   private TextView canvasviewHintTextView;
 
-  private Button mButtonSaveAll, mButtonCrop, mButtonStamp, mButtonEmoticon, mButtonDelete;
+  private Button mButtonSaveAll, mButtonSaveEach, mButtonCrop, mButtonStamp, mButtonEmoticon, mButtonDelete, mButtonStampFinish;
 
   StampItem stamp;
 
@@ -75,6 +77,9 @@ public class PreviewEditActivity extends AppCompatActivity {
 
     canvasviewHintTextView = findViewById(R.id.canvasviewHintTextView);
     previewLoadingProgressBar = findViewById(R.id.previewLoadingProgressBar);
+    layoutEditButton = findViewById(R.id.layoutEditButton);
+    layoutStampFinishButton = findViewById(R.id.layoutStampFinishButton);
+
     POSITION = -1;
 
     Intent intent = getIntent();
@@ -214,6 +219,8 @@ public class PreviewEditActivity extends AppCompatActivity {
     mButtonStamp = findViewById(R.id.buttonStamp);
     mButtonEmoticon = findViewById(R.id.buttonEmoticon);
     mButtonDelete = findViewById(R.id.buttonDelete);
+    mButtonSaveEach = findViewById(R.id.buttonSaveEach);
+    mButtonStampFinish = findViewById(R.id.buttonStampFinish);
 
     mButtonSaveAll.setOnClickListener(new View.OnClickListener() {
       @Override
@@ -245,10 +252,25 @@ public class PreviewEditActivity extends AppCompatActivity {
         clickButtonDelete();
       }
     });
+    mButtonSaveEach.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        clickButtonSaveEach();
+      }
+    });
+    mButtonStampFinish.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        clickButtonStampFinish();
+      }
+    });
   }
 
   public void clickButtonSaveAll(){
     mPreviewCanvasView.savePreviewAll();
+  }
+  public void clickButtonSaveEach(){
+
   }
   public void clickButtonCrop(){
     if(POSITION < 0 || POSITION >= previewItems.size()){
@@ -273,8 +295,11 @@ public class PreviewEditActivity extends AppCompatActivity {
   public void clickButtonEmoticon(){
   }
   public void clickButtonDelete(){
-
   }
+  public void clickButtonStampFinish(){
+    mPreviewCanvasView.finishStampEdit();
+  }
+
 
   private UCrop.Options setCropViewOption(){
     UCrop.Options options = new UCrop.Options();
@@ -343,6 +368,17 @@ public class PreviewEditActivity extends AppCompatActivity {
       mCanvasPerantLayout.setVisibility(View.VISIBLE);
 
       mPreviewCanvasView.changePreviewInCanvas(position);
+    }
+  }
+
+  public void editButtonGoneOrVisible(ClickState CLICK_STATE){
+    if(CLICK_STATE.getClickStateEnum() == ClickStateEnum.STATE_STAMP_CLICK_EDIT){
+      layoutEditButton.setVisibility(View.GONE);
+      layoutStampFinishButton.setVisibility(View.VISIBLE);
+    }
+    else{
+      layoutStampFinishButton.setVisibility(View.GONE);
+      layoutEditButton.setVisibility(View.VISIBLE);
     }
   }
 

@@ -32,6 +32,21 @@ class ClickState {
   public void start(){
     clickStateEnum = ClickStateEnum.STATE_NONE_CLICK;
   }
+  public void clickFinishStampEdit(){
+    switch ((clickStateEnum)) {
+      case STATE_NONE_CLICK:
+        break;
+      case STATE_STAMP_CLICK:
+        break;
+      case STATE_STAMP_CLICK_EDIT:
+        clickStateEnum = ClickStateEnum.STATE_NONE_CLICK;
+        break;
+      case STATE_PREVIEW_CLICK:
+        break;
+      case STATE_PREVIEW_CLICK_EDIT:
+        break;
+    }
+  }
 
   public void clickStamp(){
     switch (clickStateEnum){

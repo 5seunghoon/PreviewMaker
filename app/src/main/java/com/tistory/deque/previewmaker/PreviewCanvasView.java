@@ -76,6 +76,9 @@ public class PreviewCanvasView extends View {
       if (isStampShown){
         Logger.d(TAG, "stamp shown true");
         drawStamp();
+        if(CLICK_STATE.getClickStateEnum() == ClickStateEnum.STATE_STAMP_CLICK_EDIT){
+          drawStampEditRect();
+        }
       }
     }
   }
@@ -122,6 +125,7 @@ public class PreviewCanvasView extends View {
       movePrevY = y;
       CLICK_STATE.clickPreview();
     }
+    mActivity.editButtonGoneOrVisible(CLICK_STATE);
   }
 
 
@@ -234,6 +238,15 @@ public class PreviewCanvasView extends View {
     //mCanvas.drawBitmap(resizedStampBitmap, stampWidthPos, stampHeightPos, null);
     Rect dst =  new Rect(stampWidthPos, stampHeightPos, stampWidthPos + stampWidth, stampHeightPos + stampHeight);
     mCanvas.drawBitmap(stampOriginalBitmap, null, dst,null);
+  }
+
+  private void drawStampEditRect() {
+
+  }
+
+  public void finishStampEdit(){
+    CLICK_STATE.clickFinishStampEdit();
+    mActivity.editButtonGoneOrVisible(CLICK_STATE);
   }
 
   protected void callInvalidate(){
@@ -367,6 +380,7 @@ public class PreviewCanvasView extends View {
   public void changePreviewInCanvas(int nextPosition){
     previewValueInit();
     PreviewEditActivity.POSITION = nextPosition;
+    isStampShown = false;
     invalidate();
   }
   public void previewValueInit(){
