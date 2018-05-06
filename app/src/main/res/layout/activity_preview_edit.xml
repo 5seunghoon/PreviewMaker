@@ -72,25 +72,14 @@
         android:orientation="horizontal">
 
         <Button
-          android:id="@+id/buttonSaveAll"
+          android:id="@+id/buttonDelete"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:layout_weight="1"
           android:background="@android:color/white"
-          android:drawableTop="@drawable/ic_save_black_48dp"
+          android:drawableTop="@drawable/ic_delete_black_48dp"
           android:paddingTop="4dp"
-          android:text="@string/action_saveall_title"
-          android:textSize="12sp" />
-
-        <Button
-          android:id="@+id/buttonSaveEach"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:layout_weight="1"
-          android:background="@android:color/white"
-          android:drawableTop="@drawable/ic_save_black_48dp"
-          android:paddingTop="4dp"
-          android:text="@string/action_saveeach_title"
+          android:text="@string/action_delete_title"
           android:textSize="12sp" />
 
         <Button
@@ -128,14 +117,25 @@
           android:visibility="gone" />
 
         <Button
-          android:id="@+id/buttonDelete"
+          android:id="@+id/buttonSaveEach"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:layout_weight="1"
           android:background="@android:color/white"
-          android:drawableTop="@drawable/ic_delete_black_48dp"
+          android:drawableTop="@drawable/ic_filter_1_black_36dp"
           android:paddingTop="4dp"
-          android:text="@string/action_delete_title"
+          android:text="@string/action_saveeach_title"
+          android:textSize="12sp" />
+
+        <Button
+          android:id="@+id/buttonSaveAll"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_weight="1"
+          android:background="@android:color/white"
+          android:drawableTop="@drawable/ic_filter_9_plus_black_36dp"
+          android:paddingTop="4dp"
+          android:text="@string/action_saveall_title"
           android:textSize="12sp" />
 
       </LinearLayout>

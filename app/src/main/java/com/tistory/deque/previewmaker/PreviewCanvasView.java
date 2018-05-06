@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -27,12 +28,6 @@ import java.util.ArrayList;
 public class PreviewCanvasView extends View {
   private final static String TAG = "PreviewEditActivity";
 
-
-  private static String STATE_NONE_CLICK = "NONE_CLICK_STATE";
-  private static String STATE_STAMP_CLICK = "STAMP_CLICK_STATE";
-  private static String STATE_STAMP_CLICK_EDIT = "STAMP_EDIT_STATE";
-  private static String STATE_PREVIEW_CLICK = "PREVIEW_CLICK_STATE";
-  private static String STATE_PREVIEW_CLICK_EDIT = "PREVIEW_EDIT_STATE";
   private static ClickState CLICK_STATE;
 
   private Canvas mCanvas;
@@ -76,7 +71,7 @@ public class PreviewCanvasView extends View {
       if (isStampShown){
         Logger.d(TAG, "stamp shown true");
         drawStamp();
-        if(CLICK_STATE.getClickStateEnum() == ClickStateEnum.STATE_STAMP_CLICK_EDIT){
+        if(CLICK_STATE.getClickStateEnum() == ClickStateEnum.STATE_STAMP_EDIT){
           drawStampEditRect();
         }
       }
@@ -116,16 +111,10 @@ public class PreviewCanvasView extends View {
     x = (int) event.getX();
     y = (int) event.getY();
 
-    if(isTouchInStamp(x,y)){
+    if(CLICK_STATE.getClickStateEnum() == ClickStateEnum.STATE_STAMP_EDIT){
       movePrevX = x;
       movePrevY = y;
-      CLICK_STATE.clickStamp();
-    } else if(isTouchInPreview(x,y)) {
-      movePrevX = x;
-      movePrevY = y;
-      CLICK_STATE.clickPreview();
     }
-    mActivity.editButtonGoneOrVisible(CLICK_STATE);
   }
 
 
@@ -137,7 +126,7 @@ public class PreviewCanvasView extends View {
     int deltaY = y - movePrevY;
 
     switch (CLICK_STATE.getClickStateEnum()){
-      case STATE_STAMP_CLICK_EDIT:
+      case STATE_STAMP_EDIT:
 
         stampWidthPos += deltaX;
         stampHeightPos += deltaY;
@@ -145,22 +134,22 @@ public class PreviewCanvasView extends View {
         movePrevY = y;
         invalidate();
         break;
-      /**
-       *
-       case STATE_PREVIEW_CLICK:
-
-       previewPosWidthDelta += deltaX;
-       previewPosHeightDelta += deltaY;
-       movePrevX = x;
-       movePrevY = y;
-       invalidate();
-       break;
-       */
     }
 
   }
   private void touchUp(MotionEvent event){
-    //CLICK_STATE = ClickState.STATE_NONE_CLICK;
+    int x, y;
+    x = (int) event.getX();
+    y = (int) event.getY();
+
+    if(isTouchInStamp(x,y)){
+      movePrevX = x;
+      movePrevY = y;
+      CLICK_STATE.clickStamp();
+    }
+    mActivity.editButtonGoneOrVisible(CLICK_STATE);
+
+    invalidate();
   }
 
   private boolean isTouchInStamp(int x, int y){
@@ -183,8 +172,6 @@ public class PreviewCanvasView extends View {
 
   private void drawBellowBitmap() {
     Bitmap previewBitmap = previewItems.get(PreviewEditActivity.POSITION).getmBitmap();
-    //canvasWidth = mCanvas.getWidth();
-    //canvasHeight = mCanvas.getHeight();
     canvasWidth = grandParentWidth - 16;
     canvasHeight = grandParentHeight - 16; // layout margin
     int previewBitmapWidth = previewBitmap.getWidth();
@@ -220,7 +207,6 @@ public class PreviewCanvasView extends View {
     previewPosWidth += previewPosWidthDelta;
     previewPosHeight += previewPosHeightDelta;
 
-    //mCanvas.drawBitmap(previewBitmap, previewPosWidth, previewPosHeight, null); // put center
     dst = new Rect(previewPosWidth, previewPosHeight, previewPosWidth + previewWidth, previewPosHeight + previewHeight);
     mCanvas.drawBitmap(previewBitmap, null, dst, null);
   }
@@ -234,18 +220,27 @@ public class PreviewCanvasView extends View {
       stampWidth + ", " + stampHeight + ", " +
       stampPosWidthPer + ", " + stampPosHeightPer + ", " + stampURI);
 
-    //Bitmap resizedStampBitmap = Bitmap.createScaledBitmap(stampOriginalBitmap, stampWidth, stampHeight,true);
-    //mCanvas.drawBitmap(resizedStampBitmap, stampWidthPos, stampHeightPos, null);
     Rect dst =  new Rect(stampWidthPos, stampHeightPos, stampWidthPos + stampWidth, stampHeightPos + stampHeight);
     mCanvas.drawBitmap(stampOriginalBitmap, null, dst,null);
   }
 
   private void drawStampEditRect() {
-
+    Paint stampRect = new Paint();
+    stampRect.setStrokeWidth(5f);
+    stampRect.setColor(Color.WHITE);
+    stampRect.setStyle(Paint.Style.STROKE);
+    mCanvas.drawRect(stampWidthPos, stampHeightPos, stampWidthPos + stampWidth, stampHeightPos + stampHeight, stampRect);
   }
 
   public void finishStampEdit(){
     CLICK_STATE.clickFinishStampEdit();
+    mActivity.editButtonGoneOrVisible(CLICK_STATE);
+    invalidate();
+  }
+
+  protected void showStamp(){
+    setStampShown(true);
+    CLICK_STATE.clickStampButton();
     mActivity.editButtonGoneOrVisible(CLICK_STATE);
   }
 
@@ -253,11 +248,11 @@ public class PreviewCanvasView extends View {
     invalidate();
   }
 
-  public boolean isStampShown() {
+  protected boolean isStampShown() {
     return isStampShown;
   }
 
-  public void setStampShown(boolean stampShown) {
+  protected void setStampShown(boolean stampShown) {
     isStampShown = stampShown;
   }
 

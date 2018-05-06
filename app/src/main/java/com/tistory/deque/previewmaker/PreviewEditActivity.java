@@ -287,15 +287,21 @@ public class PreviewEditActivity extends AppCompatActivity {
 
     Logger.d(TAG, "crop start : orig : " + origURI +", dest : " + destURI);
   }
-  public void clickButtonStamp(){
-    mPreviewCanvasView.setStampShown(true);
-    if(selectedStamp != null) mPreviewCanvasView.setStampItem(selectedStamp);
-    mPreviewCanvasView.callInvalidate();
+  public void clickButtonStamp() {
+    if (!mPreviewCanvasView.isStampShown()) {
+      mPreviewCanvasView.showStamp();
+      if (selectedStamp != null) {
+        mPreviewCanvasView.setStampItem(selectedStamp);
+      }
+      mPreviewCanvasView.callInvalidate();
+    }
   }
   public void clickButtonEmoticon(){
   }
+
   public void clickButtonDelete(){
   }
+
   public void clickButtonStampFinish(){
     mPreviewCanvasView.finishStampEdit();
   }
@@ -372,7 +378,7 @@ public class PreviewEditActivity extends AppCompatActivity {
   }
 
   public void editButtonGoneOrVisible(ClickState CLICK_STATE){
-    if(CLICK_STATE.getClickStateEnum() == ClickStateEnum.STATE_STAMP_CLICK_EDIT){
+    if(CLICK_STATE.getClickStateEnum() == ClickStateEnum.STATE_STAMP_EDIT){
       layoutEditButton.setVisibility(View.GONE);
       layoutStampFinishButton.setVisibility(View.VISIBLE);
     }

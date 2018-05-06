@@ -2,10 +2,7 @@ package com.tistory.deque.previewmaker;
 
 enum ClickStateEnum {
   STATE_NONE_CLICK,
-  STATE_STAMP_CLICK,
-  STATE_STAMP_CLICK_EDIT,
-  STATE_PREVIEW_CLICK,
-  STATE_PREVIEW_CLICK_EDIT
+  STATE_STAMP_EDIT
 }
 
 class ClickState {
@@ -32,18 +29,16 @@ class ClickState {
   public void start(){
     clickStateEnum = ClickStateEnum.STATE_NONE_CLICK;
   }
+  public void clickStampButton(){
+    clickStateEnum = ClickStateEnum.STATE_STAMP_EDIT;
+  }
+
   public void clickFinishStampEdit(){
     switch ((clickStateEnum)) {
       case STATE_NONE_CLICK:
         break;
-      case STATE_STAMP_CLICK:
-        break;
-      case STATE_STAMP_CLICK_EDIT:
+      case STATE_STAMP_EDIT:
         clickStateEnum = ClickStateEnum.STATE_NONE_CLICK;
-        break;
-      case STATE_PREVIEW_CLICK:
-        break;
-      case STATE_PREVIEW_CLICK_EDIT:
         break;
     }
   }
@@ -51,56 +46,26 @@ class ClickState {
   public void clickStamp(){
     switch (clickStateEnum){
       case STATE_NONE_CLICK:
-        clickStateEnum = ClickStateEnum.STATE_STAMP_CLICK;
+        clickStateEnum = ClickStateEnum.STATE_STAMP_EDIT;
         break;
-      case STATE_STAMP_CLICK:
-        clickStateEnum = ClickStateEnum.STATE_STAMP_CLICK_EDIT;
-        break;
-      case STATE_STAMP_CLICK_EDIT:
-        break;
-      case STATE_PREVIEW_CLICK:
-        clickStateEnum = ClickStateEnum.STATE_STAMP_CLICK;
-        break;
-      case STATE_PREVIEW_CLICK_EDIT:
+      case STATE_STAMP_EDIT:
         break;
     }
   }
 
-  public void clickPreview(){
-    switch (clickStateEnum) {
-      case STATE_NONE_CLICK:
-        clickStateEnum = ClickStateEnum.STATE_PREVIEW_CLICK;
-        break;
-      case STATE_STAMP_CLICK:
-        clickStateEnum = ClickStateEnum.STATE_PREVIEW_CLICK;
-        break;
-      case STATE_STAMP_CLICK_EDIT:
-        break;
-      case STATE_PREVIEW_CLICK:
-        clickStateEnum = ClickStateEnum.STATE_PREVIEW_CLICK_EDIT;
-        break;
-      case STATE_PREVIEW_CLICK_EDIT:
-        break;
-    }
-  }
 
   public void clickSave(){
     switch (clickStateEnum) {
       case STATE_NONE_CLICK:
         break;
-      case STATE_STAMP_CLICK:
-        clickStateEnum = ClickStateEnum.STATE_NONE_CLICK;
-        break;
-      case STATE_STAMP_CLICK_EDIT:
-        clickStateEnum = ClickStateEnum.STATE_NONE_CLICK;
-        break;
-      case STATE_PREVIEW_CLICK:
-        clickStateEnum = ClickStateEnum.STATE_NONE_CLICK;
-        break;
-      case STATE_PREVIEW_CLICK_EDIT:
+      case STATE_STAMP_EDIT:
         clickStateEnum = ClickStateEnum.STATE_NONE_CLICK;
         break;
     }
+  }
+
+  public void finish(){
+    clickStateEnum = ClickStateEnum.STATE_NONE_CLICK;
   }
 
 }
