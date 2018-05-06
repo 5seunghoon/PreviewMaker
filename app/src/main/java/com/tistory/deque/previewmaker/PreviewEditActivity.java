@@ -66,7 +66,8 @@ public class PreviewEditActivity extends AppCompatActivity {
 
   private TextView canvasviewHintTextView;
 
-  private Button mButtonSaveAll, mButtonSaveEach, mButtonCrop, mButtonStamp, mButtonEmoticon, mButtonDelete, mButtonStampFinish;
+  private Button mButtonSaveAll, mButtonSaveEach, mButtonCrop, mButtonStamp, mButtonEmoticon, mButtonDelete;
+  private Button mButtonStampFinish;
 
   StampItem stamp;
 
@@ -162,6 +163,7 @@ public class PreviewEditActivity extends AppCompatActivity {
   }
 
   public void stampUpdate(int id, int width, int height, int posWidthPer, int posHeightPer){
+    viewEveryItemInDB();
     String sql = "UPDATE " + dbOpenHelper.TABLE_NAME_STAMPS + " SET "
       + dbOpenHelper.STAMP_WIDTH_KEY + " = " + width
       + ", "
@@ -171,7 +173,11 @@ public class PreviewEditActivity extends AppCompatActivity {
       + ", "
       + dbOpenHelper.STAMP_POS_HEIGHT_PERCENT_KEY + " = " + posHeightPer
       + " WHERE _ID IN(" + stampID + ")" + ";";
-    dbOpenHelper.db.rawQuery(sql, null);
+    dbOpenHelper.db.execSQL(sql);
+
+    Logger.d(TAG, "input sql : " + sql);
+    viewEveryItemInDB();
+
   }
 
   public void stampWidthHeightUpdate(int id, int width, int height){
@@ -271,7 +277,7 @@ public class PreviewEditActivity extends AppCompatActivity {
     mPreviewCanvasView.savePreviewAll();
   }
   public void clickButtonSaveEach(){
-
+    mPreviewCanvasView.savePreviewEach(POSITION);
   }
   public void clickButtonCrop(){
     if(POSITION < 0 || POSITION >= previewItems.size()){
@@ -289,6 +295,8 @@ public class PreviewEditActivity extends AppCompatActivity {
     Logger.d(TAG, "crop start : orig : " + origURI +", dest : " + destURI);
   }
   public void clickButtonStamp() {
+    if(POSITION < 0) return;
+
     if (!mPreviewCanvasView.isStampShown()) {
       mPreviewCanvasView.showStamp();
       if (selectedStamp != null) {
@@ -306,6 +314,7 @@ public class PreviewEditActivity extends AppCompatActivity {
   public void clickButtonStampFinish(){
     mPreviewCanvasView.finishStampEdit();
   }
+
 
 
   private UCrop.Options setCropViewOption(){
@@ -433,6 +442,27 @@ public class PreviewEditActivity extends AppCompatActivity {
       thumbnailCursor.close();
       Logger.d(TAG, "No exist thumbnail, so make it");
       return imageIdToThumbnail(imageId);
+    }
+  }
+
+  private void viewEveryItemInDB() {
+    if(!BuildConfig.DEBUG){
+      return;
+    }
+    int _id;
+    String _imageURI;
+    String _name;
+    String sql = "SELECT * FROM " + dbOpenHelper.TABLE_NAME_STAMPS + ";";
+    Cursor results = null;
+    results = dbOpenHelper.db.rawQuery(sql, null);
+    results.moveToFirst();
+    while(!results.isAfterLast()) {
+      _id = results.getInt(0);
+      _name = results.getString(1);
+      _imageURI = results.getString(2);
+      Logger.d(TAG, "DB ITEM : id : " + _id + " imageURI : " + _imageURI + " name : " + _name +
+        " W : " + results.getString(3) + " H : " + results.getString(4) + " W P : " + results.getString(5) + " H P : "  +results.getString(6));
+      results.moveToNext();
     }
   }
 

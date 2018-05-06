@@ -23,7 +23,7 @@
                                 <PersistentState>
                                   <option name="values">
                                     <map>
-                                      <entry key="url" value="jar:file:/C:/Program%20Files/Android/Android%20Studio/plugins/android/lib/android.jar!/images/material_design_icons/image/ic_filter_9_plus_black_24dp.xml" />
+                                      <entry key="url" value="jar:file:/C:/Program%20Files/Android/Android%20Studio/plugins/android/lib/android.jar!/images/material_design_icons/navigation/ic_close_black_24dp.xml" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -35,7 +35,7 @@
                           <map>
                             <entry key="color" value="ff4081" />
                             <entry key="height" value="36" />
-                            <entry key="outputName" value="ic_filter_9_plus_black_36dp" />
+                            <entry key="outputName" value="ic_close_black_36dp" />
                             <entry key="overrideSize" value="true" />
                             <entry key="sourceFile" value="C:\Users\HELLOEARTH" />
                             <entry key="width" value="36" />

@@ -17,7 +17,7 @@ public class StampItem {
     this.stampName = stampName;
     this.width = width;
     this.height = height;
-    this.pos_width_per = pos_width_per;
+    this.pos_width_per = pos_width_per; // 1 = 0.001%, 100,000 = 100%
     this.pos_height_per = pos_height_per;
   }
 

@@ -321,6 +321,21 @@ public class PreviewCanvasView extends View {
   public void finishStampEdit(){
     CLICK_STATE.clickFinishStampEdit();
     mActivity.editButtonGoneOrVisible(CLICK_STATE);
+
+    int id = stampItem.getID();
+
+    //stampPosWidthPer = (int) ((stampWidthPos + (stampWidth / 2.0f) ) * 100000.0f / previewWidth);
+    stampPosWidthPer = (int) (((stampWidth / 2.0f) + stampWidthPos - previewPosWidth ) * 100000.0f / (previewWidth) );
+    stampPosHeightPer = (int) (((stampHeight / 2.0f) + stampHeightPos - previewPosHeight ) * 100000.0f / (previewHeight) );
+
+    stampItem.setWidth(stampWidth);
+    stampItem.setHeight(stampHeight);
+
+    stampItem.setPos_width_per(stampPosWidthPer);
+    stampItem.setPos_height_per(stampPosHeightPer);
+
+    mActivity.stampUpdate(id, stampWidth, stampHeight, stampPosWidthPer, stampPosHeightPer);
+
     invalidate();
   }
 
@@ -359,15 +374,12 @@ public class PreviewCanvasView extends View {
       int id = stampItem.getID();
       stampWidth = stampOriginalBitmap.getWidth();
       stampHeight = stampOriginalBitmap.getHeight();
-      stampItem.setWidth(stampWidth);
-      stampItem.setHeight(stampHeight);
-      mActivity.stampWidthHeightUpdate(id, stampWidth, stampHeight);
     }
 
     stampRate = (double) stampWidth / (double) stampHeight;
 
-    stampWidthPos = (stampPosWidthPer * canvasWidth / 100) - (stampWidth / 2);
-    stampHeightPos = (stampPosHeightPer * canvasHeight / 100) - (stampHeight / 2);
+    stampWidthPos = (int) ((stampPosWidthPer * previewWidth / 100000.0f) - (stampWidth / 2.0f) + previewPosWidth);
+    stampHeightPos = (int) ((stampPosHeightPer * previewHeight / 100000.0f) - (stampHeight / 2.0f) + previewPosHeight);
 
     Logger.d(TAG, "STAMP set : w, h, pw, ph, uri : " +
       stampWidth + ", " + stampHeight + ", " +
@@ -390,7 +402,7 @@ public class PreviewCanvasView extends View {
     //saveAllAsyncTask.execute(previewItems.size());
   }
 
-  public void savePreviewEach(int previewPosition, PreviewCanvasView v){
+  public void savePreviewEach(int previewPosition){
     /**
      * 저장시 할 일
      * 1. 이미지를 원래 크기로 다시 확대(or 축소)
@@ -399,12 +411,14 @@ public class PreviewCanvasView extends View {
      * 4. 그 상태로 이미지로 저장
      * 5. 다시 축소해서 되돌리기
      */
+    if(previewPosition == -1) return;
+
     PreviewEditActivity.POSITION = previewPosition;
-    v.callInvalidate();
+    callInvalidate();
 
     Bitmap screenshot = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
     Canvas canvas = new Canvas(screenshot);
-    v.draw(canvas);
+    draw(canvas);
 
     Uri resultUri = previewItems.get(previewPosition).getResultImageURI();
     String resultFilePath = resultUri.getPath();
@@ -441,7 +455,7 @@ public class PreviewCanvasView extends View {
       .setPositiveButton("YES", new DialogInterface.OnClickListener() {
         @Override
         public void onClick(DialogInterface dialog, int which) {
-          savePreviewEach(PreviewEditActivity.POSITION, PreviewCanvasView.this);
+          savePreviewEach(PreviewEditActivity.POSITION);
           changePreviewInCanvas(nextPosition);
           return;
         }
@@ -489,7 +503,7 @@ public class PreviewCanvasView extends View {
     @Override
     protected Integer doInBackground(Integer... integers) {
       for(int i = 0 ; i < integers[0] ; i ++){
-        savePreviewEach(i, PreviewCanvasView.this);
+        savePreviewEach(i);
       }
       return null;
     }

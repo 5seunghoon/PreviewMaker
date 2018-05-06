@@ -262,25 +262,6 @@ public class MainActivity extends AppCompatActivity
     dbOpenHelper.dbOpen();
   }
 
-  private void viewEveryItemInDB() {
-    if(!BuildConfig.DEBUG){
-      return;
-    }
-    int _id;
-    String _imageURI;
-    String _name;
-    String sql = "SELECT * FROM " + dbOpenHelper.TABLE_NAME_STAMPS + ";";
-    Cursor results = null;
-    results = dbOpenHelper.db.rawQuery(sql, null);
-    results.moveToFirst();
-    while(!results.isAfterLast()) {
-      _id = results.getInt(0);
-      _name = results.getString(1);
-      _imageURI = results.getString(2);
-      Logger.d(TAG, "DB ITEM : id : " + _id + " imageURI : " + _imageURI + " name : " + _name);
-      results.moveToNext();
-    }
-  }
 
   public File createImageFile() {
     Logger.d(TAG, "createImageFile func");
@@ -403,10 +384,10 @@ public class MainActivity extends AppCompatActivity
     cur.moveToFirst();
     int maxID = cur.getInt(0);
 
-    mStampItems.add(new StampItem(maxID, data.getData(), data.getStringExtra("STAMP_NAME"), -1, -1, 50, 50));
+    mStampItems.add(new StampItem(maxID, data.getData(), data.getStringExtra("STAMP_NAME"), -1, -1, 50000, 50000));
     Logger.d(TAG, "INSERT : ID : " + maxID + " imageURI : " + data.getData() + " name : " + data.getStringExtra("STAMP_NAME"));
 
-    viewEveryItemInDB();
+    //viewEveryItemInDB();
 
     mStampAdapter.notifyDataSetChanged();
     invisibleHint();
@@ -445,7 +426,7 @@ public class MainActivity extends AppCompatActivity
 
         dbOpenHelper.dbDeleteStamp(id);
 
-        viewEveryItemInDB();
+        //viewEveryItemInDB();
 
         visibleHint();
 

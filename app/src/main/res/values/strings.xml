@@ -26,6 +26,7 @@
   <string name="action_sticker_title">스티커</string>
   <string name="action_delete_title">삭제</string>
   <string name="action_stamp_edit_finish_title">편집 완료</string>
+  <string name="action_stamp_edit_close_title">편집 취소</string>
 
 
   <string name="canvasview_hint">편집할 프리뷰를 상단에서 선택해 주세요</string>

@@ -94,8 +94,8 @@ public class DBOpenHelper extends SQLiteOpenHelper {
     stampValue.put(STAMP_URI_KEY, imageURI.toString());
     stampValue.put(STAMP_WIDTH_KEY, -1);
     stampValue.put(STAMP_HEIGHT_KEY, -1);
-    stampValue.put(STAMP_POS_WIDTH_PERCENT_KEY, 50);
-    stampValue.put(STAMP_POS_HEIGHT_PERCENT_KEY, 50);
+    stampValue.put(STAMP_POS_WIDTH_PERCENT_KEY, 50000); // 50,000 = 50%
+    stampValue.put(STAMP_POS_HEIGHT_PERCENT_KEY, 50000);
     long result = db.insert(TABLE_NAME_STAMPS, null, stampValue);
     if(result == -1){
       Logger.d(TAG, "insert error : name : " + stampName + " , uri : " + imageURI);
