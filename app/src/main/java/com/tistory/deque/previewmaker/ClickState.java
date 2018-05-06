@@ -2,7 +2,8 @@ package com.tistory.deque.previewmaker;
 
 enum ClickStateEnum {
   STATE_NONE_CLICK,
-  STATE_STAMP_EDIT
+  STATE_STAMP_EDIT,
+  STATE_STAMP_ZOOM
 }
 
 class ClickState {
@@ -40,6 +41,9 @@ class ClickState {
       case STATE_STAMP_EDIT:
         clickStateEnum = ClickStateEnum.STATE_NONE_CLICK;
         break;
+      case STATE_STAMP_ZOOM:
+        clickStateEnum = ClickStateEnum.STATE_NONE_CLICK;
+        break;
     }
   }
 
@@ -50,15 +54,43 @@ class ClickState {
         break;
       case STATE_STAMP_EDIT:
         break;
+      case STATE_STAMP_ZOOM:
+        break;
     }
   }
 
+  public void clickStampZoomStart(){
+    switch (clickStateEnum) {
+      case STATE_NONE_CLICK:
+        break;
+      case STATE_STAMP_EDIT:
+        clickStateEnum = ClickStateEnum.STATE_STAMP_ZOOM;
+        break;
+      case STATE_STAMP_ZOOM:
+        break;
+    }
+  }
+
+  public void clickStampZoomEnd(){
+    switch (clickStateEnum) {
+      case STATE_NONE_CLICK:
+        break;
+      case STATE_STAMP_EDIT:
+        break;
+      case STATE_STAMP_ZOOM:
+        clickStateEnum = ClickStateEnum.STATE_STAMP_EDIT;
+        break;
+    }
+  }
 
   public void clickSave(){
     switch (clickStateEnum) {
       case STATE_NONE_CLICK:
         break;
       case STATE_STAMP_EDIT:
+        clickStateEnum = ClickStateEnum.STATE_NONE_CLICK;
+        break;
+      case STATE_STAMP_ZOOM:
         clickStateEnum = ClickStateEnum.STATE_NONE_CLICK;
         break;
     }

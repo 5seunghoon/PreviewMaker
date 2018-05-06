@@ -103,6 +103,7 @@ public class PreviewEditActivity extends AppCompatActivity {
 
   @Override
   public void onBackPressed() {
+    if (mPreviewCanvasView.backPressed()) return;
     if (System.currentTimeMillis() - mBackPressedTime > 2000) {
       Snackbar.make(getCurrentFocus(), "편집을 취소하려면 뒤로 버튼을 한번 더 눌려주세요.\n저장되지 않을 수 있어요.", Snackbar.LENGTH_LONG)
         .setAction("EXIT", new View.OnClickListener() {
@@ -378,7 +379,8 @@ public class PreviewEditActivity extends AppCompatActivity {
   }
 
   public void editButtonGoneOrVisible(ClickState CLICK_STATE){
-    if(CLICK_STATE.getClickStateEnum() == ClickStateEnum.STATE_STAMP_EDIT){
+    if(CLICK_STATE.getClickStateEnum() == ClickStateEnum.STATE_STAMP_EDIT ||
+       CLICK_STATE.getClickStateEnum() == ClickStateEnum.STATE_STAMP_ZOOM ){
       layoutEditButton.setVisibility(View.GONE);
       layoutStampFinishButton.setVisibility(View.VISIBLE);
     }

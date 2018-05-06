@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -16,6 +15,7 @@ import android.provider.MediaStore;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -27,6 +27,14 @@ import java.util.ArrayList;
 
 public class PreviewCanvasView extends View {
   private final static String TAG = "PreviewEditActivity";
+  private enum ZoomClickWhere {
+    NONE,
+    RIGHT_TOP,
+    RIGHT_BOTTOM,
+    LEFT_TOP,
+    LEFT_BOTTOM
+  }
+  private static ZoomClickWhere ZOOM_CLICK_WHERE = ZoomClickWhere.NONE;
 
   private static ClickState CLICK_STATE;
 
@@ -47,6 +55,11 @@ public class PreviewCanvasView extends View {
   private Uri stampURI;
   private Bitmap stampOriginalBitmap;
   private int stampWidthPos, stampHeightPos;
+  private double stampRate;
+
+  private float stampGuideRectWidth = 5f;
+  private float stampGuideLineWidth = 2f;
+  private float stampGuideCircleRadius = 15f;
 
   private int movePrevX, movePrevY;
   private boolean canMoveStamp = false;
@@ -71,8 +84,9 @@ public class PreviewCanvasView extends View {
       if (isStampShown){
         Logger.d(TAG, "stamp shown true");
         drawStamp();
-        if(CLICK_STATE.getClickStateEnum() == ClickStateEnum.STATE_STAMP_EDIT){
-          drawStampEditRect();
+        if(CLICK_STATE.getClickStateEnum() == ClickStateEnum.STATE_STAMP_EDIT ||
+           CLICK_STATE.getClickStateEnum() == ClickStateEnum.STATE_STAMP_ZOOM ){
+          drawStampEditGuide();
         }
       }
     }
@@ -110,11 +124,21 @@ public class PreviewCanvasView extends View {
     int x, y;
     x = (int) event.getX();
     y = (int) event.getY();
+    Logger.d(TAG, "touch x, y : " + x + ", " + y);
+    Logger.d(TAG, "touch sw, sh, swp, shp : " + stampWidth + ", " + stampHeight + ", " + stampWidthPos + ", " + stampHeightPos);
 
-    if(CLICK_STATE.getClickStateEnum() == ClickStateEnum.STATE_STAMP_EDIT){
-      movePrevX = x;
-      movePrevY = y;
+    movePrevX = x;
+    movePrevY = y;
+
+    if(isTouchInStamp(x,y)){
+      CLICK_STATE.clickStamp();
     }
+    if((ZOOM_CLICK_WHERE = isTouchStampZoom(x,y)) != ZoomClickWhere.NONE){
+      CLICK_STATE.clickStampZoomStart();
+    }
+    mActivity.editButtonGoneOrVisible(CLICK_STATE);
+
+    invalidate();
   }
 
 
@@ -122,52 +146,91 @@ public class PreviewCanvasView extends View {
     int x, y;
     x = (int) event.getX();
     y = (int) event.getY();
-    int deltaX = x - movePrevX;
-    int deltaY = y - movePrevY;
 
     switch (CLICK_STATE.getClickStateEnum()){
-      case STATE_STAMP_EDIT:
+      case STATE_NONE_CLICK:
+        break;
 
+      case STATE_STAMP_EDIT:
+        int deltaX = x - movePrevX;
+        int deltaY = y - movePrevY;
         stampWidthPos += deltaX;
         stampHeightPos += deltaY;
-        movePrevX = x;
-        movePrevY = y;
+
+        invalidate();
+        break;
+
+      case STATE_STAMP_ZOOM:
+        double nowDist;
+        double stampCenterX, stampCenterY;
+        double newHeight, newWidth;
+
+        stampCenterX = stampWidthPos + stampWidth / 2.0f;
+        stampCenterY = stampHeightPos + stampHeight / 2.0f;
+
+        nowDist = Math.sqrt(Math.pow(stampCenterX - x, 2) + Math.pow(stampCenterY - y, 2));
+
+        newHeight = (2.0f * nowDist) / Math.sqrt( (Math.pow(stampRate, 2) + 1 ) );
+        newWidth = newHeight * stampRate;
+
+        stampWidthPos = (int) (stampCenterX - newWidth / 2);
+        stampHeightPos = (int) (stampCenterY - newHeight / 2);
+        stampWidth = (int) (stampCenterX + newWidth / 2) - stampWidthPos + 1;
+        stampHeight = (int) (stampCenterY + newHeight / 2) - stampHeightPos + 1;
+
         invalidate();
         break;
     }
 
+    movePrevX = x;
+    movePrevY = y;
+
   }
   private void touchUp(MotionEvent event){
-    int x, y;
-    x = (int) event.getX();
-    y = (int) event.getY();
+    CLICK_STATE.clickStampZoomEnd();
+    ZOOM_CLICK_WHERE = ZoomClickWhere.NONE;
+  }
 
-    if(isTouchInStamp(x,y)){
-      movePrevX = x;
-      movePrevY = y;
-      CLICK_STATE.clickStamp();
-    }
-    mActivity.editButtonGoneOrVisible(CLICK_STATE);
+  private boolean isInBox(int x, int y, int x1, int y1, int x2, int y2){
+    if(x > x1 && x < x2 && y > y1 && y < y2) return true;
+    else return false;
+  }
 
-    invalidate();
+  private boolean isInBoxWithWidth(int x, int y, int x1, int y1, int xWidth, int yWidth){
+    if(x > x1 && x < x1 + xWidth && y > y1 && y < y1 + yWidth) return true;
+    else return false;
+  }
+
+  private boolean isInBoxWithRadius(int x, int y, int xCenter, int yCenter, int radius){
+    if( (x-xCenter) * (x-xCenter) + (y-yCenter) * (y-yCenter) < radius * radius) return true;
+    else return false;
   }
 
   private boolean isTouchInStamp(int x, int y){
-    if(x < stampWidthPos + stampWidth && x > stampWidthPos){
-      if(y < stampHeightPos + stampHeight && y > stampHeightPos){
-        return true;
-      }
-    }
-    return false;
+    return isInBoxWithWidth(x, y, stampWidthPos, stampHeightPos, stampWidth, stampHeight);
   }
 
-  private boolean isTouchInPreview(int x, int y) {
-    if(x < previewPosWidth + previewWidth && x > previewPosWidth){
-      if( y < previewPosHeight + previewHeight && y > previewPosHeight){
-        return true;
-      }
+  private ZoomClickWhere isTouchStampZoom(int x, int y){
+    int radius = (int) (stampGuideCircleRadius + 15);
+    int x_s = stampWidthPos; //x start
+    int x_e = stampWidthPos + stampWidth; //x end
+    int y_s = stampHeightPos; // y start
+    int y_e = stampHeightPos + stampHeight; // y end
+
+    if (isInBoxWithRadius(x, y, x_s, y_s, radius)) {
+      return ZoomClickWhere.LEFT_TOP;
+    } else if (isInBoxWithRadius(x, y, x_s, y_e, radius)) {
+      return ZoomClickWhere.LEFT_BOTTOM;
+    } else if (isInBoxWithRadius(x, y, x_e, y_s, radius)) {
+      return ZoomClickWhere.RIGHT_TOP;
+    } else if (isInBoxWithRadius(x, y, x_e, y_e, radius)) {
+      return ZoomClickWhere.RIGHT_BOTTOM;
+    } else {
+      return ZoomClickWhere.NONE;
     }
-    return false;
+  }
+  private boolean isTouchInPreview(int x, int y) {
+    return isInBoxWithWidth(x, y, previewPosWidth, previewPosHeight, previewWidth, previewHeight);
   }
 
   private void drawBellowBitmap() {
@@ -224,12 +287,35 @@ public class PreviewCanvasView extends View {
     mCanvas.drawBitmap(stampOriginalBitmap, null, dst,null);
   }
 
-  private void drawStampEditRect() {
+  private void drawStampEditGuide() {
+    int x_s = stampWidthPos; //x start
+    int x_e = stampWidthPos + stampWidth; //x end
+    int x_l = stampWidth; //x length
+    int y_s = stampHeightPos; // y start
+    int y_e = stampHeightPos + stampHeight; // y end
+    int y_l = stampHeight; // y length
+
     Paint stampRect = new Paint();
-    stampRect.setStrokeWidth(5f);
+    stampRect.setStrokeWidth(stampGuideRectWidth);
     stampRect.setColor(Color.WHITE);
     stampRect.setStyle(Paint.Style.STROKE);
-    mCanvas.drawRect(stampWidthPos, stampHeightPos, stampWidthPos + stampWidth, stampHeightPos + stampHeight, stampRect);
+    mCanvas.drawRect(x_s, y_s, x_e, y_e, stampRect);
+
+
+    Paint stampGuideLine = new Paint();
+    stampGuideLine.setStrokeWidth(stampGuideLineWidth);
+    stampGuideLine.setColor(Color.WHITE);
+    mCanvas.drawLine(x_s, y_l / 3.0f + y_s, x_e, y_l / 3.0f + y_s, stampGuideLine);
+    mCanvas.drawLine(x_s, y_l * 2 / 3.0f + y_s, x_e, y_l * 2 / 3.0f + y_s, stampGuideLine);
+    mCanvas.drawLine(x_l / 3.0f + x_s, y_s, x_l / 3.0f + x_s, y_e, stampGuideLine);
+    mCanvas.drawLine(x_l * 2 / 3.0f + x_s, y_s, x_l * 2 / 3.0f + x_s, y_e, stampGuideLine);
+
+    Paint stampGuideCircle = new Paint();
+    stampGuideCircle.setColor(Color.WHITE);
+    mCanvas.drawCircle(x_s, y_s, stampGuideCircleRadius, stampGuideCircle);
+    mCanvas.drawCircle(x_s, y_e, stampGuideCircleRadius, stampGuideCircle);
+    mCanvas.drawCircle(x_e, y_s, stampGuideCircleRadius, stampGuideCircle);
+    mCanvas.drawCircle(x_e, y_e, stampGuideCircleRadius, stampGuideCircle);
   }
 
   public void finishStampEdit(){
@@ -269,13 +355,16 @@ public class PreviewCanvasView extends View {
 
     stampWidth = stampItem.getWidth();
     stampHeight = stampItem.getHeight();
-
     if(stampWidth < 0 || stampHeight < 0){
       int id = stampItem.getID();
       stampWidth = stampOriginalBitmap.getWidth();
       stampHeight = stampOriginalBitmap.getHeight();
+      stampItem.setWidth(stampWidth);
+      stampItem.setHeight(stampHeight);
       mActivity.stampWidthHeightUpdate(id, stampWidth, stampHeight);
     }
+
+    stampRate = (double) stampWidth / (double) stampHeight;
 
     stampWidthPos = (stampPosWidthPer * canvasWidth / 100) - (stampWidth / 2);
     stampHeightPos = (stampPosHeightPer * canvasHeight / 100) - (stampHeight / 2);
@@ -386,6 +475,14 @@ public class PreviewCanvasView extends View {
     previewWidth = 0;
     previewHeight = 0;
     previewZoomRate = 1;
+  }
+
+  public boolean backPressed() {
+    if(CLICK_STATE.getClickStateEnum() == ClickStateEnum.STATE_STAMP_EDIT){
+      finishStampEdit();
+      return true;
+    }
+    return false;
   }
 
   protected class SaveAllAsyncTask extends AsyncTask<Integer, Integer, Integer>{
