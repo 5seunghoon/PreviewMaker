@@ -457,13 +457,22 @@ public class PreviewCanvasView extends View {
             changePreviewInCanvas(nextPosition);
             return;
           }
-        });
+        })
+      .setNeutralButton("CANCLE",
+      new DialogInterface.OnClickListener() {
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+          return;
+        }
+      });
+
 
     if(PreviewEditActivity.POSITION != -1){
       Logger.d(TAG, "is Saved [" + PreviewEditActivity.POSITION + "] : " + previewItems.get(PreviewEditActivity.POSITION).getIsSaved() );
       if(!previewItems.get(PreviewEditActivity.POSITION).getIsSaved()) {
         Logger.d(TAG, "FALSE");
         AlertDialog alert = stampDeleteAlert.create();
+        alert.setCanceledOnTouchOutside(false);
         alert.show();
       } else {
         Logger.d(TAG, "TRUE");
