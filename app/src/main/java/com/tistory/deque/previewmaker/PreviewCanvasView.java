@@ -228,15 +228,16 @@ public class PreviewCanvasView extends View {
 
     double rate = (double) previewBitmapWidth / (double) previewBitmapHeight;
     Rect dst;
+    double canvasRate = (double) canvasWidth / (double) canvasHeight;
 
-    if(rate > 1 && previewBitmapWidth >= canvasWidth) { // w > h
+    if(rate >= canvasRate && previewBitmapWidth >= canvasWidth) { // w > h
 
       previewPosWidth = 0;
       previewPosHeight = (canvasHeight - (int) (canvasWidth * (1 / rate))) / 2;
       previewWidth = canvasWidth;
       previewHeight = (int) (canvasWidth * (1 / rate));
 
-    } else if (rate <= 1 && previewBitmapHeight >= canvasHeight) { // w < h
+    } else if (rate < canvasRate && previewBitmapHeight >= canvasHeight) { // w < h
 
       previewPosWidth = (canvasWidth -(int) (canvasHeight * (rate))) / 2;
       previewPosHeight = 0;
