@@ -54,6 +54,9 @@ public class PreviewCanvasView extends View {
 
   private int movePrevX, movePrevY;
 
+  ProgressDialog asyncDialog;
+  boolean isSaveEnd = false;
+
 
   public PreviewCanvasView(Context context, PreviewEditActivity activity, ArrayList<PreviewItem> previewItems) {
     super(context);
@@ -61,6 +64,12 @@ public class PreviewCanvasView extends View {
     this.previewItems = previewItems;
     CLICK_STATE = ClickState.getClickState();
     CLICK_STATE.start();
+
+    asyncDialog = new ProgressDialog(mActivity);
+    asyncDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+    asyncDialog.setCancelable(false);
+    asyncDialog.setCanceledOnTouchOutside(false);
+    asyncDialog.setMessage("저장중입니다..");
   }
   @Override
   protected void onDraw(Canvas canvas) {
@@ -382,14 +391,28 @@ public class PreviewCanvasView extends View {
     }
   }
 
+  public void saveEnd(){
+    try {
+      asyncDialog.dismiss();
+    } catch (Exception e) {}
+    isSaveEnd = true;
+  }
+
+/**
   public void savePreviewAll(){
     SaveAllAsyncTask saveAllAsyncTask = new SaveAllAsyncTask();
     for(int i = 0 ; i < previewItems.size() ; i++){
-      PreviewEditActivity.POSITION = i;
-      callInvalidate();
-      saveAllAsyncTask.execute(-1);
+      if(!previewItems.get(i).getIsSaved()){
+        PreviewEditActivity.POSITION = i;
+        callInvalidate();
+        isSaveEnd = false;
+        asyncDialog.show();
+        saveAllAsyncTask.execute(-1);
+        while(true) if(isSaveEnd) break;
+      }
     }
   }
+  */
 
   public void savePreviewEach(int nextPosition){
     /**
@@ -399,7 +422,9 @@ public class PreviewCanvasView extends View {
      * 그렇지 않으면, "저장하시겠습니까" 에서 YES를 눌린 것임.
      */
 
+    asyncDialog.show();
     SaveAllAsyncTask saveAllAsyncTask = new SaveAllAsyncTask();
+    isSaveEnd = false;
     saveAllAsyncTask.execute(nextPosition);
 
   }
@@ -463,7 +488,7 @@ public class PreviewCanvasView extends View {
         @Override
         public void onClick(DialogInterface dialog, int which) {
           savePreviewEach(nextPosition);
-          //changePreviewInCanvas(nextPosition);
+          //changeAndInitPreviewInCanvas(nextPosition);
           return;
         }
       })
@@ -471,7 +496,7 @@ public class PreviewCanvasView extends View {
         new DialogInterface.OnClickListener() {
           @Override
           public void onClick(DialogInterface dialog, int which) {
-            changePreviewInCanvas(nextPosition);
+            changeAndInitPreviewInCanvas(nextPosition);
             return;
           }
         })
@@ -490,12 +515,12 @@ public class PreviewCanvasView extends View {
         alert.setCanceledOnTouchOutside(false);
         alert.show();
       } else {
-        changePreviewInCanvas(nextPosition);
+        changeAndInitPreviewInCanvas(nextPosition);
       }
     }
   }
 
-  public void changePreviewInCanvas(int nextPosition){
+  public void changeAndInitPreviewInCanvas(int nextPosition){
     previewValueInit();
     PreviewEditActivity.POSITION = nextPosition;
     isStampShown = false;
@@ -503,6 +528,7 @@ public class PreviewCanvasView extends View {
     previewItems.get(nextPosition).saved();
     invalidate();
   }
+
   public void previewValueInit(){
     previewPosWidth = 0;
     previewPosHeight = 0;
@@ -520,16 +546,12 @@ public class PreviewCanvasView extends View {
 
   protected class SaveAllAsyncTask extends AsyncTask<Integer, Integer, String>{
 
-    ProgressDialog asyncDialog = new ProgressDialog(mActivity);
     int nextPosition;
+    final String ERROR_INVALID_POSITION = "ERROR_INVALID_POSITION";
+    final String ERROR_IO_EXCEPTION = "ERROR_IO_EXCEPTION";
 
     @Override
     protected void onPreExecute() {
-      asyncDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-      asyncDialog.setMessage("저장중입니다..");
-
-      // show dialog
-      asyncDialog.show();
       super.onPreExecute();
     }
 
@@ -537,7 +559,7 @@ public class PreviewCanvasView extends View {
     protected String doInBackground(Integer... param) {
       nextPosition = param[0];
 
-      if (PreviewEditActivity.POSITION == -1) return "0";
+      if (PreviewEditActivity.POSITION == -1) return ERROR_INVALID_POSITION;
       int previewPosition = PreviewEditActivity.POSITION;
 
       Bitmap screenshot = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
@@ -559,7 +581,7 @@ public class PreviewCanvasView extends View {
 
       }  catch (IOException e) {
         e.printStackTrace();
-        return "-1";
+        return ERROR_IO_EXCEPTION;
       }
 
       CLICK_STATE.clickSave();
@@ -573,19 +595,35 @@ public class PreviewCanvasView extends View {
 
     @Override
     protected void onPostExecute(String str) {
-      if (nextPosition != -1){
-        changePreviewInCanvas(nextPosition);
-      } else {
-        changePreviewInCanvas(PreviewEditActivity.POSITION);
-      }
-      asyncDialog.dismiss();
-      if (str != "0") {
-        if (str == "-1"){
-          Snackbar.make(mActivity.getCurrentFocus(), "저장 실패...", Snackbar.LENGTH_LONG).show();
+      if(str != ERROR_INVALID_POSITION) {
+
+        if (nextPosition != -1){
+          changeAndInitPreviewInCanvas(nextPosition);
         } else {
-          Snackbar.make(mActivity.getCurrentFocus(), "저장 성공 : " + str, Snackbar.LENGTH_LONG).show();
+          changeAndInitPreviewInCanvas(PreviewEditActivity.POSITION);
+        }
+
+
+        if (str == ERROR_IO_EXCEPTION){
+          Snackbar.make(mActivity.getCurrentFocus(), "저장 실패!", Snackbar.LENGTH_LONG).show();
+        } else {
+          File resultFile = new File(str);
+          Snackbar.make(mActivity.getCurrentFocus(),
+            "저장 폴더 : " + MainActivity.PREVIEW_SAVED_DIRECTORY + "\n파일 이름 : " + resultFile.getName(),
+            Snackbar.LENGTH_LONG)
+            .setAction("NEXT", new OnClickListener() {
+              @Override
+              public void onClick(View v) {
+                if(PreviewEditActivity.POSITION + 1 < previewItems.size()){
+                  nextPosition = PreviewEditActivity.POSITION + 1;
+                  changeAndInitPreviewInCanvas(nextPosition);
+                }
+              }
+            })
+            .show();
         }
       }
+      saveEnd();
       super.onPostExecute(str);
     }
   }

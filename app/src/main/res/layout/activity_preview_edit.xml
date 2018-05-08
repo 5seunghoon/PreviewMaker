@@ -136,7 +136,8 @@
           android:drawableTop="@drawable/ic_filter_9_plus_black_36dp"
           android:paddingTop="4dp"
           android:text="@string/action_saveall_title"
-          android:textSize="12sp" />
+          android:textSize="12sp"
+          android:visibility="gone" />
 
       </LinearLayout>
     </LinearLayout>

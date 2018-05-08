@@ -110,7 +110,7 @@ public class PreviewEditActivity extends AppCompatActivity {
   public void onBackPressed() {
     if (mPreviewCanvasView.backPressed()) return;
     if (System.currentTimeMillis() - mBackPressedTime > 2000) {
-      Snackbar.make(getCurrentFocus(), "편집을 취소하려면 뒤로 버튼을 한번 더 눌려주세요.\n저장되지 않을 수 있어요.", Snackbar.LENGTH_LONG)
+      Snackbar.make(getCurrentFocus(), "뒤로 버튼을 한 번 더 누르시면 편집이 취소됩니다.\n저장되지 않을 수 있습니다.", Snackbar.LENGTH_LONG)
         .setAction("EXIT", new View.OnClickListener() {
           @Override
           public void onClick(View v) {
@@ -278,7 +278,7 @@ public class PreviewEditActivity extends AppCompatActivity {
   }
 
   public void clickButtonSaveAll(){
-    mPreviewCanvasView.savePreviewAll();
+    //mPreviewCanvasView.savePreviewAll();
   }
   public void clickButtonSaveEach(){
     mPreviewCanvasView.savePreviewEach(-1);
@@ -388,7 +388,7 @@ public class PreviewEditActivity extends AppCompatActivity {
       canvasviewHintTextView.setVisibility(View.GONE);
       mCanvasPerantLayout.setVisibility(View.VISIBLE);
 
-      mPreviewCanvasView.changePreviewInCanvas(position);
+      mPreviewCanvasView.changeAndInitPreviewInCanvas(position);
     }
   }
 
