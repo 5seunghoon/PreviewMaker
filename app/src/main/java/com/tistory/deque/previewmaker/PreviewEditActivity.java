@@ -281,7 +281,7 @@ public class PreviewEditActivity extends AppCompatActivity {
     mPreviewCanvasView.savePreviewAll();
   }
   public void clickButtonSaveEach(){
-    mPreviewCanvasView.savePreviewEach(POSITION);
+    mPreviewCanvasView.savePreviewEach(-1);
   }
   public void clickButtonCrop(){
     if(POSITION < 0 || POSITION >= previewItems.size()){

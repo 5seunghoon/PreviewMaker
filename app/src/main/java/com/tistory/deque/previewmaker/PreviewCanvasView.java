@@ -383,14 +383,24 @@ public class PreviewCanvasView extends View {
   }
 
   public void savePreviewAll(){
-    //SaveAllAsyncTask saveAllAsyncTask = new SaveAllAsyncTask();
-    //saveAllAsyncTask.execute(previewItems.size());
+    SaveAllAsyncTask saveAllAsyncTask = new SaveAllAsyncTask();
+    for(int i = 0 ; i < previewItems.size() ; i++){
+      PreviewEditActivity.POSITION = i;
+      callInvalidate();
+      saveAllAsyncTask.execute(-1);
+    }
   }
 
-  public void savePreviewEach(int previewPosition){
+  public void savePreviewEach(int nextPosition){
+    /**
+     * if nextPosition == -1 , there is only click 'save',
+     * or not, there is only click 'YES' in save question dialog.
+     * 만약 nextPosition이 -1이면, 저장 버튼을 눌린것임.
+     * 그렇지 않으면, "저장하시겠습니까" 에서 YES를 눌린 것임.
+     */
 
     SaveAllAsyncTask saveAllAsyncTask = new SaveAllAsyncTask();
-    saveAllAsyncTask.execute(mActivity);
+    saveAllAsyncTask.execute(nextPosition);
 
   }
   public void savePreviewEachTEMP(int previewPosition){
@@ -452,8 +462,8 @@ public class PreviewCanvasView extends View {
         new DialogInterface.OnClickListener() {
         @Override
         public void onClick(DialogInterface dialog, int which) {
-          savePreviewEach(PreviewEditActivity.POSITION);
-          changePreviewInCanvas(nextPosition);
+          savePreviewEach(nextPosition);
+          //changePreviewInCanvas(nextPosition);
           return;
         }
       })
@@ -475,14 +485,11 @@ public class PreviewCanvasView extends View {
 
 
     if(PreviewEditActivity.POSITION != -1){
-      Logger.d(TAG, "is Saved [" + PreviewEditActivity.POSITION + "] : " + previewItems.get(PreviewEditActivity.POSITION).getIsSaved() );
       if(!previewItems.get(PreviewEditActivity.POSITION).getIsSaved()) {
-        Logger.d(TAG, "FALSE");
         AlertDialog alert = stampDeleteAlert.create();
         alert.setCanceledOnTouchOutside(false);
         alert.show();
       } else {
-        Logger.d(TAG, "TRUE");
         changePreviewInCanvas(nextPosition);
       }
     }
@@ -511,9 +518,10 @@ public class PreviewCanvasView extends View {
     return false;
   }
 
-  protected class SaveAllAsyncTask extends AsyncTask<PreviewEditActivity, Integer, String>{
+  protected class SaveAllAsyncTask extends AsyncTask<Integer, Integer, String>{
 
     ProgressDialog asyncDialog = new ProgressDialog(mActivity);
+    int nextPosition;
 
     @Override
     protected void onPreExecute() {
@@ -526,7 +534,9 @@ public class PreviewCanvasView extends View {
     }
 
     @Override
-    protected String doInBackground(PreviewEditActivity... param) {
+    protected String doInBackground(Integer... param) {
+      nextPosition = param[0];
+
       if (PreviewEditActivity.POSITION == -1) return "0";
       int previewPosition = PreviewEditActivity.POSITION;
 
@@ -542,16 +552,12 @@ public class PreviewCanvasView extends View {
         fos = new FileOutputStream(resultFile);
         screenshot.compress(Bitmap.CompressFormat.JPEG, 100, fos);
         fos.close();
-        //Snackbar.make(mActivity.getCurrentFocus(), "저장 성공 : " + resultFilePath, Snackbar.LENGTH_LONG).show();
 
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
         mediaScanIntent.setData(resultUri);
         mActivity.sendBroadcast(mediaScanIntent);
 
-      } catch (FileNotFoundException e) {
-        e.printStackTrace();
-        return "-1";
-      } catch (IOException e) {
+      }  catch (IOException e) {
         e.printStackTrace();
         return "-1";
       }
@@ -567,11 +573,18 @@ public class PreviewCanvasView extends View {
 
     @Override
     protected void onPostExecute(String str) {
+      if (nextPosition != -1){
+        changePreviewInCanvas(nextPosition);
+      } else {
+        changePreviewInCanvas(PreviewEditActivity.POSITION);
+      }
       asyncDialog.dismiss();
-      if (str == "-1"){
-        Snackbar.make(mActivity.getCurrentFocus(), "저장 실패...", Snackbar.LENGTH_LONG).show();
-      } else if (str == "0"){ } else {
-        Snackbar.make(mActivity.getCurrentFocus(), "저장 성공 : " + str, Snackbar.LENGTH_LONG).show();
+      if (str != "0") {
+        if (str == "-1"){
+          Snackbar.make(mActivity.getCurrentFocus(), "저장 실패...", Snackbar.LENGTH_LONG).show();
+        } else {
+          Snackbar.make(mActivity.getCurrentFocus(), "저장 성공 : " + str, Snackbar.LENGTH_LONG).show();
+        }
       }
       super.onPostExecute(str);
     }
