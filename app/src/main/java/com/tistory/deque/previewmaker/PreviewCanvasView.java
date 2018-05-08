@@ -1,6 +1,7 @@
 package com.tistory.deque.previewmaker;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -387,6 +388,12 @@ public class PreviewCanvasView extends View {
   }
 
   public void savePreviewEach(int previewPosition){
+
+    SaveAllAsyncTask saveAllAsyncTask = new SaveAllAsyncTask();
+    saveAllAsyncTask.execute(mActivity);
+
+  }
+  public void savePreviewEachTEMP(int previewPosition){
     /**
      * 저장시 할 일
      * 1. 이미지를 원래 크기로 다시 확대(or 축소)
@@ -504,13 +511,69 @@ public class PreviewCanvasView extends View {
     return false;
   }
 
-  protected class SaveAllAsyncTask extends AsyncTask<Integer, Integer, Integer>{
+  protected class SaveAllAsyncTask extends AsyncTask<PreviewEditActivity, Integer, String>{
+
+    ProgressDialog asyncDialog = new ProgressDialog(mActivity);
+
     @Override
-    protected Integer doInBackground(Integer... integers) {
-      for(int i = 0 ; i < integers[0] ; i ++){
-        savePreviewEach(i);
+    protected void onPreExecute() {
+      asyncDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+      asyncDialog.setMessage("저장중입니다..");
+
+      // show dialog
+      asyncDialog.show();
+      super.onPreExecute();
+    }
+
+    @Override
+    protected String doInBackground(PreviewEditActivity... param) {
+      if (PreviewEditActivity.POSITION == -1) return "0";
+      int previewPosition = PreviewEditActivity.POSITION;
+
+      Bitmap screenshot = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
+      Canvas canvas = new Canvas(screenshot);
+      mActivity.getmPreviewCanvasView().draw(canvas);
+
+      Uri resultUri = previewItems.get(previewPosition).getResultImageURI();
+      String resultFilePath = resultUri.getPath();
+      File resultFile = new File(resultFilePath);
+      FileOutputStream fos;
+      try {
+        fos = new FileOutputStream(resultFile);
+        screenshot.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+        fos.close();
+        //Snackbar.make(mActivity.getCurrentFocus(), "저장 성공 : " + resultFilePath, Snackbar.LENGTH_LONG).show();
+
+        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        mediaScanIntent.setData(resultUri);
+        mActivity.sendBroadcast(mediaScanIntent);
+
+      } catch (FileNotFoundException e) {
+        e.printStackTrace();
+        return "-1";
+      } catch (IOException e) {
+        e.printStackTrace();
+        return "-1";
       }
-      return null;
+
+      CLICK_STATE.clickSave();
+
+      PreviewItem previewItem = previewItems.get(previewPosition);
+      previewItem.setOriginalImageURI(resultUri);
+      previewItem.saved();
+
+      return resultFilePath;
+    }
+
+    @Override
+    protected void onPostExecute(String str) {
+      asyncDialog.dismiss();
+      if (str == "-1"){
+        Snackbar.make(mActivity.getCurrentFocus(), "저장 실패...", Snackbar.LENGTH_LONG).show();
+      } else if (str == "0"){ } else {
+        Snackbar.make(mActivity.getCurrentFocus(), "저장 성공 : " + str, Snackbar.LENGTH_LONG).show();
+      }
+      super.onPostExecute(str);
     }
   }
 }

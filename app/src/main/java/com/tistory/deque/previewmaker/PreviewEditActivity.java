@@ -71,6 +71,10 @@ public class PreviewEditActivity extends AppCompatActivity {
 
   StampItem stamp;
 
+  public PreviewCanvasView getmPreviewCanvasView() {
+    return mPreviewCanvasView;
+  }
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
