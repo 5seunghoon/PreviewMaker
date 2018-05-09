@@ -11,10 +11,11 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 public class PreviewItem {
   private final static String TAG = "PreviewEditActivity";
-  private static int bitmapMaxSize = 2000;
+  private static int bitmapMaxSize = 2500; // 프리뷰의 장축이 이 사이즈로 제한됨
   private Uri originalImageURI;
   private Uri thumbnailImageURI;
   private Uri resultImageURI;
@@ -22,17 +23,20 @@ public class PreviewItem {
   private Activity mActivity;
   private boolean isSaved;
 
-  public static void setBitmapMaxSize(int size){
-    bitmapMaxSize = size;
+  public PreviewItem(Uri originalImageURI, Uri thumbnailImageURI, Activity activity){
+    this.originalImageURI = originalImageURI;
+    this.thumbnailImageURI = thumbnailImageURI;
+    this.mActivity = activity;
+    this.isSaved = true;
+    this.resultImageURI = makeResultImageFile();
+    mBitmap = URIToBitmap(originalImageURI, mActivity);
   }
-  public static int getBitmapMaxSize(){ return bitmapMaxSize; }
 
-  public static Bitmap URIToBitmap(Uri imageUri, Activity activity){
-    Bitmap bitmap = null;
+  private static Bitmap URIToBitmap(Uri imageUri, Activity activity){
+    Bitmap bitmap;
     Bitmap resizedBitmap = null;
-    int width = 1, height = 1;
+    int width, height;
     double rate;
-
 
     try {
       bitmap = MediaStore.Images.Media.getBitmap(activity.getContentResolver(), imageUri);
@@ -60,28 +64,15 @@ public class PreviewItem {
     return resizedBitmap;
   }
 
-  public PreviewItem(Uri originalImageURI, Uri thumbnailImageURI, Activity activity){
-    this.originalImageURI = originalImageURI;
-    this.thumbnailImageURI = thumbnailImageURI;
-    this.mActivity = activity;
-    this.isSaved = true;
-    this.resultImageURI = makeResultImageFile();
-    mBitmap = URIToBitmap(originalImageURI, mActivity);
-  }
-
   public void setOriginalImageURI(Uri originalImageURI) {
     this.originalImageURI = originalImageURI;
     mBitmap = URIToBitmap(originalImageURI, mActivity);
   }
 
-  public void setThumbnailImageURI(Uri thumbnailImageURI) {
-    this.thumbnailImageURI = thumbnailImageURI;
-  }
-
   private Uri makeResultImageFile(){
-    String timeStamp = new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date());
-    String imageFileName = "PREVIEW_" + timeStamp + ".png";
-    File imageFile = null;
+    String timeStamp = new SimpleDateFormat(MainActivity.FILE_NAME_FORMAT, Locale.KOREA).format(new Date());
+    String imageFileName = MainActivity.FILE_NAME_HEADER_PREVIEW + timeStamp + MainActivity.FILE_NAME_IMAGE_FORMAT;
+    File imageFile;
     File storageDir = new File(Environment.getExternalStorageDirectory() + "/Pictures", MainActivity.PREVIEW_SAVED_DIRECTORY);
     if(!storageDir.exists()){
       storageDir.mkdir();
@@ -95,6 +86,12 @@ public class PreviewItem {
 
     return resultUri;
   }
+
+  public static void setBitmapMaxSize(int size){
+    bitmapMaxSize = size;
+  }
+
+  public static int getBitmapMaxSize(){ return bitmapMaxSize; }
 
   public Uri getOriginalImageURI() {
     return originalImageURI;

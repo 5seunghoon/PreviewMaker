@@ -72,7 +72,7 @@ public class StampAdapter extends RecyclerView.Adapter<StampAdapter.ViewHolder> 
 
   private void clickDel(final View v, final int position){
     AlertDialog.Builder stampDeleteAlert = new AlertDialog.Builder(mActivity);
-    stampDeleteAlert.setMessage("낙관 [" + mStampItems.get(position).getStampName() + "] 을 정말 삭제하시겠어요?").setCancelable(true)
+    stampDeleteAlert.setMessage("낙관 [" + mStampItems.get(position).getStampName() + "] 을 정말 삭제하시겠습니까?").setCancelable(true)
       .setPositiveButton("YES", new DialogInterface.OnClickListener() {
         @Override
         public void onClick(DialogInterface dialog, int which) {

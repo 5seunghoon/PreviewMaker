@@ -21,6 +21,17 @@ public class StampItem {
     this.pos_height_per = pos_height_per;
   }
 
+  public StampItem(int ID, Uri imageURI, String stampName){
+    this.ID = ID;
+    this.imageURI = imageURI;
+    this.stampName = stampName;
+
+    this.width = DBOpenHelper.STAMP_WIDTH_KEY_INIT_VALUE;
+    this.height = DBOpenHelper.STAMP_HEIGHT_KEY_INIT_VALUE;
+    this.pos_width_per = DBOpenHelper.STAMP_POS_WIDTH_PERCENT_KEY_INIT_VALUE;
+    this.pos_height_per = DBOpenHelper.STAMP_POS_HEIGHT_PERCENT_KEY_INIT_VALUE;
+  }
+
   public Uri getImageURI() {
     return imageURI;
   }
@@ -51,12 +62,9 @@ public class StampItem {
   public void setImageURI(Uri imageURI) {
     this.imageURI = imageURI;
   }
+
   public void setStampName(String stampName) {
     this.stampName = stampName;
-  }
-
-  public void setID(int ID) {
-    this.ID = ID;
   }
 
   public void setWidth(int width) {

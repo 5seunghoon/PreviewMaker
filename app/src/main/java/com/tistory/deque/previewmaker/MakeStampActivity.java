@@ -6,27 +6,24 @@ import android.net.Uri;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import com.tistory.deque.previewmaker.Logger;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 
 import java.io.File;
 
 public class MakeStampActivity extends AppCompatActivity {
+  public static final String STAMP_NAME = "STAMP_NAME";
   private final String TAG = "MakeStampActivity";
 
-  Uri imageURI;
-  ImageView imageView;
-  EditText editText;
-  Button okButton;
-  LinearLayout stampImageLayout;
+  private Uri imageURI;
+  private ImageView imageView;
+  private EditText editText;
+  private Button okButton;
 
-  long backPressedTime;
+  private long backPressedTime;
 
 
   @Override
@@ -41,7 +38,7 @@ public class MakeStampActivity extends AppCompatActivity {
     editText = findViewById(R.id.stampNameEditText);
     okButton = findViewById(R.id.stampNameOkButton);
 
-    setTitle(R.string.tile_make_stamp_activity);
+    setTitle(R.string.title_make_stamp_activity);
     imageView.setImageURI(imageURI);
 
     okButton.setOnClickListener(new View.OnClickListener() {
@@ -67,7 +64,7 @@ public class MakeStampActivity extends AppCompatActivity {
     else {
       Snackbar
         .make(findViewById(R.id.activityMakeStampMainLayout)
-          , "낙관 설정을 취소하시려면 뒤로 버튼을 한번 더 눌려주세요."
+          , getString(R.string.snackbar_make_stamp_acti_back_to_exit)
           , Snackbar.LENGTH_LONG)
         .show();
       backPressedTime = System.currentTimeMillis();
@@ -77,35 +74,29 @@ public class MakeStampActivity extends AppCompatActivity {
   private void deleteFile(Uri uri){
     File file = new File(uri.getPath());
     if(file.delete()) {
-      Logger.d(TAG, "Stamp delete suc");
-      //Do media scan
-      Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-      mediaScanIntent.setData(uri);
-      sendBroadcast(mediaScanIntent);
-      Logger.d(TAG, "media scanning end");
+      MainActivity.galleryAddPic(this, uri);
     } else {
       Logger.d(TAG, "Stamp delete fail" + uri);
     }
-
   }
 
   private void clkOkButton(String name){
     if(name.length() == 0) {
       Snackbar
         .make(findViewById(R.id.activityMakeStampMainLayout)
-          , "낙관의 이름을 입력해주세요."
+          , getString(R.string.snackbar_make_stamp_acti_no_name_warn)
           , Snackbar.LENGTH_LONG)
         .show();
     } else if (name.length() > 10) {
       Snackbar
         .make(findViewById(R.id.activityMakeStampMainLayout)
-          , "낙관의 이름을 10자 이내로 줄여주실수 있나요?"
+          , getString(R.string.snackbar_make_stamp_acti_name_len_warn)
           , Snackbar.LENGTH_LONG)
         .show();
     } else {
       Intent resultIntent = new Intent();
       resultIntent.setData(imageURI);
-      resultIntent.putExtra("STAMP_NAME", editText.getText().toString());
+      resultIntent.putExtra(STAMP_NAME, editText.getText().toString());
       setResult(RESULT_OK, resultIntent);
       finish();
     }

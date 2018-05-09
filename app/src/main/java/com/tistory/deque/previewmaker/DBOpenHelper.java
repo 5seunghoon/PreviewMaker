@@ -19,7 +19,12 @@ public class DBOpenHelper extends SQLiteOpenHelper {
   public static final String STAMP_POS_WIDTH_PERCENT_KEY = "STAMP_POS_WIDTH_PERCENT";
   public static final String STAMP_POS_HEIGHT_PERCENT_KEY = "STAMP_POS_HEIGHT_PERCENT";
 
-  public static final String dpOpenHelperName = "DB_OPEN_HELPER_NAME";
+  public static final int STAMP_POS_WIDTH_PERCENT_KEY_INIT_VALUE = 50000; // 50,000 = 50%
+  public static final int STAMP_POS_HEIGHT_PERCENT_KEY_INIT_VALUE = 50000; // 50,000 = 50%
+  public static final int STAMP_WIDTH_KEY_INIT_VALUE = -1;
+  public static final int STAMP_HEIGHT_KEY_INIT_VALUE = -1;
+
+  public static final String DP_OPEN_HELPER_NAME = "DB_OPEN_HELPER_NAME";
   public static final int dbVersion = 1;
 
   private static final String TAG = "MainActivity";
@@ -92,10 +97,10 @@ public class DBOpenHelper extends SQLiteOpenHelper {
     ContentValues stampValue = new ContentValues();
     stampValue.put(STAMP_NAME_KEY, stampName);
     stampValue.put(STAMP_URI_KEY, imageURI.toString());
-    stampValue.put(STAMP_WIDTH_KEY, -1);
-    stampValue.put(STAMP_HEIGHT_KEY, -1);
-    stampValue.put(STAMP_POS_WIDTH_PERCENT_KEY, 50000); // 50,000 = 50%
-    stampValue.put(STAMP_POS_HEIGHT_PERCENT_KEY, 50000);
+    stampValue.put(STAMP_WIDTH_KEY, STAMP_WIDTH_KEY_INIT_VALUE);
+    stampValue.put(STAMP_HEIGHT_KEY, STAMP_HEIGHT_KEY_INIT_VALUE);
+    stampValue.put(STAMP_POS_WIDTH_PERCENT_KEY, STAMP_POS_WIDTH_PERCENT_KEY_INIT_VALUE);
+    stampValue.put(STAMP_POS_HEIGHT_PERCENT_KEY, STAMP_POS_HEIGHT_PERCENT_KEY_INIT_VALUE);
     long result = db.insert(TABLE_NAME_STAMPS, null, stampValue);
     if(result == -1){
       Logger.d(TAG, "insert error : name : " + stampName + " , uri : " + imageURI);
@@ -106,26 +111,6 @@ public class DBOpenHelper extends SQLiteOpenHelper {
       return true;
     }
   }
-
-  public boolean dbInsertStamp(String stampName, Uri imageURI, int width, int height, int posWidthPer, int posHeightPer){
-    ContentValues stampValue = new ContentValues();
-    stampValue.put(STAMP_NAME_KEY, stampName);
-    stampValue.put(STAMP_URI_KEY, imageURI.toString());
-    stampValue.put(STAMP_WIDTH_KEY, width);
-    stampValue.put(STAMP_HEIGHT_KEY, height);
-    stampValue.put(STAMP_POS_WIDTH_PERCENT_KEY, posWidthPer);
-    stampValue.put(STAMP_POS_HEIGHT_PERCENT_KEY, posHeightPer);
-    long result = db.insert(TABLE_NAME_STAMPS, null, stampValue);
-    if(result == -1){
-      Logger.d(TAG, "insert error : name : " + stampName + " , uri : " + imageURI);
-      return false;
-    }
-    else{
-      Logger.d(TAG, "insert success : name : " + stampName + " , uri : " + imageURI);
-      return true;
-    }
-  }
-
 
   public boolean dbDeleteStamp(int id){
     long result = db.delete(TABLE_NAME_STAMPS,  PK_ID + "=" + id, null);
@@ -136,5 +121,21 @@ public class DBOpenHelper extends SQLiteOpenHelper {
       Logger.d(TAG, "delete suc : id : " + id);
       return true;
     }
+  }
+
+  public void dbUpdateStamp(int id, int width, int height, int posWidthPer, int posHeightPer){
+    String sql = "UPDATE " + TABLE_NAME_STAMPS + " SET "
+      + STAMP_WIDTH_KEY + " = " + width
+      + ", "
+      + STAMP_HEIGHT_KEY + " = " + height
+      + ", "
+      + STAMP_POS_WIDTH_PERCENT_KEY + " = " + posWidthPer
+      + ", "
+      + STAMP_POS_HEIGHT_PERCENT_KEY + " = " + posHeightPer
+      + " WHERE _ID IN(" + id + ")" + ";";
+    db.execSQL(sql);
+
+    Logger.d(TAG, "input sql : " + sql);
+
   }
 }

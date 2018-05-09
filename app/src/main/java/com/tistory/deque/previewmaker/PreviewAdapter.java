@@ -1,7 +1,5 @@
 package com.tistory.deque.previewmaker;
 
-import android.app.Activity;
-import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -35,7 +33,6 @@ public class PreviewAdapter extends RecyclerView.Adapter<PreviewAdapter.ViewHold
   @Override
   public PreviewAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
     View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.preview_list_item, parent, false);
-
     ViewHolder vh = new ViewHolder(v);
     return vh;
   }
@@ -43,7 +40,6 @@ public class PreviewAdapter extends RecyclerView.Adapter<PreviewAdapter.ViewHold
   @Override
   public void onBindViewHolder(@NonNull ViewHolder holder, final int position) {
     holder.previewImageView.setImageURI(mPreviewItems.get(position).getThumbnailImageURI());
-
     holder.previewImageView.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {

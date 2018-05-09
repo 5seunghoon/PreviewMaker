@@ -16,7 +16,6 @@ import android.provider.MediaStore;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -29,6 +28,9 @@ import java.util.ArrayList;
 public class PreviewCanvasView extends View {
   private final static String TAG = "PreviewEditActivity";
 
+  public static final int CANVAS_WIDTH_MAX_SIZE = 3000;
+  public static final int CANVAS_HEIGHT_MAX_SIZE = 3000;
+
   private static ClickState CLICK_STATE;
 
   private Canvas mCanvas;
@@ -36,7 +38,7 @@ public class PreviewCanvasView extends View {
   private int canvasWidth, canvasHeight;
   public static int grandParentWidth, grandParentHeight;
 
-  ArrayList<PreviewItem> previewItems;
+  private ArrayList<PreviewItem> previewItems;
   private int previewPosWidth, previewPosHeight;
   private int previewWidth, previewHeight;
 
@@ -54,22 +56,21 @@ public class PreviewCanvasView extends View {
 
   private int movePrevX, movePrevY;
 
-  ProgressDialog asyncDialog;
-  boolean isSaveEnd = false;
+  private ProgressDialog saveProgressDialog;
 
 
   public PreviewCanvasView(Context context, PreviewEditActivity activity, ArrayList<PreviewItem> previewItems) {
     super(context);
-    mActivity = activity;
+    this.mActivity = activity;
     this.previewItems = previewItems;
     CLICK_STATE = ClickState.getClickState();
     CLICK_STATE.start();
 
-    asyncDialog = new ProgressDialog(mActivity);
-    asyncDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-    asyncDialog.setCancelable(false);
-    asyncDialog.setCanceledOnTouchOutside(false);
-    asyncDialog.setMessage("저장중입니다..");
+    saveProgressDialog = new ProgressDialog(mActivity);
+    saveProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+    saveProgressDialog.setCancelable(false);
+    saveProgressDialog.setCanceledOnTouchOutside(false);
+    saveProgressDialog.setMessage("저장중입니다..");
   }
   @Override
   protected void onDraw(Canvas canvas) {
@@ -94,17 +95,11 @@ public class PreviewCanvasView extends View {
   @Override
   protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
     super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-
-    this.setMeasuredDimension(3000, 3000);
+    this.setMeasuredDimension(CANVAS_WIDTH_MAX_SIZE, CANVAS_HEIGHT_MAX_SIZE);
   }
 
   @Override
   public boolean onTouchEvent(MotionEvent event) {
-    /**
-     * 멀티터치를 통한 확대/회전 구현해야함
-     * 프리뷰는 확대만, 스탬프는 확대 회전 둘다
-     * 스탬프의경우 삭제도 만들어야됨
-     */
     switch (event.getAction()){
       case MotionEvent.ACTION_DOWN :
         touchDown(event);
@@ -123,8 +118,6 @@ public class PreviewCanvasView extends View {
     int x, y;
     x = (int) event.getX();
     y = (int) event.getY();
-    Logger.d(TAG, "touch x, y : " + x + ", " + y);
-    Logger.d(TAG, "touch sw, sh, swp, shp : " + stampWidth + ", " + stampHeight + ", " + stampWidthPos + ", " + stampHeightPos);
 
     movePrevX = x;
     movePrevY = y;
@@ -224,9 +217,6 @@ public class PreviewCanvasView extends View {
       return false;
     }
   }
-  private boolean isTouchInPreview(int x, int y) {
-    return isInBoxWithWidth(x, y, previewPosWidth, previewPosHeight, previewWidth, previewHeight);
-  }
 
   private void drawBellowBitmap() {
     Bitmap previewBitmap = previewItems.get(PreviewEditActivity.POSITION).getmBitmap();
@@ -317,7 +307,6 @@ public class PreviewCanvasView extends View {
 
     int id = stampItem.getID();
 
-    //stampPosWidthPer = (int) ((stampWidthPos + (stampWidth / 2.0f) ) * 100000.0f / previewWidth);
     stampPosWidthPer = (int) (((stampWidth / 2.0f) + stampWidthPos - previewPosWidth ) * 100000.0f / (previewWidth) );
     stampPosHeightPer = (int) (((stampHeight / 2.0f) + stampHeightPos - previewPosHeight ) * 100000.0f / (previewHeight) );
 
@@ -393,26 +382,9 @@ public class PreviewCanvasView extends View {
 
   public void saveEnd(){
     try {
-      asyncDialog.dismiss();
+      saveProgressDialog.dismiss();
     } catch (Exception e) {}
-    isSaveEnd = true;
   }
-
-/**
-  public void savePreviewAll(){
-    SaveAllAsyncTask saveAllAsyncTask = new SaveAllAsyncTask();
-    for(int i = 0 ; i < previewItems.size() ; i++){
-      if(!previewItems.get(i).getIsSaved()){
-        PreviewEditActivity.POSITION = i;
-        callInvalidate();
-        isSaveEnd = false;
-        asyncDialog.show();
-        saveAllAsyncTask.execute(-1);
-        while(true) if(isSaveEnd) break;
-      }
-    }
-  }
-  */
 
   public void savePreviewEach(int nextPosition){
     /**
@@ -422,57 +394,9 @@ public class PreviewCanvasView extends View {
      * 그렇지 않으면, "저장하시겠습니까" 에서 YES를 눌린 것임.
      */
 
-    asyncDialog.show();
+    saveProgressDialog.show();
     SaveAllAsyncTask saveAllAsyncTask = new SaveAllAsyncTask();
-    isSaveEnd = false;
     saveAllAsyncTask.execute(nextPosition);
-
-  }
-  public void savePreviewEachTEMP(int previewPosition){
-    /**
-     * 저장시 할 일
-     * 1. 이미지를 원래 크기로 다시 확대(or 축소)
-     * 2. 그 확대된 비율과, 낙관이 원래 붙어있던 위치에 맞춰서 확대된 이미지에도 제대로 낙관 붙이고
-     * 3. 크기 맞춰서 자르고 (3000*3000을 프리뷰 원래 크기에 맞춰서 자른다는 뜻)
-     * 4. 그 상태로 이미지로 저장
-     * 5. 다시 축소해서 되돌리기
-     */
-    if(previewPosition == -1) return;
-
-    PreviewEditActivity.POSITION = previewPosition;
-    callInvalidate();
-
-    Bitmap screenshot = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
-    Canvas canvas = new Canvas(screenshot);
-    draw(canvas);
-
-    Uri resultUri = previewItems.get(previewPosition).getResultImageURI();
-    String resultFilePath = resultUri.getPath();
-    File resultFile = new File(resultFilePath);
-    FileOutputStream fos;
-    try{
-      fos = new FileOutputStream(resultFile);
-      screenshot.compress(Bitmap.CompressFormat.JPEG, 100, fos);
-      fos.close();
-      Snackbar.make(this, "저장 성공 : " + resultFilePath, Snackbar.LENGTH_LONG).show();
-
-      Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-      mediaScanIntent.setData(resultUri);
-      mActivity.sendBroadcast(mediaScanIntent);
-
-    } catch (FileNotFoundException e) {
-      e.printStackTrace();
-      Snackbar.make(this, "저장 실패...", Snackbar.LENGTH_LONG).show();
-    } catch (IOException e) {
-      e.printStackTrace();
-      Snackbar.make(this, "저장 실패...", Snackbar.LENGTH_LONG).show();
-    }
-
-    CLICK_STATE.clickSave();
-
-    PreviewItem previewItem = previewItems.get(PreviewEditActivity.POSITION);
-    previewItem.setOriginalImageURI(resultUri);
-    previewItem.saved();
   }
 
   public boolean isNowEditingStamp() {
@@ -482,7 +406,7 @@ public class PreviewCanvasView extends View {
 
   public void clickNewPreview(final int nextPosition) {
     AlertDialog.Builder stampDeleteAlert = new AlertDialog.Builder(mActivity);
-    stampDeleteAlert.setMessage("편집 중인 프리뷰를 저장하시겠어요?").setCancelable(true)
+    stampDeleteAlert.setMessage(mActivity.getString(R.string.snackbar_preview_edit_acti_clk_new_preview)).setCancelable(true)
       .setPositiveButton("YES",
         new DialogInterface.OnClickListener() {
         @Override
@@ -557,6 +481,14 @@ public class PreviewCanvasView extends View {
 
     @Override
     protected String doInBackground(Integer... param) {
+      /**
+       * 저장시 할 일
+       * 1. 이미지를 원래 크기로 다시 확대(or 축소)
+       * 2. 그 확대된 비율과, 낙관이 원래 붙어있던 위치에 맞춰서 확대된 이미지에도 제대로 낙관 붙이고
+       * 3. 크기 맞춰서 자르고 (3000*3000을 프리뷰 원래 크기에 맞춰서 자른다는 뜻)
+       * 4. 그 상태로 이미지로 저장
+       * 5. 다시 축소해서 되돌리기
+       */
       nextPosition = param[0];
 
       if (PreviewEditActivity.POSITION == -1) return ERROR_INVALID_POSITION;

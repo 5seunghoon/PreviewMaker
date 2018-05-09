@@ -33,26 +33,23 @@ public class PreviewEditActivity extends AppCompatActivity {
 
   private final String TAG = "PreviewEditActivity";
 
-  public static final String URI_ERROR = "URI_ERROR";
   public static final String EXTRA_STAMP_ID = "STAMP_ID";
-  public static final String EXTRA_STAMP_POSITION = "STAMP_POSITION";
   public static final String EXTRA_PREVIEW_LIST = "PREVIEW_LIST";
-  final String dpOpenHelperName = "DB_OPEN_HELPER_NAME";
 
   public static int canvasGrandParentViewWidth, canvasGrandParentViewHeight;
 
   protected static int POSITION = -1;
   private boolean isClickPreviewFirst = false;
-  long mBackPressedTime;
+  private long mBackPressedTime;
 
-  int stampID;
-  Uri stampImageURI;
+  private int stampID;
+  private Uri stampImageURI;
 
   private DBOpenHelper dbOpenHelper;
   private StampItem selectedStamp;
 
-  ArrayList<String> previewPaths;
-  ArrayList<PreviewItem> previewItems;
+  private ArrayList<String> previewPaths;
+  private ArrayList<PreviewItem> previewItems;
   private RecyclerView mRecyclerPreviewView;
   private PreviewAdapter mPreviewAdapter;
   private LinearLayoutManager mRecyclerPreviewViewLayoutManager;
@@ -66,7 +63,7 @@ public class PreviewEditActivity extends AppCompatActivity {
 
   private TextView canvasviewHintTextView;
 
-  private Button mButtonSaveAll, mButtonSaveEach, mButtonCrop, mButtonStamp, mButtonEmoticon, mButtonDelete;
+  private Button mButtonSaveEach, mButtonCrop, mButtonStamp, mButtonDelete;
   private Button mButtonStampFinish;
 
   StampItem stamp;
@@ -86,9 +83,10 @@ public class PreviewEditActivity extends AppCompatActivity {
     layoutStampFinishButton = findViewById(R.id.layoutStampFinishButton);
 
     POSITION = -1;
+    isClickPreviewFirst = false;
 
     Intent intent = getIntent();
-    stampID = intent.getExtras().getInt("STAMP_ID");
+    stampID = intent.getExtras().getInt(EXTRA_STAMP_ID);
     stampImageURI = intent.getData();
     previewPaths = new ArrayList<>();
     previewItems = new ArrayList<>();
@@ -110,8 +108,8 @@ public class PreviewEditActivity extends AppCompatActivity {
   public void onBackPressed() {
     if (mPreviewCanvasView.backPressed()) return;
     if (System.currentTimeMillis() - mBackPressedTime > 2000) {
-      Snackbar.make(getCurrentFocus(), "뒤로 버튼을 한 번 더 누르시면 편집이 취소됩니다.\n저장되지 않을 수 있습니다.", Snackbar.LENGTH_LONG)
-        .setAction("EXIT", new View.OnClickListener() {
+      Snackbar.make(getCurrentFocus(), getString(R.string.snackbar_preview_edit_acti_back_to_exit), Snackbar.LENGTH_LONG)
+        .setAction(getString(R.string.snackbar_preview_edit_acti_back_to_exit_btn), new View.OnClickListener() {
           @Override
           public void onClick(View v) {
             finish();
@@ -151,10 +149,10 @@ public class PreviewEditActivity extends AppCompatActivity {
     }
   }
 
-  private void setStamp(int stampID){
+  private void setStamp(int stampID) {
     dbOpenHelper = DBOpenHelper.getDbOpenHelper(
       getApplicationContext()
-      , DBOpenHelper.dpOpenHelperName
+      , DBOpenHelper.DP_OPEN_HELPER_NAME
       , null
       , DBOpenHelper.dbVersion);
     dbOpenHelper.dbOpen();
@@ -166,41 +164,16 @@ public class PreviewEditActivity extends AppCompatActivity {
     }
   }
 
-  public void stampUpdate(int id, int width, int height, int posWidthPer, int posHeightPer){
-    viewEveryItemInDB();
-    String sql = "UPDATE " + dbOpenHelper.TABLE_NAME_STAMPS + " SET "
-      + dbOpenHelper.STAMP_WIDTH_KEY + " = " + width
-      + ", "
-      + dbOpenHelper.STAMP_HEIGHT_KEY + " = " + height
-      + ", "
-      + dbOpenHelper.STAMP_POS_WIDTH_PERCENT_KEY + " = " + posWidthPer
-      + ", "
-      + dbOpenHelper.STAMP_POS_HEIGHT_PERCENT_KEY + " = " + posHeightPer
-      + " WHERE _ID IN(" + stampID + ")" + ";";
-    dbOpenHelper.db.execSQL(sql);
-
-    Logger.d(TAG, "input sql : " + sql);
-    viewEveryItemInDB();
-
-  }
-
-  public void stampWidthHeightUpdate(int id, int width, int height){
-    String sql = "UPDATE " + dbOpenHelper.TABLE_NAME_STAMPS + " SET "
-      + dbOpenHelper.STAMP_WIDTH_KEY + " = " + width
-      + ", "
-      + dbOpenHelper.STAMP_HEIGHT_KEY + " = " + height
-      + " WHERE _ID IN(" + stampID + ")" + ";";
-    dbOpenHelper.db.rawQuery(sql, null);
+  public void stampUpdate(int id, int width, int height, int posWidthPer, int posHeightPer) {
+    dbOpenHelper.dbUpdateStamp(id, width, height, posWidthPer, posHeightPer);
   }
 
   private StampItem stampsFromDB(int stampID) throws FileNotFoundException{
-    int id;
-    String imageURIPath;
-    String name;
-    int width, height, posWidthPer, posHeightPer;
+    int id, width, height, posWidthPer, posHeightPer;
+    String imageURIPath, name;
+
     String sql = "SELECT * FROM " + dbOpenHelper.TABLE_NAME_STAMPS + " WHERE _ID IN(" + stampID + ")" + ";";
-    Cursor results = null;
-    results = dbOpenHelper.db.rawQuery(sql, null);
+    Cursor results = dbOpenHelper.db.rawQuery(sql, null);
     Logger.d(TAG, "Cursor open sql : " + sql);
 
     results.moveToFirst();
@@ -211,6 +184,7 @@ public class PreviewEditActivity extends AppCompatActivity {
     height = results.getInt(4);
     posWidthPer = results.getInt(5);
     posHeightPer = results.getInt(6);
+
     Logger.d(TAG, "STAMP FIND SUCCESS : id : " + id + " imageURIPath : " + imageURIPath + " name : " + name);
 
     String imageURIFilePath = Uri.parse(imageURIPath).getPath();
@@ -224,21 +198,13 @@ public class PreviewEditActivity extends AppCompatActivity {
 
   }
 
-  public void setButtonListener(){
-    mButtonSaveAll = findViewById(R.id.buttonSaveAll);
+  public void setButtonListener() {
     mButtonCrop = findViewById(R.id.buttonCrop);
     mButtonStamp = findViewById(R.id.buttonStamp);
-    mButtonEmoticon = findViewById(R.id.buttonEmoticon);
     mButtonDelete = findViewById(R.id.buttonDelete);
     mButtonSaveEach = findViewById(R.id.buttonSaveEach);
     mButtonStampFinish = findViewById(R.id.buttonStampFinish);
 
-    mButtonSaveAll.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        clickButtonSaveAll();
-      }
-    });
     mButtonCrop.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
@@ -249,12 +215,6 @@ public class PreviewEditActivity extends AppCompatActivity {
       @Override
       public void onClick(View v) {
         clickButtonStamp();
-      }
-    });
-    mButtonEmoticon.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        clickButtonEmoticon();
       }
     });
     mButtonDelete.setOnClickListener(new View.OnClickListener() {
@@ -277,13 +237,11 @@ public class PreviewEditActivity extends AppCompatActivity {
     });
   }
 
-  public void clickButtonSaveAll(){
-    //mPreviewCanvasView.savePreviewAll();
-  }
-  public void clickButtonSaveEach(){
+  public void clickButtonSaveEach() {
     mPreviewCanvasView.savePreviewEach(-1);
   }
-  public void clickButtonCrop(){
+
+  public void clickButtonCrop() {
     if(POSITION < 0 || POSITION >= previewItems.size()){
       return;
     }
@@ -298,36 +256,13 @@ public class PreviewEditActivity extends AppCompatActivity {
 
     Logger.d(TAG, "crop start : orig : " + origURI +", dest : " + destURI);
   }
-  public void clickButtonStamp() {
-    if(POSITION < 0) return;
 
-    if (!mPreviewCanvasView.isStampShown()) {
-      mPreviewCanvasView.showStamp();
-      if (selectedStamp != null) {
-        mPreviewCanvasView.setStampItem(selectedStamp);
-      }
-      mPreviewCanvasView.callInvalidate();
-    }
-  }
-  public void clickButtonEmoticon(){
-  }
-
-  public void clickButtonDelete(){
-  }
-
-  public void clickButtonStampFinish(){
-    mPreviewCanvasView.finishStampEdit();
-  }
-
-
-
-  private UCrop.Options setCropViewOption(){
+  private UCrop.Options setCropViewOption() {
     UCrop.Options options = new UCrop.Options();
     options.setToolbarColor(ContextCompat.getColor(this, R.color.colorPrimary));
     options.setActiveWidgetColor(ContextCompat.getColor(this, R.color.colorAccent));
     options.setToolbarWidgetColor(ContextCompat.getColor(this, R.color.black));
     options.setStatusBarColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
-
 
     options.setAspectRatioOptions(1,
       new AspectRatio("16:9", 16, 9),
@@ -341,28 +276,43 @@ public class PreviewEditActivity extends AppCompatActivity {
     return options;
   }
 
-  private void setPreviewCanvas(){
+  public void clickButtonStamp() {
+    if(POSITION < 0) return;
+
+    if (!mPreviewCanvasView.isStampShown()) {
+      mPreviewCanvasView.showStamp();
+      if (selectedStamp != null) {
+        mPreviewCanvasView.setStampItem(selectedStamp);
+      }
+      mPreviewCanvasView.callInvalidate();
+    }
+  }
+
+  public void clickButtonDelete() {
+  }
+
+  public void clickButtonStampFinish() {
+    mPreviewCanvasView.finishStampEdit();
+  }
+
+  private void setPreviewCanvas() {
     mCanvasGrandParentLayout = findViewById(R.id.canvasGrandParentLayout);
     mCanvasPerantLayout = findViewById(R.id.canvasParentLayout);
     mPreviewCanvasView = new PreviewCanvasView(this, this, previewItems);
     mCanvasPerantLayout.addView(mPreviewCanvasView);
-
 
     mCanvasGrandParentLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
       @Override
       public void onGlobalLayout() {
         canvasGrandParentViewWidth = mCanvasGrandParentLayout.getWidth();
         canvasGrandParentViewHeight = mCanvasGrandParentLayout.getHeight();
-        //int min = canvasGrandParentViewWidth < canvasGrandParentViewHeight ? canvasGrandParentViewWidth : canvasGrandParentViewHeight;
-        //min -= 50;
         PreviewCanvasView.grandParentWidth = canvasGrandParentViewWidth;
         PreviewCanvasView.grandParentHeight = canvasGrandParentViewHeight;
-        //Logger.d(TAG, "W : " + canvasGrandParentViewWidth + ", H : " + canvasGrandParentViewHeight + ", min : " + min);
       }
     });
-
   }
-  private void setRecyclerView(){
+
+  private void setRecyclerView() {
     mRecyclerPreviewView = findViewById(R.id.previewRecyclerView);
     mRecyclerPreviewView.setHasFixedSize(true);
 
@@ -375,24 +325,22 @@ public class PreviewEditActivity extends AppCompatActivity {
     mRecyclerPreviewView.setAdapter(mPreviewAdapter);
   }
 
-  protected void clickPreviewItem(View v, int position){
+  protected void clickPreviewItem(View v, int position) {
     if (mPreviewCanvasView.isNowEditingStamp()) return;
 
     if (POSITION != position) {
       mPreviewCanvasView.clickNewPreview(position);
     }
 
-    if(!isClickPreviewFirst){
-
+    if(!isClickPreviewFirst) {
       isClickPreviewFirst = true;
       canvasviewHintTextView.setVisibility(View.GONE);
       mCanvasPerantLayout.setVisibility(View.VISIBLE);
-
       mPreviewCanvasView.changeAndInitPreviewInCanvas(position);
     }
   }
 
-  public void editButtonGoneOrVisible(ClickState CLICK_STATE){
+  public void editButtonGoneOrVisible(ClickState CLICK_STATE) {
     if(CLICK_STATE.getClickStateEnum() == ClickStateEnum.STATE_STAMP_EDIT ||
        CLICK_STATE.getClickStateEnum() == ClickStateEnum.STATE_STAMP_ZOOM ){
       layoutEditButton.setVisibility(View.GONE);
@@ -471,7 +419,7 @@ public class PreviewEditActivity extends AppCompatActivity {
     }
   }
 
-  protected class LoadingPreviewThumbnail extends AsyncTask<PreviewEditActivity, Integer, Boolean>{
+  protected class LoadingPreviewThumbnail extends AsyncTask<PreviewEditActivity, Integer, Boolean> {
 
     private double loadingCounter = 0;
 
