@@ -38,8 +38,15 @@ import me.nereo.multi_image_selector.MultiImageSelectorActivity;
 
 public class MainActivity extends AppCompatActivity
   implements NavigationView.OnNavigationItemSelectedListener {
+  public final static String FILE_NAME_FORMAT = "yyyyMMddHHmmssSSS";
+  public final static String FILE_NAME_HEADER_STAMP = "STAMP_";
+  public final static String FILE_NAME_HEADER_PREVIEW = "PREVIEW_";
+  public final static String FILE_NAME_IMAGE_FORMAT = ".png";
+
   public final static String PREVIEW_SAVED_DIRECTORY = "Preview Maker";
   public final static String STAMP_SAVED_DIRECTORY = "Stamp";
+
+  private static int MAX_SELECT_IMAGE_ACCOUNT = 20;
 
   private final int REQUEST_TAKE_STAMP_FROM_ALBUM = 101;
   private final int REQUEST_MAKE_STAMP_ACTIVITY = 102;
@@ -269,8 +276,8 @@ public class MainActivity extends AppCompatActivity
 
   public File createImageFile() {
     Logger.d(TAG, "createImageFile func");
-    String timeStamp = new SimpleDateFormat("yyyyMMddHHmmssSSS", Locale.KOREA).format(new Date());
-    String imageFileName = "STAMP_" + timeStamp + ".png";
+    String timeStamp = new SimpleDateFormat(FILE_NAME_FORMAT, Locale.KOREA).format(new Date());
+    String imageFileName = FILE_NAME_HEADER_STAMP + timeStamp + FILE_NAME_IMAGE_FORMAT;
     Logger.d(TAG, "image file name : " + imageFileName
     );
     File imageFile = null;
@@ -307,7 +314,7 @@ public class MainActivity extends AppCompatActivity
 
         FileInputStream fis = new FileInputStream(file);
         FileOutputStream newfos = new FileOutputStream(outFile);
-        int readcount = 0;
+        int readcount;
         byte[] buffer = new byte[1024];
 
         while ((readcount = fis.read(buffer, 0, 1024)) != -1) {
@@ -317,7 +324,7 @@ public class MainActivity extends AppCompatActivity
         fis.close();
       } catch (IOException e) {
         Logger.d(TAG, "FILE COPY FAIL");
-        Snackbar.make(this.getCurrentFocus(), getString(R.string.snackbar_main_acti_stamp_copy_err), Snackbar.LENGTH_LONG);
+        Snackbar.make(mToolbar, getString(R.string.snackbar_main_acti_stamp_copy_err), Snackbar.LENGTH_LONG);
         e.printStackTrace();
       }
     } else {
@@ -424,7 +431,7 @@ public class MainActivity extends AppCompatActivity
     // whether show camera
     intent.putExtra(MultiImageSelectorActivity.EXTRA_SHOW_CAMERA, false);
     // max select image amount
-    intent.putExtra(MultiImageSelectorActivity.EXTRA_SELECT_COUNT, 20);
+    intent.putExtra(MultiImageSelectorActivity.EXTRA_SELECT_COUNT, MAX_SELECT_IMAGE_ACCOUNT);
     // select mode (MultiImageSelectorActivity.MODE_SINGLE OR MultiImageSelectorActivity.MODE_MULTI)
     intent.putExtra(MultiImageSelectorActivity.EXTRA_SELECT_MODE, MultiImageSelectorActivity.MODE_MULTI);
     // default select images (support array list)
@@ -440,7 +447,7 @@ public class MainActivity extends AppCompatActivity
      */
     int id, width, height, posWidthPer, posHeightPer;
     String imageURIPath, name;
-    String sql = "SELECT * FROM " + dbOpenHelper.TABLE_NAME_STAMPS + ";";
+    String sql = "SELECT * FROM " + DBOpenHelper.TABLE_NAME_STAMPS + ";";
     Cursor results = dbOpenHelper.db.rawQuery(sql, null);
 
     Logger.d(TAG, "Cursor open");

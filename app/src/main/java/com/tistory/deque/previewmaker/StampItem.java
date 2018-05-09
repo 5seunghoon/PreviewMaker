@@ -62,12 +62,9 @@ public class StampItem {
   public void setImageURI(Uri imageURI) {
     this.imageURI = imageURI;
   }
+
   public void setStampName(String stampName) {
     this.stampName = stampName;
-  }
-
-  public void setID(int ID) {
-    this.ID = ID;
   }
 
   public void setWidth(int width) {
