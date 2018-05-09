@@ -32,6 +32,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import me.nereo.multi_image_selector.MultiImageSelectorActivity;
 
@@ -41,31 +42,29 @@ public class MainActivity extends AppCompatActivity
   public final static String STAMP_SAVED_DIRECTORY = "Stamp";
 
   private final int REQUEST_TAKE_STAMP_FROM_ALBUM = 101;
-  private final int REQUEST_IMAGE_CROP = 102;
-  private final int REQUEST_MAKE_STAMP_ACTIVITY = 103;
-  private final int REQUEST_TAKE_PREVIEW_FROM_ALBUM = 104;
+  private final int REQUEST_MAKE_STAMP_ACTIVITY = 102;
+  private final int REQUEST_TAKE_PREVIEW_FROM_ALBUM = 103;
   private final String TAG = "MainActivity";
 
-  DBOpenHelper dbOpenHelper;
+  private DBOpenHelper dbOpenHelper;
 
-  Toolbar mToolbar;
-  Permission mPermission;
-  TextView mMainActivityHintTextView;
+  private Toolbar mToolbar;
+  private Permission mPermission;
+  private TextView mMainActivityHintTextView;
 
-  String mCurrentPhotoPath;
-  Uri mCropSourceURI, mCropEndURI; //  mCropSourceURI = 자를 uri, mCropEndURI = 자르고 난뒤 uri
+  private String mCurrentPhotoPath;
+  private Uri mCropSourceURI, mCropEndURI; //  mCropSourceURI = 자를 uri, mCropEndURI = 자르고 난뒤 uri
 
-  RecyclerView mRecyclerStampView;
-  ArrayList<StampItem> mStampItems;
-  StampAdapter mStampAdapter;
-  LinearLayoutManager mRecyclerViewLayoutManager;
+  private RecyclerView mRecyclerStampView;
+  private ArrayList<StampItem> mStampItems;
+  private StampAdapter mStampAdapter;
+  private LinearLayoutManager mRecyclerViewLayoutManager;
 
-  ArrayList<String> mSeletedPreviews;
-
+  private ArrayList<String> mSeletedPreviews;
 
 
   long mBackPressedTime;
-  int position;
+  private int stampPosition;
 
 
   @Override
@@ -96,7 +95,7 @@ public class MainActivity extends AppCompatActivity
     setRecyclerView();
 
     //floating action button
-    FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+    FloatingActionButton fab = findViewById(R.id.fab);
     fab.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
@@ -108,14 +107,14 @@ public class MainActivity extends AppCompatActivity
     setTitle("프리뷰 메이커");
 
     //setting drawer
-    DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+    DrawerLayout drawer = findViewById(R.id.drawer_layout);
     ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
       this, drawer, mToolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
     drawer.addDrawerListener(toggle);
     toggle.syncState();
 
     //setting navigation view
-    NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+    NavigationView navigationView = findViewById(R.id.nav_view);
     navigationView.setNavigationItemSelectedListener(this);
 
 
@@ -128,51 +127,34 @@ public class MainActivity extends AppCompatActivity
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
     switch (requestCode){
-      case REQUEST_TAKE_STAMP_FROM_ALBUM:
+      case REQUEST_TAKE_STAMP_FROM_ALBUM: // 앨범에서 stamp선택 완료
         if(resultCode == Activity.RESULT_OK){
-          File albumFile = null;
-          albumFile = createImageFile();
+          File albumFile = createImageFile();
           mCropSourceURI = data.getData();
-          Logger.d(TAG, "mCropSourceURI : " + mCropSourceURI);
           mCropEndURI = Uri.fromFile(albumFile);
-
-          //cropImage();
           nonCropImage();
 
-          Logger.d(TAG, "TAKE STAMP FROM ALBUM OK");
+          Logger.d(TAG, "mCropSourceURI : " + mCropSourceURI);
+          Logger.d(TAG, "TAKE STAMP FROM ALBUM SUCCESS");
         } else {
           Logger.d(TAG, "TAKE STAMP FROM ALBUM FAIL");
         }
         break;
 
-      case REQUEST_IMAGE_CROP:
+      case REQUEST_MAKE_STAMP_ACTIVITY: // 앨범 이름 등 설정 완료
         if(resultCode == Activity.RESULT_OK){
-          galleryAddPic();
-          Intent intent = new Intent(getApplicationContext(), MakeStampActivity.class);
-          intent.setData(mCropEndURI);
-          startActivityForResult(intent, REQUEST_MAKE_STAMP_ACTIVITY);
-          Logger.d(TAG, "IMAGE CROP OK");
-        } else if(resultCode == Activity.RESULT_CANCELED){
-          Logger.d(TAG, "IMAGE CROP CANCLE");
-        } else {
-          Logger.d(TAG, "IMAGE CROP FIRST USER");
+          addStampToListAndDB(data);
         }
         break;
 
-      case REQUEST_MAKE_STAMP_ACTIVITY:
-        if(resultCode == Activity.RESULT_OK){
-          addStampToListAndDB(requestCode, resultCode, data);
-        }
-        break;
-
-      case REQUEST_TAKE_PREVIEW_FROM_ALBUM:
+      case REQUEST_TAKE_PREVIEW_FROM_ALBUM: // 앨범에서 preview들 선택 완료
         if(resultCode == Activity.RESULT_OK){
           List<String> path = data.getStringArrayListExtra(MultiImageSelectorActivity.EXTRA_RESULT);
 
           Intent intent = new Intent(getApplicationContext(), PreviewEditActivity.class);
           intent.putStringArrayListExtra(PreviewEditActivity.EXTRA_PREVIEW_LIST, (ArrayList<String>) path);
-          intent.setData(mStampItems.get(position).getImageURI());
-          intent.putExtra(PreviewEditActivity.EXTRA_STAMP_ID, mStampItems.get(position).getID());
+          intent.setData(mStampItems.get(stampPosition).getImageURI());
+          intent.putExtra(PreviewEditActivity.EXTRA_STAMP_ID, mStampItems.get(stampPosition).getID());
           startActivity(intent);
         }
         break;
@@ -181,10 +163,10 @@ public class MainActivity extends AppCompatActivity
 
   @Override
   public void onBackPressed() {
-    DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-    if (drawer.isDrawerOpen(GravityCompat.START)) {
+    DrawerLayout drawer = findViewById(R.id.drawer_layout);
+    if (drawer.isDrawerOpen(GravityCompat.START)) { // 드로어가 열려있으면 닫고
       drawer.closeDrawer(GravityCompat.START);
-    } else {
+    } else { // 드로어가 닫혀있으면 앱 종료
       if(System.currentTimeMillis() - mBackPressedTime > 2000){
         Snackbar.make(mToolbar, "뒤로 버튼을 한번 더 누르시면 종료합니다", Snackbar.LENGTH_LONG)
           .setAction("EXIT", new View.OnClickListener() {
@@ -262,10 +244,32 @@ public class MainActivity extends AppCompatActivity
     dbOpenHelper.dbOpen();
   }
 
+  private void setRecyclerView(){
+    mRecyclerStampView = findViewById(R.id.recyclerStampView);
+    mRecyclerStampView.setHasFixedSize(true);
+
+    mRecyclerViewLayoutManager = new LinearLayoutManager(this);
+    mRecyclerViewLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+    mRecyclerStampView.setLayoutManager(mRecyclerViewLayoutManager);
+    mRecyclerStampView.setItemAnimator(new DefaultItemAnimator());
+
+    mStampItems = new ArrayList<>();
+    mStampAdapter = new StampAdapter(mStampItems, this);
+    mRecyclerStampView.setAdapter(mStampAdapter);
+  }
+
+  private void getStampFromAlbum() {
+    Logger.d(TAG, "getAlbum()");
+    Intent intent = new Intent(Intent.ACTION_PICK);
+    intent.setType("image/*");
+    intent.setType(MediaStore.Images.Media.CONTENT_TYPE);
+    Logger.d(TAG, "start Activity : album intent");
+    startActivityForResult(intent, REQUEST_TAKE_STAMP_FROM_ALBUM);
+  }
 
   public File createImageFile() {
     Logger.d(TAG, "createImageFile func");
-    String timeStamp = new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date());
+    String timeStamp = new SimpleDateFormat("yyyyMMddHHmmssSSS", Locale.KOREA).format(new Date());
     String imageFileName = "STAMP_" + timeStamp + ".png";
     Logger.d(TAG, "image file name : " + imageFileName
     );
@@ -288,31 +292,16 @@ public class MainActivity extends AppCompatActivity
     return imageFile;
   }
 
-  @Deprecated
-  public void cropImage() {
-    /**
-     * mCropSourceURI = 자를 uri
-     * mCropEndURI = 자르고 난뒤 uri
-     */
-    Logger.d(TAG, "cropImage() CALL");
-    Logger.d(TAG, "cropImage() : Photo URI, Album URI" + mCropSourceURI + ", " + mCropEndURI);
-
-    Intent cropIntent = new Intent("com.android.camera.action.CROP");
-
-    cropIntent.setFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-    cropIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-    cropIntent.setDataAndType(mCropSourceURI, "image/*");
-    cropIntent.putExtra("output", mCropEndURI);
-    startActivityForResult(cropIntent, REQUEST_IMAGE_CROP);
-  }
-
   public void nonCropImage(){
+    /**
+     * copy mCropSourceURI and paste to mCropEndURI
+     */
     String pathCropSourceURI = getRealPathFromURI(mCropSourceURI);
     File file = new File(pathCropSourceURI);
     File outFile = new File(mCropEndURI.getPath());
     Logger.d(TAG, "inFile , outFile " + file + " , " + outFile);
 
-    if (file != null && file.exists()) {
+    if (file.exists()) {
 
       try {
 
@@ -326,19 +315,16 @@ public class MainActivity extends AppCompatActivity
         }
         newfos.close();
         fis.close();
-      } catch (Exception e) {
+      } catch (IOException e) {
         Logger.d(TAG, "FILE COPY FAIL");
+        Snackbar.make(this.getCurrentFocus(), "파일 복사 에러. 다시 시도해 주세요", Snackbar.LENGTH_LONG);
         e.printStackTrace();
       }
     } else {
       Logger.d(TAG, "IN FILE NOT EXIST");
     }
 
-    Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-    File f = new File(mCropEndURI.getPath());
-    Uri contentUri = Uri.fromFile(f);
-    mediaScanIntent.setData(contentUri);
-    sendBroadcast(mediaScanIntent);
+    galleryAddPic(mCropEndURI.getPath());
 
     Intent intent = new Intent(getApplicationContext(), MakeStampActivity.class);
     intent.setData(mCropEndURI);
@@ -361,41 +347,41 @@ public class MainActivity extends AppCompatActivity
     return path;
   }
 
-  private void galleryAddPic() {
-    /**
-     * Do media scan
-     */
+  private void galleryAddPic(String imagePath) {
     Logger.d(TAG, "galleryAddPic, do media scan");
     Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-    File f = new File(mCurrentPhotoPath);
+    File f = new File(imagePath);
     Uri contentUri = Uri.fromFile(f);
     mediaScanIntent.setData(contentUri);
     sendBroadcast(mediaScanIntent);
     Logger.d(TAG, "media scanning end");
   }
+  private void galleryAddPic(Uri imageURI){
+    Logger.d(TAG, "galleryAddPic, do media scan");
+    Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+    mediaScanIntent.setData(imageURI);
+    sendBroadcast(mediaScanIntent);
+    Logger.d(TAG, "media scanning end");
+  }
 
-  private void addStampToListAndDB(int requestCode, int resultCode, Intent data){
-    dbOpenHelper.dbInsertStamp(data.getStringExtra("STAMP_NAME"), data.getData());
-
-    int width, height, posWidthPer, posHeightPer;
+  private void addStampToListAndDB(Intent data){
+    dbOpenHelper.dbInsertStamp(data.getStringExtra(MakeStampActivity.STAMP_NAME), data.getData());
 
     final String MY_QUERY = "SELECT MAX(_id) FROM " + dbOpenHelper.TABLE_NAME_STAMPS;
     Cursor cur = dbOpenHelper.db.rawQuery(MY_QUERY, null);
     cur.moveToFirst();
     int maxID = cur.getInt(0);
 
-    mStampItems.add(new StampItem(maxID, data.getData(), data.getStringExtra("STAMP_NAME"), -1, -1, 50000, 50000));
-    Logger.d(TAG, "INSERT : ID : " + maxID + " imageURI : " + data.getData() + " name : " + data.getStringExtra("STAMP_NAME"));
-
-    //viewEveryItemInDB();
+    mStampItems.add(new StampItem(maxID, data.getData(), data.getStringExtra(MakeStampActivity.STAMP_NAME)));
+    Logger.d(TAG, "INSERT : ID : " + maxID + " imageURI : " + data.getData() + " name : " + data.getStringExtra(MakeStampActivity.STAMP_NAME));
 
     mStampAdapter.notifyDataSetChanged();
     invisibleHint();
   }
 
-  protected void callFromListItem(int position){
+  protected void callFromListItem(int stampPosition){
     getPreviewsFromAlbum();
-    this.position = position;
+    this.stampPosition = stampPosition;
   }
 
   protected void callFromListItemToDelete(View v, int position){
@@ -411,9 +397,7 @@ public class MainActivity extends AppCompatActivity
       if(file.delete()) {
 
         Logger.d(TAG, "Stamp delete suc");
-        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-        mediaScanIntent.setData(imageURI);
-        sendBroadcast(mediaScanIntent);
+        galleryAddPic(imageURI);
         Logger.d(TAG, "media scanning end");
 
         try{
@@ -441,25 +425,28 @@ public class MainActivity extends AppCompatActivity
     mSeletedPreviews = new ArrayList<>();
 
     Intent intent = new Intent(getApplicationContext(), MultiImageSelectorActivity.class);
-// whether show camera
+    // whether show camera
     intent.putExtra(MultiImageSelectorActivity.EXTRA_SHOW_CAMERA, false);
-// max select image amount
+    // max select image amount
     intent.putExtra(MultiImageSelectorActivity.EXTRA_SELECT_COUNT, 20);
-// select mode (MultiImageSelectorActivity.MODE_SINGLE OR MultiImageSelectorActivity.MODE_MULTI)
+    // select mode (MultiImageSelectorActivity.MODE_SINGLE OR MultiImageSelectorActivity.MODE_MULTI)
     intent.putExtra(MultiImageSelectorActivity.EXTRA_SELECT_MODE, MultiImageSelectorActivity.MODE_MULTI);
-// default select images (support array list)
+    // default select images (support array list)
     intent.putStringArrayListExtra(MultiImageSelectorActivity.EXTRA_DEFAULT_SELECTED_LIST, mSeletedPreviews);
     startActivityForResult(intent, REQUEST_TAKE_PREVIEW_FROM_ALBUM);
   }
 
   private void stampsFromDBToList() {
-    int id;
-    int width, height, posWidthPer, posHeightPer;
-    String imageURIPath;
-    String name;
+    /**
+     * Read DB, on List
+     * DB에서 stamp를 전부 읽어서 리스트로 불러옴
+     * 이때 DB에 있는 stamp의 실제 파일이 존재하지 않을 경우 DB에서 삭제함
+     */
+    int id, width, height, posWidthPer, posHeightPer;
+    String imageURIPath, name;
     String sql = "SELECT * FROM " + dbOpenHelper.TABLE_NAME_STAMPS + ";";
-    Cursor results = null;
-    results = dbOpenHelper.db.rawQuery(sql, null);
+    Cursor results = dbOpenHelper.db.rawQuery(sql, null);
+
     Logger.d(TAG, "Cursor open");
     results.moveToFirst();
     while(!results.isAfterLast()) {
@@ -474,18 +461,13 @@ public class MainActivity extends AppCompatActivity
       Logger.d(TAG, "DB ITEM : id : " + id + " imageURIPath : " + imageURIPath + " name : " + name);
 
       //if there is not exist stamp file, delete it in db
-      String imageURIFilePath = Uri.parse(imageURIPath).getPath();
-      File stampFile = new File(imageURIFilePath);
-
+      File stampFile = new File(Uri.parse(imageURIPath).getPath());
       Logger.d(TAG, " imageURIPath : " + imageURIPath );
       if (!stampFile.exists()) {
         dbOpenHelper.dbDeleteStamp(id);
       } else {
         mStampItems.add(new StampItem(id, Uri.parse(imageURIPath), name, width, height, posWidthPer, posHeightPer));
       }
-
-      //if(id > endOfID) endOfID = id;
-
       results.moveToNext();
     }
     invisibleHint();
@@ -501,26 +483,4 @@ public class MainActivity extends AppCompatActivity
     Logger.d(TAG, mStampItems.size() +  " ->mStampItems size");
   }
 
-  private void setRecyclerView(){
-    mRecyclerStampView = findViewById(R.id.recyclerStampView);
-    mRecyclerStampView.setHasFixedSize(true);
-
-    mRecyclerViewLayoutManager = new LinearLayoutManager(this);
-    mRecyclerViewLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-    mRecyclerStampView.setLayoutManager(mRecyclerViewLayoutManager);
-    mRecyclerStampView.setItemAnimator(new DefaultItemAnimator());
-
-    mStampItems = new ArrayList<>();
-    mStampAdapter = new StampAdapter(mStampItems, this);
-    mRecyclerStampView.setAdapter(mStampAdapter);
-  }
-
-  private void getStampFromAlbum() {
-    Logger.d(TAG, "getAlbum()");
-    Intent intent = new Intent(Intent.ACTION_PICK);
-    intent.setType("image/*");
-    intent.setType(MediaStore.Images.Media.CONTENT_TYPE);
-    Logger.d(TAG, "start Activity : album intent");
-    startActivityForResult(intent, REQUEST_TAKE_STAMP_FROM_ALBUM);
-  }
 }

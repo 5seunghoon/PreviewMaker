@@ -18,6 +18,7 @@ import android.widget.LinearLayout;
 import java.io.File;
 
 public class MakeStampActivity extends AppCompatActivity {
+  public static final String STAMP_NAME = "STAMP_NAME";
   private final String TAG = "MakeStampActivity";
 
   Uri imageURI;
@@ -105,7 +106,7 @@ public class MakeStampActivity extends AppCompatActivity {
     } else {
       Intent resultIntent = new Intent();
       resultIntent.setData(imageURI);
-      resultIntent.putExtra("STAMP_NAME", editText.getText().toString());
+      resultIntent.putExtra(STAMP_NAME, editText.getText().toString());
       setResult(RESULT_OK, resultIntent);
       finish();
     }
