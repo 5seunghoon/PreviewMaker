@@ -24,7 +24,7 @@ public class DBOpenHelper extends SQLiteOpenHelper {
   public static final int STAMP_WIDTH_KEY_INIT_VALUE = -1;
   public static final int STAMP_HEIGHT_KEY_INIT_VALUE = -1;
 
-  public static final String dpOpenHelperName = "DB_OPEN_HELPER_NAME";
+  public static final String DP_OPEN_HELPER_NAME = "DB_OPEN_HELPER_NAME";
   public static final int dbVersion = 1;
 
   private static final String TAG = "MainActivity";
@@ -121,5 +121,21 @@ public class DBOpenHelper extends SQLiteOpenHelper {
       Logger.d(TAG, "delete suc : id : " + id);
       return true;
     }
+  }
+
+  public void dbUpdateStamp(int id, int width, int height, int posWidthPer, int posHeightPer){
+    String sql = "UPDATE " + TABLE_NAME_STAMPS + " SET "
+      + STAMP_WIDTH_KEY + " = " + width
+      + ", "
+      + STAMP_HEIGHT_KEY + " = " + height
+      + ", "
+      + STAMP_POS_WIDTH_PERCENT_KEY + " = " + posWidthPer
+      + ", "
+      + STAMP_POS_HEIGHT_PERCENT_KEY + " = " + posHeightPer
+      + " WHERE _ID IN(" + id + ")" + ";";
+    db.execSQL(sql);
+
+    Logger.d(TAG, "input sql : " + sql);
+
   }
 }

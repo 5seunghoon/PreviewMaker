@@ -168,8 +168,8 @@ public class MainActivity extends AppCompatActivity
       drawer.closeDrawer(GravityCompat.START);
     } else { // 드로어가 닫혀있으면 앱 종료
       if(System.currentTimeMillis() - mBackPressedTime > 2000){
-        Snackbar.make(mToolbar, getString(R.string.snackbar_main_activity_back_click_to_exit), Snackbar.LENGTH_LONG)
-          .setAction(getString(R.string.snackbar_main_activity_back_click_to_exit_button), new View.OnClickListener() {
+        Snackbar.make(mToolbar, getString(R.string.snackbar_main_acti_back_to_exit), Snackbar.LENGTH_LONG)
+          .setAction(getString(R.string.snackbar_main_acti_back_to_exit_btn), new View.OnClickListener() {
             @Override
             public void onClick(View v) {
               finish();
@@ -238,7 +238,7 @@ public class MainActivity extends AppCompatActivity
   private void dbOpen(){
     dbOpenHelper = DBOpenHelper.getDbOpenHelper(
       getApplicationContext()
-      , DBOpenHelper.dpOpenHelperName
+      , DBOpenHelper.DP_OPEN_HELPER_NAME
       , null
       , DBOpenHelper.dbVersion);
     dbOpenHelper.dbOpen();
@@ -317,7 +317,7 @@ public class MainActivity extends AppCompatActivity
         fis.close();
       } catch (IOException e) {
         Logger.d(TAG, "FILE COPY FAIL");
-        Snackbar.make(this.getCurrentFocus(), getString(R.string.snackbar_error_copy_stamp), Snackbar.LENGTH_LONG);
+        Snackbar.make(this.getCurrentFocus(), getString(R.string.snackbar_main_acti_stamp_copy_err), Snackbar.LENGTH_LONG);
         e.printStackTrace();
       }
     } else {

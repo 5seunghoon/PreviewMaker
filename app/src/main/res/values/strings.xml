@@ -28,15 +28,21 @@
   <string name="action_stamp_edit_finish_title">편집 완료</string>
   <string name="action_stamp_edit_close_title">편집 취소</string>
 
-  <string name="snackbar_main_activity_back_click_to_exit">뒤로 버튼을 한번 더 누르시면 종료합니다</string>
-  <string name="snackbar_main_activity_back_click_to_exit_button">EXIT</string>
-  <string name="snackbar_error_copy_stamp">파일 복사 에러. 다시 시도해 주세요</string>
-  <string name="snackbar_make_stamp_activity_back_click_to_exit">뒤로 버튼을 한번 더 누르시면 낙관 설정을 취소합니다</string>
-  <string name="snackbar_make_stamp_activity_no_name_warning">이름을 입력해 주세요</string>
-  <string name="snackbar_make_stamp_activity_name_length_warning">낙관의 이름을 10자 이내로 줄여주세요</string>
+
+  <string name="snackbar_main_acti_back_to_exit">뒤로 버튼을 한번 더 누르시면 종료합니다.</string>
+  <string name="snackbar_main_acti_back_to_exit_btn">EXIT</string>
+  <string name="snackbar_main_acti_stamp_copy_err">파일 복사 에러. 다시 시도해 주세요.</string>
+
+  <string name="snackbar_make_stamp_acti_back_to_exit">뒤로 버튼을 한번 더 누르시면 낙관 설정을 취소합니다.</string>
+  <string name="snackbar_make_stamp_acti_no_name_warn">이름을 입력해 주세요.</string>
+  <string name="snackbar_make_stamp_acti_name_len_warn">낙관의 이름을 10자 이내로 줄여주세요.</string>
 
   <string name="snackbar_permission_deny">사진을 불러오고 저장하기 위해서는 권한이 필요합니다. 오른쪽 [GO!] 클릭!</string>
-  <string name="snackbar_permission_deny_rational">"사진을 불러오고 저장하려면 권한이 꼭 필요합니다.\n[설정]-[애플리케이션] 에서 권한을 허용해주세요"</string>
+  <string name="snackbar_permission_deny_rational">사진을 불러오고 저장하려면 권한이 꼭 필요합니다.\n[설정]-[애플리케이션]에서 권한을 허용해주세요.</string>
+
+  <string name="snackbar_preview_edit_acti_back_to_exit">뒤로 버튼을 한 번 더 누르시면 편집이 취소됩니다.\n저장되지 않을 수 있습니다.</string>
+  <string name="snackbar_preview_edit_acti_back_to_exit_btn">EXIT</string>
+  <string name="snackbar_preview_edit_acti_clk_new_preview">편집 중인 프리뷰를 저장하시겠습니까?</string>
 
 
   <string name="canvasview_hint">편집할 프리뷰를 상단에서 선택해 주세요</string>

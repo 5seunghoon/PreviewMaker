@@ -64,7 +64,7 @@ public class MakeStampActivity extends AppCompatActivity {
     else {
       Snackbar
         .make(findViewById(R.id.activityMakeStampMainLayout)
-          , getString(R.string.snackbar_make_stamp_activity_back_click_to_exit)
+          , getString(R.string.snackbar_make_stamp_acti_back_to_exit)
           , Snackbar.LENGTH_LONG)
         .show();
       backPressedTime = System.currentTimeMillis();
@@ -84,13 +84,13 @@ public class MakeStampActivity extends AppCompatActivity {
     if(name.length() == 0) {
       Snackbar
         .make(findViewById(R.id.activityMakeStampMainLayout)
-          , getString(R.string.snackbar_make_stamp_activity_no_name_warning)
+          , getString(R.string.snackbar_make_stamp_acti_no_name_warn)
           , Snackbar.LENGTH_LONG)
         .show();
     } else if (name.length() > 10) {
       Snackbar
         .make(findViewById(R.id.activityMakeStampMainLayout)
-          , getString(R.string.snackbar_make_stamp_activity_name_length_warning)
+          , getString(R.string.snackbar_make_stamp_acti_name_len_warn)
           , Snackbar.LENGTH_LONG)
         .show();
     } else {
