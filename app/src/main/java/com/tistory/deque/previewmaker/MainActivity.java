@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity
   private ArrayList<String> mSeletedPreviews;
 
 
-  long mBackPressedTime;
+  private long mBackPressedTime;
   private int stampPosition;
 
 
@@ -168,8 +168,8 @@ public class MainActivity extends AppCompatActivity
       drawer.closeDrawer(GravityCompat.START);
     } else { // 드로어가 닫혀있으면 앱 종료
       if(System.currentTimeMillis() - mBackPressedTime > 2000){
-        Snackbar.make(mToolbar, "뒤로 버튼을 한번 더 누르시면 종료합니다", Snackbar.LENGTH_LONG)
-          .setAction("EXIT", new View.OnClickListener() {
+        Snackbar.make(mToolbar, getString(R.string.snackbar_main_activity_back_click_to_exit), Snackbar.LENGTH_LONG)
+          .setAction(getString(R.string.snackbar_main_activity_back_click_to_exit_button), new View.OnClickListener() {
             @Override
             public void onClick(View v) {
               finish();
@@ -317,14 +317,14 @@ public class MainActivity extends AppCompatActivity
         fis.close();
       } catch (IOException e) {
         Logger.d(TAG, "FILE COPY FAIL");
-        Snackbar.make(this.getCurrentFocus(), "파일 복사 에러. 다시 시도해 주세요", Snackbar.LENGTH_LONG);
+        Snackbar.make(this.getCurrentFocus(), getString(R.string.snackbar_error_copy_stamp), Snackbar.LENGTH_LONG);
         e.printStackTrace();
       }
     } else {
       Logger.d(TAG, "IN FILE NOT EXIST");
     }
 
-    galleryAddPic(mCropEndURI.getPath());
+    galleryAddPic(this, mCropEndURI.getPath());
 
     Intent intent = new Intent(getApplicationContext(), MakeStampActivity.class);
     intent.setData(mCropEndURI);
@@ -347,21 +347,17 @@ public class MainActivity extends AppCompatActivity
     return path;
   }
 
-  private void galleryAddPic(String imagePath) {
-    Logger.d(TAG, "galleryAddPic, do media scan");
+  public static void galleryAddPic(Activity activity, String imagePath) {
     Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
     File f = new File(imagePath);
     Uri contentUri = Uri.fromFile(f);
     mediaScanIntent.setData(contentUri);
-    sendBroadcast(mediaScanIntent);
-    Logger.d(TAG, "media scanning end");
+    activity.sendBroadcast(mediaScanIntent);
   }
-  private void galleryAddPic(Uri imageURI){
-    Logger.d(TAG, "galleryAddPic, do media scan");
+  public static void galleryAddPic(Activity activity, Uri imageURI){
     Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
     mediaScanIntent.setData(imageURI);
-    sendBroadcast(mediaScanIntent);
-    Logger.d(TAG, "media scanning end");
+    activity.sendBroadcast(mediaScanIntent);
   }
 
   private void addStampToListAndDB(Intent data){
@@ -397,7 +393,7 @@ public class MainActivity extends AppCompatActivity
       if(file.delete()) {
 
         Logger.d(TAG, "Stamp delete suc");
-        galleryAddPic(imageURI);
+        galleryAddPic(this, imageURI);
         Logger.d(TAG, "media scanning end");
 
         try{
@@ -414,7 +410,7 @@ public class MainActivity extends AppCompatActivity
 
         visibleHint();
 
-        Snackbar.make(v, "낙관 [" + name + "] 삭제 완료", Snackbar.LENGTH_LONG).show();
+        Snackbar.make(v, "[" + name + "] 삭제 완료", Snackbar.LENGTH_LONG).show();
       } else {
         Logger.d(TAG, "Stamp delete fail : " + imageURI);
       }
