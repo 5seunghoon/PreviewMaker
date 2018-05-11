@@ -64,7 +64,7 @@ public class PreviewEditActivity extends AppCompatActivity {
   private TextView canvasviewHintTextView;
 
   private Button mButtonSaveEach, mButtonCrop, mButtonStamp, mButtonDelete;
-  private Button mButtonStampFinish;
+  private Button mButtonStampFinish, mButtonStampDelete;
 
   StampItem stamp;
 
@@ -204,6 +204,7 @@ public class PreviewEditActivity extends AppCompatActivity {
     mButtonDelete = findViewById(R.id.buttonDelete);
     mButtonSaveEach = findViewById(R.id.buttonSaveEach);
     mButtonStampFinish = findViewById(R.id.buttonStampFinish);
+    mButtonStampDelete = findViewById(R.id.buttonStampDelete);
 
     mButtonCrop.setOnClickListener(new View.OnClickListener() {
       @Override
@@ -229,10 +230,17 @@ public class PreviewEditActivity extends AppCompatActivity {
         clickButtonSaveEach();
       }
     });
+
     mButtonStampFinish.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
         clickButtonStampFinish();
+      }
+    });
+    mButtonStampDelete.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        clickButtonStampDelete();
       }
     });
   }
@@ -294,6 +302,8 @@ public class PreviewEditActivity extends AppCompatActivity {
   public void clickButtonStampFinish() {
     mPreviewCanvasView.finishStampEdit();
   }
+
+  public void clickButtonStampDelete() { mPreviewCanvasView.deleteStamp(); }
 
   private void setPreviewCanvas() {
     mCanvasGrandParentLayout = findViewById(R.id.canvasGrandParentLayout);
