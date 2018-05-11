@@ -3,9 +3,9 @@ package com.tistory.deque.previewmaker;
 import android.net.Uri;
 
 public class StampItem {
-  int ID;
-  Uri imageURI;
-  String stampName;
+  private int ID;
+  private Uri imageURI;
+  private String stampName;
   private int width;
   private int height;
   private int pos_width_per;
@@ -35,6 +35,7 @@ public class StampItem {
   public Uri getImageURI() {
     return imageURI;
   }
+
   public String getStampName() {
     return stampName;
   }
