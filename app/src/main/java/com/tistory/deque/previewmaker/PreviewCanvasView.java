@@ -150,10 +150,10 @@ public class PreviewCanvasView extends View {
     movePrevX = x;
     movePrevY = y;
 
-    if (isTouchInStamp(x, y)) {
+    if (isTouchInStamp(x, y) && isStampShown) {
       CLICK_STATE.clickStamp();
     }
-    if (isTouchStampZoom(x, y)) {
+    if (isTouchStampZoom(x, y) && isStampShown) {
       CLICK_STATE.clickStampZoomStart();
     }
     mActivity.editButtonGoneOrVisible(CLICK_STATE);
@@ -232,7 +232,7 @@ public class PreviewCanvasView extends View {
   }
 
   private boolean isTouchStampZoom(int x, int y) {
-    int radius = (int) (stampGuideCircleRadius + 15);
+    int radius = (int) (stampGuideCircleRadius + 25);
     int x_s = stampWidthPos; //x start
     int x_e = stampWidthPos + stampWidth; //x end
     int y_s = stampHeightPos; // y start
@@ -266,13 +266,15 @@ public class PreviewCanvasView extends View {
       changedStampCenterX = (int) ((double) stampItem.getPos_width_per() * (double) previewOrigBitmapWidth / 100000d);
       changedStampCenterY = (int) ((double) stampItem.getPos_height_per() * (double) previewOrigBitmapHeight / 100000d);
 
+      Paint paintContrastBrightness = getPaintContrastBrightnessPaint(1, stampItem.getAbsoluteBrightness());
+
       Rect stampDst = new Rect(
         (int) (changedStampCenterX - changedStampWidth / 2f),
         (int) (changedStampCenterY - changedStampHeight / 2f),
         (int) (changedStampCenterX + changedStampWidth / 2f),
         (int) (changedStampCenterY + changedStampHeight / 2f));
       Logger.d(TAG + "[SAVE]", changedStampCenterX + ", " + changedStampCenterY + ", " + changedStampWidth + ", " + changedStampHeight);
-      mCanvas.drawBitmap(stampOriginalBitmap, null, stampDst, null);
+      mCanvas.drawBitmap(stampOriginalBitmap, null, stampDst, paintContrastBrightness);
     }
   }
 

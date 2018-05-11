@@ -27,7 +27,7 @@
   <string name="action_delete_title">삭제</string>
 
   <string name="action_stamp_edit_finish_title">편집 완료</string>
-  <string name="action_stamp_edit_delete_title">편집 취소</string>
+  <string name="action_stamp_edit_delete_title">낙관 삭제</string>
   <string name="action_stamp_edit_brightness_title">밝기 조정</string>
 
 
