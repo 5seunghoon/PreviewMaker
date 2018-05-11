@@ -54,6 +54,16 @@
         android:visibility="gone">
 
         <Button
+          android:id="@+id/buttonStampDelete"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:background="@android:color/white"
+          android:drawableTop="@drawable/ic_delete_black_48dp"
+          android:paddingTop="4dp"
+          android:text="@string/action_stamp_edit_delete_title"
+          android:textSize="12sp" />
+
+        <Button
           android:id="@+id/buttonStampFinish"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"

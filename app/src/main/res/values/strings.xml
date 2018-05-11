@@ -26,7 +26,7 @@
   <string name="action_sticker_title">스티커</string>
   <string name="action_delete_title">삭제</string>
   <string name="action_stamp_edit_finish_title">편집 완료</string>
-  <string name="action_stamp_edit_close_title">편집 취소</string>
+  <string name="action_stamp_edit_delete_title">편집 취소</string>
 
 
   <string name="snackbar_main_acti_back_to_exit">뒤로 버튼을 한번 더 누르시면 종료합니다.</string>
@@ -47,6 +47,7 @@
 
   <string name="canvasview_hint">편집할 프리뷰를 상단에서 선택해 주세요</string>
 
+  <string name="message_save_dialog">저장중입니다.\n화면에 다르게 표시될 수 있지만, 정상입니다.</string>
 
 
 </resources>

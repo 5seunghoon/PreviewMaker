@@ -58,6 +58,8 @@ public class PreviewCanvasView extends View {
 
   private ProgressDialog saveProgressDialog;
 
+  private boolean isSaveRoutine = false;
+
 
   public PreviewCanvasView(Context context, PreviewEditActivity activity, ArrayList<PreviewItem> previewItems) {
     super(context);
@@ -70,51 +72,76 @@ public class PreviewCanvasView extends View {
     saveProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
     saveProgressDialog.setCancelable(false);
     saveProgressDialog.setCanceledOnTouchOutside(false);
-    saveProgressDialog.setMessage("저장중입니다..");
+    saveProgressDialog.setMessage(mActivity.getString(R.string.message_save_dialog));
   }
+
   @Override
   protected void onDraw(Canvas canvas) {
     super.onDraw(canvas);
     mCanvas = canvas;
     setBackgroundColor(ContextCompat.getColor(getContext(), R.color.backgroundGray));
+
     if (PreviewEditActivity.POSITION < 0) { // 프리뷰들중에서 아무런 프리뷰도 선택하지 않았을 때
       setBackgroundColor(Color.WHITE);
     } else {
-      drawBellowBitmap();
-      if (isStampShown){
-        Logger.d(TAG, "stamp shown true");
-        drawStamp();
-        if(CLICK_STATE.getClickStateEnum() == ClickStateEnum.STATE_STAMP_EDIT ||
-           CLICK_STATE.getClickStateEnum() == ClickStateEnum.STATE_STAMP_ZOOM ){
-          drawStampEditGuide();
+
+      if (isSaveRoutine) {
+
+        drawCanvasOriginalSize(PreviewEditActivity.POSITION);
+
+      } else {
+
+        drawBellowBitmap();
+        if (isStampShown) {
+          drawStamp();
+          if (CLICK_STATE.getClickStateEnum() == ClickStateEnum.STATE_STAMP_EDIT ||
+            CLICK_STATE.getClickStateEnum() == ClickStateEnum.STATE_STAMP_ZOOM) {
+            drawStampEditGuide();
+          }
         }
+
       }
     }
+
   }
 
   @Override
   protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-    super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     this.setMeasuredDimension(CANVAS_WIDTH_MAX_SIZE, CANVAS_HEIGHT_MAX_SIZE);
   }
 
   @Override
   public boolean onTouchEvent(MotionEvent event) {
-    switch (event.getAction()){
-      case MotionEvent.ACTION_DOWN :
+    switch (event.getAction()) {
+      case MotionEvent.ACTION_DOWN:
         touchDown(event);
         break;
-      case MotionEvent.ACTION_MOVE :
+      case MotionEvent.ACTION_MOVE:
         touchMove(event);
         break;
-      case MotionEvent.ACTION_UP :
+      case MotionEvent.ACTION_UP:
         touchUp(event);
         break;
     }
     return true;
   }
 
-  private void touchDown(MotionEvent event){
+  public void previewValueInit() {
+    previewPosWidth = 0;
+    previewPosHeight = 0;
+    previewWidth = 0;
+    previewHeight = 0;
+  }
+
+  public boolean backPressed() {
+    if (CLICK_STATE.getClickStateEnum() == ClickStateEnum.STATE_STAMP_EDIT) {
+      finishStampEdit();
+      return true;
+    }
+    return false;
+  }
+
+  private void touchDown(MotionEvent event) {
     int x, y;
     x = (int) event.getX();
     y = (int) event.getY();
@@ -122,10 +149,10 @@ public class PreviewCanvasView extends View {
     movePrevX = x;
     movePrevY = y;
 
-    if(isTouchInStamp(x,y)){
+    if (isTouchInStamp(x, y)) {
       CLICK_STATE.clickStamp();
     }
-    if(isTouchStampZoom(x,y)){
+    if (isTouchStampZoom(x, y)) {
       CLICK_STATE.clickStampZoomStart();
     }
     mActivity.editButtonGoneOrVisible(CLICK_STATE);
@@ -134,12 +161,12 @@ public class PreviewCanvasView extends View {
   }
 
 
-  private void touchMove(MotionEvent event){
+  private void touchMove(MotionEvent event) {
     int x, y;
     x = (int) event.getX();
     y = (int) event.getY();
 
-    switch (CLICK_STATE.getClickStateEnum()){
+    switch (CLICK_STATE.getClickStateEnum()) {
       case STATE_NONE_CLICK:
         break;
 
@@ -162,7 +189,7 @@ public class PreviewCanvasView extends View {
 
         nowDist = Math.sqrt(Math.pow(stampCenterX - x, 2) + Math.pow(stampCenterY - y, 2));
 
-        newHeight = (2.0f * nowDist) / Math.sqrt( (Math.pow(stampRate, 2) + 1 ) );
+        newHeight = (2.0f * nowDist) / Math.sqrt((Math.pow(stampRate, 2) + 1));
         newWidth = newHeight * stampRate;
 
         stampWidthPos = (int) (stampCenterX - newWidth / 2);
@@ -178,30 +205,32 @@ public class PreviewCanvasView extends View {
     movePrevY = y;
 
   }
-  private void touchUp(MotionEvent event){
+
+  private void touchUp(MotionEvent event) {
     CLICK_STATE.clickStampZoomEnd();
   }
 
-  private boolean isInBox(int x, int y, int x1, int y1, int x2, int y2){
-    if(x > x1 && x < x2 && y > y1 && y < y2) return true;
+  private boolean isInBox(int x, int y, int x1, int y1, int x2, int y2) {
+    if (x > x1 && x < x2 && y > y1 && y < y2) return true;
     else return false;
   }
 
-  private boolean isInBoxWithWidth(int x, int y, int x1, int y1, int xWidth, int yWidth){
-    if(x > x1 && x < x1 + xWidth && y > y1 && y < y1 + yWidth) return true;
+  private boolean isInBoxWithWidth(int x, int y, int x1, int y1, int xWidth, int yWidth) {
+    if (x > x1 && x < x1 + xWidth && y > y1 && y < y1 + yWidth) return true;
     else return false;
   }
 
-  private boolean isInBoxWithRadius(int x, int y, int xCenter, int yCenter, int radius){
-    if( (x-xCenter) * (x-xCenter) + (y-yCenter) * (y-yCenter) < radius * radius) return true;
+  private boolean isInBoxWithRadius(int x, int y, int xCenter, int yCenter, int radius) {
+    if ((x - xCenter) * (x - xCenter) + (y - yCenter) * (y - yCenter) < radius * radius)
+      return true;
     else return false;
   }
 
-  private boolean isTouchInStamp(int x, int y){
+  private boolean isTouchInStamp(int x, int y) {
     return isInBoxWithWidth(x, y, stampWidthPos, stampHeightPos, stampWidth, stampHeight);
   }
 
-  private boolean isTouchStampZoom(int x, int y){
+  private boolean isTouchStampZoom(int x, int y) {
     int radius = (int) (stampGuideCircleRadius + 15);
     int x_s = stampWidthPos; //x start
     int x_e = stampWidthPos + stampWidth; //x end
@@ -218,6 +247,35 @@ public class PreviewCanvasView extends View {
     }
   }
 
+  private void drawCanvasOriginalSize(int previewPosition) {
+    Bitmap previewBitmap = previewItems.get(previewPosition).getmBitmap();
+    int previewOrigBitmapWidth = previewBitmap.getWidth();
+    int previewOrigBitmapHeight = previewBitmap.getHeight();
+
+    Rect previewDst = new Rect(0, 0, previewOrigBitmapWidth, previewOrigBitmapHeight);
+    mCanvas.drawBitmap(previewBitmap, null, previewDst, null);
+
+    if (isStampShown) {
+      int changedStampCenterX, changedStampCenterY, changedStampWidth, changedStampHeight;
+      double widthRate = (double) stampItem.getWidth() / (double) previewWidth;
+      double heightRate = (double) stampItem.getHeight() / (double) previewHeight;
+
+      changedStampWidth = (int) (widthRate * previewOrigBitmapWidth);
+      changedStampHeight = (int) (heightRate * previewOrigBitmapHeight);
+      changedStampCenterX = (int) ((double) stampItem.getPos_width_per() * (double) previewOrigBitmapWidth / 100000d);
+      changedStampCenterY = (int) ((double) stampItem.getPos_height_per() * (double) previewOrigBitmapHeight / 100000d);
+
+      Rect stampDst = new Rect(
+        (int) (changedStampCenterX - changedStampWidth / 2f),
+        (int) (changedStampCenterY - changedStampHeight / 2f),
+        (int) (changedStampCenterX + changedStampWidth / 2f),
+        (int) (changedStampCenterY + changedStampHeight / 2f));
+      Logger.d(TAG + "[SAVE]" , changedStampCenterX + ", " +changedStampCenterY + ", " + changedStampWidth + ", "+ changedStampHeight);
+      mCanvas.drawBitmap(stampOriginalBitmap, null, stampDst, null);
+    }
+  }
+
+
   private void drawBellowBitmap() {
     Bitmap previewBitmap = previewItems.get(PreviewEditActivity.POSITION).getmBitmap();
     canvasWidth = grandParentWidth - 16;
@@ -230,7 +288,7 @@ public class PreviewCanvasView extends View {
     Rect dst;
     double canvasRate = (double) canvasWidth / (double) canvasHeight;
 
-    if(rate >= canvasRate && previewBitmapWidth >= canvasWidth) { // w > h
+    if (rate >= canvasRate && previewBitmapWidth >= canvasWidth) { // w > h
 
       previewPosWidth = 0;
       previewPosHeight = (canvasHeight - (int) (canvasWidth * (1 / rate))) / 2;
@@ -239,7 +297,7 @@ public class PreviewCanvasView extends View {
 
     } else if (rate < canvasRate && previewBitmapHeight >= canvasHeight) { // w < h
 
-      previewPosWidth = (canvasWidth -(int) (canvasHeight * (rate))) / 2;
+      previewPosWidth = (canvasWidth - (int) (canvasHeight * (rate))) / 2;
       previewPosHeight = 0;
       previewWidth = (int) (canvasHeight * (rate));
       previewHeight = canvasHeight;
@@ -253,12 +311,12 @@ public class PreviewCanvasView extends View {
 
     }
     dst = new Rect(previewPosWidth, previewPosHeight, previewPosWidth + previewWidth, previewPosHeight + previewHeight);
-    Logger.d(TAG, previewPosWidth +","+ previewPosHeight +","+ (previewPosWidth + previewWidth)+","+ (previewPosHeight + previewHeight));
+    Logger.d(TAG, previewPosWidth + "," + previewPosHeight + "," + (previewPosWidth + previewWidth) + "," + (previewPosHeight + previewHeight));
     mCanvas.drawBitmap(previewBitmap, null, dst, null);
   }
 
-  private void drawStamp(){
-    if(stampItem == null) {
+  private void drawStamp() {
+    if (stampItem == null) {
       Logger.d(TAG, "no stamp item");
       return;
     }
@@ -266,8 +324,8 @@ public class PreviewCanvasView extends View {
       stampWidth + ", " + stampHeight + ", " +
       stampPosWidthPer + ", " + stampPosHeightPer + ", " + stampURI);
 
-    Rect dst =  new Rect(stampWidthPos, stampHeightPos, stampWidthPos + stampWidth, stampHeightPos + stampHeight);
-    mCanvas.drawBitmap(stampOriginalBitmap, null, dst,null);
+    Rect dst = new Rect(stampWidthPos, stampHeightPos, stampWidthPos + stampWidth, stampHeightPos + stampHeight);
+    mCanvas.drawBitmap(stampOriginalBitmap, null, dst, null);
   }
 
   private void drawStampEditGuide() {
@@ -301,14 +359,14 @@ public class PreviewCanvasView extends View {
     mCanvas.drawCircle(x_e, y_e, stampGuideCircleRadius, stampGuideCircle);
   }
 
-  public void finishStampEdit(){
+  public void finishStampEdit() {
     CLICK_STATE.clickFinishStampEdit();
     mActivity.editButtonGoneOrVisible(CLICK_STATE);
 
     int id = stampItem.getID();
 
-    stampPosWidthPer = (int) (((stampWidth / 2.0f) + stampWidthPos - previewPosWidth ) * 100000.0f / (previewWidth) );
-    stampPosHeightPer = (int) (((stampHeight / 2.0f) + stampHeightPos - previewPosHeight ) * 100000.0f / (previewHeight) );
+    stampPosWidthPer = (int) (((stampWidth / 2.0f) + stampWidthPos - previewPosWidth) * 100000.0f / (previewWidth));
+    stampPosHeightPer = (int) (((stampHeight / 2.0f) + stampHeightPos - previewPosHeight) * 100000.0f / (previewHeight));
 
     stampItem.setWidth(stampWidth);
     stampItem.setHeight(stampHeight);
@@ -321,14 +379,22 @@ public class PreviewCanvasView extends View {
     invalidate();
   }
 
-  protected void showStamp(){
+  public void deleteStamp(){
+    CLICK_STATE.clickFinishStampEdit();
+    mActivity.editButtonGoneOrVisible(CLICK_STATE);
+
+    isStampShown = false;
+    invalidate();
+  }
+
+  protected void showStamp() {
     setStampShown(true);
     CLICK_STATE.clickStampButton();
     previewItems.get(PreviewEditActivity.POSITION).editted();
     mActivity.editButtonGoneOrVisible(CLICK_STATE);
   }
 
-  protected void callInvalidate(){
+  protected void callInvalidate() {
     invalidate();
   }
 
@@ -353,7 +419,7 @@ public class PreviewCanvasView extends View {
 
     stampWidth = stampItem.getWidth();
     stampHeight = stampItem.getHeight();
-    if(stampWidth < 0 || stampHeight < 0){
+    if (stampWidth < 0 || stampHeight < 0) {
       int id = stampItem.getID();
       stampWidth = stampOriginalBitmap.getWidth();
       stampHeight = stampOriginalBitmap.getHeight();
@@ -369,8 +435,8 @@ public class PreviewCanvasView extends View {
       stampPosWidthPer + ", " + stampPosHeightPer + ", " + stampURI);
   }
 
-  public Bitmap stampURIToBitmap(Uri imageUri, Activity activity){
-    try{
+  public Bitmap stampURIToBitmap(Uri imageUri, Activity activity) {
+    try {
       Bitmap bitmap = MediaStore.Images.Media.getBitmap(activity.getContentResolver(), imageUri);
       return bitmap;
     } catch (IOException e) {
@@ -380,13 +446,15 @@ public class PreviewCanvasView extends View {
     }
   }
 
-  public void saveEnd(){
+  public void saveEnd() {
+    isSaveRoutine = false;
     try {
       saveProgressDialog.dismiss();
-    } catch (Exception e) {}
+    } catch (Exception e) {
+    }
   }
 
-  public void savePreviewEach(int nextPosition){
+  public void savePreviewEach(int nextPosition) {
     /**
      * if nextPosition == -1 , there is only click 'save',
      * or not, there is only click 'YES' in save question dialog.
@@ -395,12 +463,13 @@ public class PreviewCanvasView extends View {
      */
 
     saveProgressDialog.show();
+    changeCanvasToSave();
     SaveAllAsyncTask saveAllAsyncTask = new SaveAllAsyncTask();
     saveAllAsyncTask.execute(nextPosition);
   }
 
   public boolean isNowEditingStamp() {
-    if(CLICK_STATE.getClickStateEnum() == ClickStateEnum.STATE_NONE_CLICK) return false;
+    if (CLICK_STATE.getClickStateEnum() == ClickStateEnum.STATE_NONE_CLICK) return false;
     else return true;
   }
 
@@ -409,13 +478,13 @@ public class PreviewCanvasView extends View {
     stampDeleteAlert.setMessage(mActivity.getString(R.string.snackbar_preview_edit_acti_clk_new_preview)).setCancelable(true)
       .setPositiveButton("YES",
         new DialogInterface.OnClickListener() {
-        @Override
-        public void onClick(DialogInterface dialog, int which) {
-          savePreviewEach(nextPosition);
-          //changeAndInitPreviewInCanvas(nextPosition);
-          return;
-        }
-      })
+          @Override
+          public void onClick(DialogInterface dialog, int which) {
+            savePreviewEach(nextPosition);
+            //changeAndInitPreviewInCanvas(nextPosition);
+            return;
+          }
+        })
       .setNegativeButton("NO",
         new DialogInterface.OnClickListener() {
           @Override
@@ -425,16 +494,16 @@ public class PreviewCanvasView extends View {
           }
         })
       .setNeutralButton("CANCLE",
-      new DialogInterface.OnClickListener() {
-        @Override
-        public void onClick(DialogInterface dialog, int which) {
-          return;
-        }
-      });
+        new DialogInterface.OnClickListener() {
+          @Override
+          public void onClick(DialogInterface dialog, int which) {
+            return;
+          }
+        });
 
 
-    if(PreviewEditActivity.POSITION != -1){
-      if(!previewItems.get(PreviewEditActivity.POSITION).getIsSaved()) {
+    if (PreviewEditActivity.POSITION != -1) {
+      if (!previewItems.get(PreviewEditActivity.POSITION).getIsSaved()) {
         AlertDialog alert = stampDeleteAlert.create();
         alert.setCanceledOnTouchOutside(false);
         alert.show();
@@ -444,7 +513,7 @@ public class PreviewCanvasView extends View {
     }
   }
 
-  public void changeAndInitPreviewInCanvas(int nextPosition){
+  public void changeAndInitPreviewInCanvas(int nextPosition) {
     previewValueInit();
     PreviewEditActivity.POSITION = nextPosition;
     isStampShown = false;
@@ -453,22 +522,12 @@ public class PreviewCanvasView extends View {
     invalidate();
   }
 
-  public void previewValueInit(){
-    previewPosWidth = 0;
-    previewPosHeight = 0;
-    previewWidth = 0;
-    previewHeight = 0;
+  public void changeCanvasToSave() {
+    isSaveRoutine = true;
+    callInvalidate();
   }
 
-  public boolean backPressed() {
-    if(CLICK_STATE.getClickStateEnum() == ClickStateEnum.STATE_STAMP_EDIT){
-      finishStampEdit();
-      return true;
-    }
-    return false;
-  }
-
-  protected class SaveAllAsyncTask extends AsyncTask<Integer, Integer, String>{
+  protected class SaveAllAsyncTask extends AsyncTask<Integer, Integer, String> {
 
     int nextPosition;
     final String ERROR_INVALID_POSITION = "ERROR_INVALID_POSITION";
@@ -481,20 +540,18 @@ public class PreviewCanvasView extends View {
 
     @Override
     protected String doInBackground(Integer... param) {
-      /**
-       * 저장시 할 일
-       * 1. 이미지를 원래 크기로 다시 확대(or 축소)
-       * 2. 그 확대된 비율과, 낙관이 원래 붙어있던 위치에 맞춰서 확대된 이미지에도 제대로 낙관 붙이고
-       * 3. 크기 맞춰서 자르고 (3000*3000을 프리뷰 원래 크기에 맞춰서 자른다는 뜻)
-       * 4. 그 상태로 이미지로 저장
-       * 5. 다시 축소해서 되돌리기
-       */
       nextPosition = param[0];
 
       if (PreviewEditActivity.POSITION == -1) return ERROR_INVALID_POSITION;
       int previewPosition = PreviewEditActivity.POSITION;
 
-      Bitmap screenshot = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
+      Logger.d(TAG + "[SAVE]", 5 + "");
+
+      Bitmap screenshot = Bitmap.createBitmap(
+        previewItems.get(previewPosition).getmBitmap().getWidth(),
+        previewItems.get(previewPosition).getmBitmap().getHeight(),
+        Bitmap.Config.ARGB_8888);
+
       Canvas canvas = new Canvas(screenshot);
       mActivity.getmPreviewCanvasView().draw(canvas);
 
@@ -511,7 +568,7 @@ public class PreviewCanvasView extends View {
         mediaScanIntent.setData(resultUri);
         mActivity.sendBroadcast(mediaScanIntent);
 
-      }  catch (IOException e) {
+      } catch (IOException e) {
         e.printStackTrace();
         return ERROR_IO_EXCEPTION;
       }
@@ -527,16 +584,16 @@ public class PreviewCanvasView extends View {
 
     @Override
     protected void onPostExecute(String str) {
-      if(str != ERROR_INVALID_POSITION) {
+      if (str != ERROR_INVALID_POSITION) {
 
-        if (nextPosition != -1){
+        if (nextPosition != -1) {
           changeAndInitPreviewInCanvas(nextPosition);
         } else {
           changeAndInitPreviewInCanvas(PreviewEditActivity.POSITION);
         }
 
 
-        if (str == ERROR_IO_EXCEPTION){
+        if (str == ERROR_IO_EXCEPTION) {
           Snackbar.make(mActivity.getCurrentFocus(), "저장 실패!", Snackbar.LENGTH_LONG).show();
         } else {
           File resultFile = new File(str);
@@ -546,7 +603,7 @@ public class PreviewCanvasView extends View {
             .setAction("NEXT", new OnClickListener() {
               @Override
               public void onClick(View v) {
-                if(PreviewEditActivity.POSITION + 1 < previewItems.size()){
+                if (PreviewEditActivity.POSITION + 1 < previewItems.size()) {
                   nextPosition = PreviewEditActivity.POSITION + 1;
                   changeAndInitPreviewInCanvas(nextPosition);
                 }
