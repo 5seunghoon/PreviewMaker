@@ -25,8 +25,11 @@
   <string name="action_saveeach_title">개별 저장</string>
   <string name="action_sticker_title">스티커</string>
   <string name="action_delete_title">삭제</string>
+
   <string name="action_stamp_edit_finish_title">편집 완료</string>
   <string name="action_stamp_edit_delete_title">편집 취소</string>
+  <string name="action_stamp_edit_brightness_title">밝기 조정</string>
+
 
 
   <string name="snackbar_main_acti_back_to_exit">뒤로 버튼을 한번 더 누르시면 종료합니다.</string>

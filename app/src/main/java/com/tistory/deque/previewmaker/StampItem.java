@@ -10,6 +10,7 @@ public class StampItem {
   private int height;
   private int pos_width_per;
   private int pos_height_per;
+  private int brightness;
 
   public StampItem(int ID, Uri imageURI, String stampName, int width, int height, int pos_width_per, int pos_height_per) {
     this.ID = ID;
@@ -19,6 +20,7 @@ public class StampItem {
     this.height = height;
     this.pos_width_per = pos_width_per; // 1 = 0.001%, 100,000 = 100%
     this.pos_height_per = pos_height_per;
+    this.brightness = 0;
   }
 
   public StampItem(int ID, Uri imageURI, String stampName){
@@ -30,6 +32,20 @@ public class StampItem {
     this.height = DBOpenHelper.STAMP_HEIGHT_KEY_INIT_VALUE;
     this.pos_width_per = DBOpenHelper.STAMP_POS_WIDTH_PERCENT_KEY_INIT_VALUE;
     this.pos_height_per = DBOpenHelper.STAMP_POS_HEIGHT_PERCENT_KEY_INIT_VALUE;
+
+    this.brightness = 0;
+  }
+
+  public int getBrightness() {
+    return brightness + PreviewEditActivity.SeekBarBrightnessMax / 2;
+  }
+
+  public int getAbsoluteBrightness(){
+    return brightness;
+  }
+
+  public void setBrightness(int brightness) {
+    this.brightness = brightness - PreviewEditActivity.SeekBarBrightnessMax / 2;
   }
 
   public Uri getImageURI() {

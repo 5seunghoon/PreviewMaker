@@ -33,6 +33,9 @@ class ClickState {
   public void clickStampButton(){
     clickStateEnum = ClickStateEnum.STATE_STAMP_EDIT;
   }
+  public boolean isShowGuideLine() {
+    return clickStateEnum != ClickStateEnum.STATE_NONE_CLICK;
+  }
 
   public void clickFinishStampEdit(){
     switch ((clickStateEnum)) {

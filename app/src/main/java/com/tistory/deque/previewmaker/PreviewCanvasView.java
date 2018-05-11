@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.net.Uri;
@@ -94,8 +96,7 @@ public class PreviewCanvasView extends View {
         drawBellowBitmap();
         if (isStampShown) {
           drawStamp();
-          if (CLICK_STATE.getClickStateEnum() == ClickStateEnum.STATE_STAMP_EDIT ||
-            CLICK_STATE.getClickStateEnum() == ClickStateEnum.STATE_STAMP_ZOOM) {
+          if (CLICK_STATE.isShowGuideLine()) {
             drawStampEditGuide();
           }
         }
@@ -270,7 +271,7 @@ public class PreviewCanvasView extends View {
         (int) (changedStampCenterY - changedStampHeight / 2f),
         (int) (changedStampCenterX + changedStampWidth / 2f),
         (int) (changedStampCenterY + changedStampHeight / 2f));
-      Logger.d(TAG + "[SAVE]" , changedStampCenterX + ", " +changedStampCenterY + ", " + changedStampWidth + ", "+ changedStampHeight);
+      Logger.d(TAG + "[SAVE]", changedStampCenterX + ", " + changedStampCenterY + ", " + changedStampWidth + ", " + changedStampHeight);
       mCanvas.drawBitmap(stampOriginalBitmap, null, stampDst, null);
     }
   }
@@ -324,8 +325,34 @@ public class PreviewCanvasView extends View {
       stampWidth + ", " + stampHeight + ", " +
       stampPosWidthPer + ", " + stampPosHeightPer + ", " + stampURI);
 
+    Paint paintContrastBrightness = getPaintContrastBrightnessPaint(1, stampItem.getAbsoluteBrightness());
+
     Rect dst = new Rect(stampWidthPos, stampHeightPos, stampWidthPos + stampWidth, stampHeightPos + stampHeight);
-    mCanvas.drawBitmap(stampOriginalBitmap, null, dst, null);
+    mCanvas.drawBitmap(stampOriginalBitmap, null, dst, paintContrastBrightness);
+  }
+
+  public void onDrawStampBrigtness(int value) {
+    if (stampItem == null) {
+      return;
+    }
+    stampItem.setBrightness(value);
+    callInvalidate();
+  }
+
+  public Paint getPaintContrastBrightnessPaint(float contrast, float brightness) {
+    //contrast : 1, brightness : 0 is init value
+    ColorMatrix cm = new ColorMatrix(new float[]
+      {
+        contrast, 0, 0, 0, brightness,
+        0, contrast, 0, 0, brightness,
+        0, 0, contrast, 0, brightness,
+        0, 0, 0,        1, 0
+      });
+
+    Paint paint = new Paint();
+    paint.setColorFilter(new ColorMatrixColorFilter(cm));
+
+    return paint;
   }
 
   private void drawStampEditGuide() {
@@ -379,12 +406,15 @@ public class PreviewCanvasView extends View {
     invalidate();
   }
 
-  public void deleteStamp(){
+  public void deleteStamp() {
     CLICK_STATE.clickFinishStampEdit();
     mActivity.editButtonGoneOrVisible(CLICK_STATE);
 
     isStampShown = false;
     invalidate();
+  }
+
+  public void brightnessStamp() {
   }
 
   protected void showStamp() {

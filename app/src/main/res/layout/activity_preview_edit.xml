@@ -45,18 +45,19 @@
       android:orientation="vertical">
 
       <LinearLayout
-        android:id="@+id/layoutStampFinishButton"
+        android:id="@+id/layoutStampEditButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:gravity="right"
         android:orientation="horizontal"
-        android:visibility="gone">
+        android:visibility="visible">
 
         <Button
           android:id="@+id/buttonStampDelete"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
+          android:layout_weight="1"
           android:background="@android:color/white"
           android:drawableTop="@drawable/ic_delete_black_48dp"
           android:paddingTop="4dp"
@@ -64,9 +65,21 @@
           android:textSize="12sp" />
 
         <Button
+          android:id="@+id/buttonStampBrightness"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_weight="1"
+          android:background="@android:color/white"
+          android:drawableTop="@drawable/ic_settings_brightness_black_24dp"
+          android:paddingTop="4dp"
+          android:text="@string/action_stamp_edit_brightness_title"
+          android:textSize="12sp" />
+
+        <Button
           android:id="@+id/buttonStampFinish"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
+          android:layout_weight="1"
           android:background="@android:color/white"
           android:drawableTop="@drawable/ic_check_black_48dp"
           android:paddingTop="4dp"
@@ -120,12 +133,55 @@
           android:layout_height="wrap_content"
           android:layout_weight="1"
           android:background="@android:color/white"
-          android:drawableTop="@drawable/ic_filter_1_black_36dp"
+          android:drawableTop="@drawable/ic_save_black_48dp"
           android:paddingTop="4dp"
           android:text="@string/action_saveeach_title"
           android:textSize="12sp" />
 
       </LinearLayout>
+
+      <LinearLayout
+        android:id="@+id/layoutStampEditSeekBar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="horizontal">
+
+        <EditText
+          android:id="@+id/stampSeekBarTextView"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center"
+          android:layout_weight="1"
+          android:background="@android:color/white"
+          android:ems="10"
+          android:gravity="center"
+          android:inputType="textPersonName"
+          android:textColor="@color/colorAccent"
+          android:textSize="14sp" />
+
+        <SeekBar
+          android:id="@+id/stampEditSeekBar"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center"
+          android:layout_weight="1" />
+
+        <EditText
+          android:id="@+id/stampSeekBarTextView2"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center"
+          android:layout_weight="1"
+          android:background="@android:color/white"
+          android:ems="10"
+          android:gravity="center"
+          android:inputType="textPersonName"
+          android:textColor="@color/colorAccent"
+          android:textSize="14sp" />
+
+      </LinearLayout>
+
     </LinearLayout>
 
     <LinearLayout
