@@ -61,6 +61,7 @@ public class PreviewCanvasView extends View {
   private ProgressDialog saveProgressDialog;
 
   private boolean isSaveRoutine = false;
+  private Snackbar saveInformationSnackbar;
 
 
   public PreviewCanvasView(Context context, PreviewEditActivity activity, ArrayList<PreviewItem> previewItems) {
@@ -550,8 +551,12 @@ public class PreviewCanvasView extends View {
     PreviewEditActivity.POSITION = nextPosition;
     isStampShown = false;
     CLICK_STATE.finish();
+    mActivity.editButtonGoneOrVisible(CLICK_STATE);
     previewItems.get(nextPosition).saved();
     invalidate();
+    if(saveInformationSnackbar != null){
+      saveInformationSnackbar.dismiss();
+    }
   }
 
   public void changeCanvasToSave() {
@@ -626,10 +631,11 @@ public class PreviewCanvasView extends View {
 
 
         if (str == ERROR_IO_EXCEPTION) {
-          Snackbar.make(mActivity.getCurrentFocus(), "저장 실패!", Snackbar.LENGTH_LONG).show();
+          saveInformationSnackbar = Snackbar.make(mActivity.getCurrentFocus(), "저장 실패!", Snackbar.LENGTH_LONG);
+          saveInformationSnackbar.show();
         } else {
           File resultFile = new File(str);
-          Snackbar.make(mActivity.getCurrentFocus(),
+          saveInformationSnackbar = Snackbar.make(mActivity.getCurrentFocus(),
             "저장 폴더 : " + MainActivity.PREVIEW_SAVED_DIRECTORY + "\n파일 이름 : " + resultFile.getName(),
             Snackbar.LENGTH_LONG)
             .setAction("NEXT", new OnClickListener() {
@@ -640,8 +646,8 @@ public class PreviewCanvasView extends View {
                   changeAndInitPreviewInCanvas(nextPosition);
                 }
               }
-            })
-            .show();
+            });
+          saveInformationSnackbar.show();
         }
       }
       saveEnd();

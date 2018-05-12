@@ -273,7 +273,7 @@ public class PreviewEditActivity extends AppCompatActivity {
   private void setVisibleInit() {
     layoutStampEditButton.setVisibility(View.GONE);
     layoutEditButton.setVisibility(View.VISIBLE);
-    mLayoutStampEditSeekBar.setVisibility(View.GONE);
+    mLayoutStampEditSeekBar.setVisibility(View.INVISIBLE);
   }
 
 
@@ -329,16 +329,16 @@ public class PreviewEditActivity extends AppCompatActivity {
   }
 
   public void clickButtonDelete() {
-    mLayoutStampEditSeekBar.setVisibility(View.GONE);
+    mLayoutStampEditSeekBar.setVisibility(View.INVISIBLE);
   }
 
   public void clickButtonStampFinish() {
-    mLayoutStampEditSeekBar.setVisibility(View.GONE);
+    mLayoutStampEditSeekBar.setVisibility(View.INVISIBLE);
     mPreviewCanvasView.finishStampEdit();
   }
 
   public void clickButtonStampDelete() {
-    mLayoutStampEditSeekBar.setVisibility(View.GONE);
+    mLayoutStampEditSeekBar.setVisibility(View.INVISIBLE);
     mPreviewCanvasView.deleteStamp();
   }
 
