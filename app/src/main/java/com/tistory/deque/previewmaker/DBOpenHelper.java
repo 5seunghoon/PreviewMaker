@@ -18,11 +18,13 @@ public class DBOpenHelper extends SQLiteOpenHelper {
   public static final String STAMP_HEIGHT_KEY = "STAMP_HEIGHT";
   public static final String STAMP_POS_WIDTH_PERCENT_KEY = "STAMP_POS_WIDTH_PERCENT";
   public static final String STAMP_POS_HEIGHT_PERCENT_KEY = "STAMP_POS_HEIGHT_PERCENT";
+  public static final String STAMP_POS_ANCHOR_KEY = "STAMP_POS_ANCHOR";
 
   public static final int STAMP_POS_WIDTH_PERCENT_KEY_INIT_VALUE = 50000; // 50,000 = 50%
   public static final int STAMP_POS_HEIGHT_PERCENT_KEY_INIT_VALUE = 50000; // 50,000 = 50%
   public static final int STAMP_WIDTH_KEY_INIT_VALUE = -1;
   public static final int STAMP_HEIGHT_KEY_INIT_VALUE = -1;
+  public static final int STAMP_POS_ANCHOR_KEY_INIT_VALUE = StampItem.stampAnchorToInt(StampAnchor.CENTER);
 
   public static final String DP_OPEN_HELPER_NAME = "DB_OPEN_HELPER_NAME";
   public static final int dbVersion = 1;
@@ -75,6 +77,8 @@ public class DBOpenHelper extends SQLiteOpenHelper {
       STAMP_POS_WIDTH_PERCENT_KEY + " INTEGER" +
       ", " +
       STAMP_POS_HEIGHT_PERCENT_KEY + " INTEGER" +
+      ", " +
+      STAMP_POS_ANCHOR_KEY + " INTEGER" +
       ")";
     Logger.d(TAG, "SQL EXEC : " + sql);
     try{
@@ -101,6 +105,7 @@ public class DBOpenHelper extends SQLiteOpenHelper {
     stampValue.put(STAMP_HEIGHT_KEY, STAMP_HEIGHT_KEY_INIT_VALUE);
     stampValue.put(STAMP_POS_WIDTH_PERCENT_KEY, STAMP_POS_WIDTH_PERCENT_KEY_INIT_VALUE);
     stampValue.put(STAMP_POS_HEIGHT_PERCENT_KEY, STAMP_POS_HEIGHT_PERCENT_KEY_INIT_VALUE);
+    stampValue.put(STAMP_POS_ANCHOR_KEY, STAMP_POS_ANCHOR_KEY_INIT_VALUE);
     long result = db.insert(TABLE_NAME_STAMPS, null, stampValue);
     if(result == -1){
       Logger.d(TAG, "insert error : name : " + stampName + " , uri : " + imageURI);
@@ -123,7 +128,7 @@ public class DBOpenHelper extends SQLiteOpenHelper {
     }
   }
 
-  public void dbUpdateStamp(int id, int width, int height, int posWidthPer, int posHeightPer){
+  public void dbUpdateStamp(int id, int width, int height, int posWidthPer, int posHeightPer, int anchorInt){
     String sql = "UPDATE " + TABLE_NAME_STAMPS + " SET "
       + STAMP_WIDTH_KEY + " = " + width
       + ", "
@@ -132,6 +137,8 @@ public class DBOpenHelper extends SQLiteOpenHelper {
       + STAMP_POS_WIDTH_PERCENT_KEY + " = " + posWidthPer
       + ", "
       + STAMP_POS_HEIGHT_PERCENT_KEY + " = " + posHeightPer
+      + ", "
+      + STAMP_POS_ANCHOR_KEY + " = " + anchorInt
       + " WHERE _ID IN(" + id + ")" + ";";
     db.execSQL(sql);
 

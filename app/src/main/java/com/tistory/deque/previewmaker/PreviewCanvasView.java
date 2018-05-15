@@ -22,7 +22,6 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -51,6 +50,7 @@ public class PreviewCanvasView extends View {
   private Bitmap stampOriginalBitmap;
   private int stampWidthPos, stampHeightPos;
   private double stampRate;
+  private StampAnchor stampPosAnchor;
 
   private float stampGuideRectWidth = 5f;
   private float stampGuideLineWidth = 2f;
@@ -258,6 +258,12 @@ public class PreviewCanvasView extends View {
     mCanvas.drawBitmap(previewBitmap, null, previewDst, null);
 
     if (isStampShown) {
+      int widthAnchor, heightAnchor, anchorInt;
+      anchorInt = StampItem.stampAnchorToInt(stampPosAnchor);
+      widthAnchor = anchorInt % 3;
+      if(anchorInt == 0) heightAnchor = 0;
+      else heightAnchor = StampItem.stampAnchorToInt(stampPosAnchor) / 3;
+
       int changedStampCenterX, changedStampCenterY, changedStampWidth, changedStampHeight;
       double widthRate = (double) stampItem.getWidth() / (double) previewWidth;
       double heightRate = (double) stampItem.getHeight() / (double) previewHeight;
@@ -270,10 +276,10 @@ public class PreviewCanvasView extends View {
       Paint paintContrastBrightness = getPaintContrastBrightnessPaint(1, stampItem.getAbsoluteBrightness());
 
       Rect stampDst = new Rect(
-        (int) (changedStampCenterX - changedStampWidth / 2f),
-        (int) (changedStampCenterY - changedStampHeight / 2f),
-        (int) (changedStampCenterX + changedStampWidth / 2f),
-        (int) (changedStampCenterY + changedStampHeight / 2f));
+        (int) (changedStampCenterX - changedStampWidth * widthAnchor / 2f),
+        (int) (changedStampCenterY - changedStampHeight * heightAnchor / 2f),
+        (int) (changedStampCenterX - changedStampWidth * widthAnchor / 2f) + changedStampWidth,
+        (int) (changedStampCenterY - changedStampHeight * heightAnchor / 2f) + changedStampHeight );
       Logger.d(TAG + "[SAVE]", changedStampCenterX + ", " + changedStampCenterY + ", " + changedStampWidth + ", " + changedStampHeight);
       mCanvas.drawBitmap(stampOriginalBitmap, null, stampDst, paintContrastBrightness);
     }
@@ -394,9 +400,16 @@ public class PreviewCanvasView extends View {
     mActivity.editButtonGoneOrVisible(CLICK_STATE);
 
     int id = stampItem.getID();
-
     stampPosWidthPer = (int) (((stampWidth / 2.0f) + stampWidthPos - previewPosWidth) * 100000.0f / (previewWidth));
     stampPosHeightPer = (int) (((stampHeight / 2.0f) + stampHeightPos - previewPosHeight) * 100000.0f / (previewHeight));
+
+    int widthAnchor = stampPosWidthPer / 33333;
+    int heightAnchor = stampPosHeightPer / 33333;
+
+    stampPosAnchor = StampItem.intToStampAnchor(widthAnchor + heightAnchor * 3);
+    stampPosWidthPer = (int) (((stampWidth / 2.0f) * widthAnchor + stampWidthPos - previewPosWidth) * 100000.0f / (previewWidth));
+    stampPosHeightPer = (int) (((stampHeight / 2.0f) * heightAnchor + stampHeightPos - previewPosHeight) * 100000.0f / (previewHeight));
+    Logger.d(TAG + " [ANCHOR]", "ANCHOR : " + stampPosAnchor + "stampPosWidthPer" + stampPosWidthPer + "stampPosHeightPer" + stampPosHeightPer);
 
     stampItem.setWidth(stampWidth);
     stampItem.setHeight(stampHeight);
@@ -404,7 +417,9 @@ public class PreviewCanvasView extends View {
     stampItem.setPos_width_per(stampPosWidthPer);
     stampItem.setPos_height_per(stampPosHeightPer);
 
-    mActivity.stampUpdate(id, stampWidth, stampHeight, stampPosWidthPer, stampPosHeightPer);
+    stampItem.setPos_anchor(stampPosAnchor);
+
+    mActivity.stampUpdate(id, stampWidth, stampHeight, stampPosWidthPer, stampPosHeightPer, StampItem.stampAnchorToInt(stampPosAnchor));
 
     invalidate();
   }
@@ -447,9 +462,11 @@ public class PreviewCanvasView extends View {
     this.stampItem = stampItem;
     stampPosWidthPer = stampItem.getPos_width_per();
     stampPosHeightPer = stampItem.getPos_height_per();
+    stampPosAnchor = stampItem.getPos_anchor();
     stampURI = stampItem.getImageURI();
     stampOriginalBitmap = stampURIToBitmap(stampURI, mActivity);
 
+    //get init width and height when there is no information in db
     stampWidth = stampItem.getWidth();
     stampHeight = stampItem.getHeight();
     if (stampWidth < 0 || stampHeight < 0) {
@@ -460,8 +477,16 @@ public class PreviewCanvasView extends View {
 
     stampRate = (double) stampWidth / (double) stampHeight;
 
-    stampWidthPos = (int) ((stampPosWidthPer * previewWidth / 100000.0f) - (stampWidth / 2.0f) + previewPosWidth);
-    stampHeightPos = (int) ((stampPosHeightPer * previewHeight / 100000.0f) - (stampHeight / 2.0f) + previewPosHeight);
+    //get correct position from anchor
+    int widthAnchor, heightAnchor, anchorInt;
+    anchorInt = StampItem.stampAnchorToInt(stampPosAnchor);
+    widthAnchor = anchorInt % 3;
+    if(anchorInt == 0) heightAnchor = 0;
+    else heightAnchor = StampItem.stampAnchorToInt(stampPosAnchor) / 3;
+
+    stampWidthPos = (int) ((stampPosWidthPer * previewWidth / 100000.0f) - (stampWidth * widthAnchor / 2.0f)  + previewPosWidth);
+    stampHeightPos = (int) ((stampPosHeightPer * previewHeight / 100000.0f) - (stampHeight * heightAnchor / 2.0f)  + previewPosHeight);
+    Logger.d(TAG + " [ANCHOR]", "ANCHOR : " + anchorInt + "stampPosWidthPer" + stampPosWidthPer + "stampPosHeightPer" + stampPosHeightPer);
 
     Logger.d(TAG, "STAMP set : w, h, pw, ph, uri : " +
       stampWidth + ", " + stampHeight + ", " +
@@ -581,8 +606,6 @@ public class PreviewCanvasView extends View {
 
       if (PreviewEditActivity.POSITION == -1) return ERROR_INVALID_POSITION;
       int previewPosition = PreviewEditActivity.POSITION;
-
-      Logger.d(TAG + "[SAVE]", 5 + "");
 
       Bitmap screenshot = Bitmap.createBitmap(
         previewItems.get(previewPosition).getmBitmap().getWidth(),

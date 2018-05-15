@@ -172,12 +172,12 @@ public class PreviewEditActivity extends AppCompatActivity {
     }
   }
 
-  public void stampUpdate(int id, int width, int height, int posWidthPer, int posHeightPer) {
-    dbOpenHelper.dbUpdateStamp(id, width, height, posWidthPer, posHeightPer);
+  public void stampUpdate(int id, int width, int height, int posWidthPer, int posHeightPer, int anchorInt) {
+    dbOpenHelper.dbUpdateStamp(id, width, height, posWidthPer, posHeightPer, anchorInt);
   }
 
   private StampItem stampsFromDB(int stampID) throws FileNotFoundException{
-    int id, width, height, posWidthPer, posHeightPer;
+    int id, width, height, posWidthPer, posHeightPer, anchorInt;
     String imageURIPath, name;
 
     String sql = "SELECT * FROM " + dbOpenHelper.TABLE_NAME_STAMPS + " WHERE _ID IN(" + stampID + ")" + ";";
@@ -192,6 +192,7 @@ public class PreviewEditActivity extends AppCompatActivity {
     height = results.getInt(4);
     posWidthPer = results.getInt(5);
     posHeightPer = results.getInt(6);
+    anchorInt = results.getInt(7);
 
     Logger.d(TAG, "STAMP FIND SUCCESS : id : " + id + " imageURIPath : " + imageURIPath + " name : " + name);
 
@@ -199,7 +200,7 @@ public class PreviewEditActivity extends AppCompatActivity {
     File stampFile = new File(imageURIFilePath);
 
     if (stampFile.exists()) {
-      return new StampItem(id, Uri.parse(imageURIPath), name, width, height, posWidthPer, posHeightPer);
+      return new StampItem(id, Uri.parse(imageURIPath), name, width, height, posWidthPer, posHeightPer, anchorInt);
     } else {
       throw new FileNotFoundException();
     }

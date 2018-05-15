@@ -439,7 +439,7 @@ public class MainActivity extends AppCompatActivity
      * DB에서 stamp를 전부 읽어서 리스트로 불러옴
      * 이때 DB에 있는 stamp의 실제 파일이 존재하지 않을 경우 DB에서 삭제함
      */
-    int id, width, height, posWidthPer, posHeightPer;
+    int id, width, height, posWidthPer, posHeightPer, anchorInt;
     String imageURIPath, name;
     String sql = "SELECT * FROM " + DBOpenHelper.TABLE_NAME_STAMPS + ";";
     Cursor results = dbOpenHelper.db.rawQuery(sql, null);
@@ -454,6 +454,7 @@ public class MainActivity extends AppCompatActivity
       height = results.getInt(4);
       posWidthPer = results.getInt(5);
       posHeightPer = results.getInt(6);
+      anchorInt = results.getInt(7);
 
       Logger.d(TAG, "DB ITEM : id : " + id + " imageURIPath : " + imageURIPath + " name : " + name);
 
@@ -463,7 +464,7 @@ public class MainActivity extends AppCompatActivity
       if (!stampFile.exists()) {
         dbOpenHelper.dbDeleteStamp(id);
       } else {
-        mStampItems.add(new StampItem(id, Uri.parse(imageURIPath), name, width, height, posWidthPer, posHeightPer));
+        mStampItems.add(new StampItem(id, Uri.parse(imageURIPath), name, width, height, posWidthPer, posHeightPer, anchorInt));
       }
       results.moveToNext();
     }
