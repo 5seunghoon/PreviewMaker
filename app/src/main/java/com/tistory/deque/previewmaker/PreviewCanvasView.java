@@ -175,18 +175,22 @@ public class PreviewCanvasView extends View {
       case STATE_STAMP_EDIT:
         int deltaX = x - movePrevX;
         int deltaY = y - movePrevY;
+
         int prevPosW = stampWidthPos;
         int prevPosH = stampHeightPos;
         stampWidthPos += deltaX;
         stampHeightPos += deltaY;
-        if ( (stampWidthPos < previewPosWidth - stampWidth)
-          || (stampWidthPos > previewPosWidth + previewWidth) ){
+
+        /*
+        if ( (stampWidthPos < -1 * stampWidth)
+          || (stampWidthPos > canvasWidth) ){
           stampWidthPos = prevPosW;
         }
-        if( (stampHeightPos < previewPosHeight - stampHeight)
-          || (stampHeightPos > previewPosHeight + previewHeight) ){
+        if( (stampHeightPos < -1 * stampHeight)
+          || (stampHeightPos > canvasHeight) ){
           stampHeightPos = prevPosH;
         }
+        */
 
         invalidate();
         break;
