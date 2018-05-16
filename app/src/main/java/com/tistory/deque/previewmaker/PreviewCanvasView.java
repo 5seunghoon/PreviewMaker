@@ -112,6 +112,21 @@ public class PreviewCanvasView extends View {
     this.setMeasuredDimension(CANVAS_WIDTH_MAX_SIZE, CANVAS_HEIGHT_MAX_SIZE);
   }
 
+  public void previewValueInit() {
+    previewPosWidth = 0;
+    previewPosHeight = 0;
+    previewWidth = 0;
+    previewHeight = 0;
+  }
+
+  public boolean backPressed() {
+    if (CLICK_STATE.getClickStateEnum() == ClickStateEnum.STATE_STAMP_EDIT) {
+      finishStampEdit();
+      return true;
+    }
+    return false;
+  }
+
   @Override
   public boolean onTouchEvent(MotionEvent event) {
     switch (event.getAction()) {
@@ -126,21 +141,6 @@ public class PreviewCanvasView extends View {
         break;
     }
     return true;
-  }
-
-  public void previewValueInit() {
-    previewPosWidth = 0;
-    previewPosHeight = 0;
-    previewWidth = 0;
-    previewHeight = 0;
-  }
-
-  public boolean backPressed() {
-    if (CLICK_STATE.getClickStateEnum() == ClickStateEnum.STATE_STAMP_EDIT) {
-      finishStampEdit();
-      return true;
-    }
-    return false;
   }
 
   private void touchDown(MotionEvent event) {
@@ -175,8 +175,18 @@ public class PreviewCanvasView extends View {
       case STATE_STAMP_EDIT:
         int deltaX = x - movePrevX;
         int deltaY = y - movePrevY;
+        int prevPosW = stampWidthPos;
+        int prevPosH = stampHeightPos;
         stampWidthPos += deltaX;
         stampHeightPos += deltaY;
+        if ( (stampWidthPos < previewPosWidth - stampWidth)
+          || (stampWidthPos > previewPosWidth + previewWidth) ){
+          stampWidthPos = prevPosW;
+        }
+        if( (stampHeightPos < previewPosHeight - stampHeight)
+          || (stampHeightPos > previewPosHeight + previewHeight) ){
+          stampHeightPos = prevPosH;
+        }
 
         invalidate();
         break;
