@@ -331,6 +331,21 @@ public class PreviewEditActivity extends AppCompatActivity {
 
   public void clickButtonDelete() {
     mLayoutStampEditSeekBar.setVisibility(View.INVISIBLE);
+
+    if(previewItems.size() == 1) return;
+
+    int removePos = POSITION;
+
+    mPreviewAdapter.notifyItemRemoved(removePos);
+    mPreviewAdapter.notifyItemRangeChanged(0, previewItems.size());
+
+    if(POSITION == previewItems.size() - 1) { // end of list
+      POSITION = 0;
+    }
+    previewItems.remove(removePos);
+    previewPaths.remove(removePos);
+
+    mPreviewCanvasView.callInvalidate();
   }
 
   public void clickButtonStampFinish() {
