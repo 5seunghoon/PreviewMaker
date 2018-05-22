@@ -1,4 +1,4 @@
-package com.tistory.deque.previewmaker;
+package com.tistory.deque.previewmaker.PreviewData;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -6,6 +6,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+
+import com.tistory.deque.previewmaker.PreviewEditActivity;
+import com.tistory.deque.previewmaker.R;
 
 import java.util.ArrayList;
 

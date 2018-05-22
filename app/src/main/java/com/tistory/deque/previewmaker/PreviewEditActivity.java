@@ -22,6 +22,15 @@ import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.tistory.deque.previewmaker.Contoler.ClickState;
+import com.tistory.deque.previewmaker.Contoler.ClickStateEnum;
+import com.tistory.deque.previewmaker.Contoler.DBOpenHelper;
+import com.tistory.deque.previewmaker.Contoler.StampEditSelectedEnum;
+import com.tistory.deque.previewmaker.Contoler.StampSeekBarListener;
+import com.tistory.deque.previewmaker.PreviewData.PreviewAdapter;
+import com.tistory.deque.previewmaker.PreviewData.PreviewItem;
+import com.tistory.deque.previewmaker.StampData.StampItem;
+import com.tistory.deque.previewmaker.Util.Logger;
 import com.yalantis.ucrop.UCrop;
 import com.yalantis.ucrop.model.AspectRatio;
 import com.yalantis.ucrop.view.CropImageView;
@@ -265,7 +274,7 @@ public class PreviewEditActivity extends AppCompatActivity {
   private void setSeekBar() {
     mLayoutStampEditSeekBar = findViewById(R.id.layoutStampEditSeekBar);
     mStampSeekBarTextView = findViewById(R.id.stampSeekBarTextView);
-    mStampSeekBarBrightnessListener = new StampSeekBarListener(this, STAMP_EDIT_SELECTED.BRIGHTNESS, mPreviewCanvasView);
+    mStampSeekBarBrightnessListener = new StampSeekBarListener(this, StampEditSelectedEnum.BRIGHTNESS, mPreviewCanvasView);
     mStampSeekBar = findViewById(R.id.stampEditSeekBar);
     mStampSeekBar.setMax(SeekBarBrightnessMax);
     mStampSeekBar.setProgress(SeekBarBrightnessMax / 2);
@@ -366,12 +375,12 @@ public class PreviewEditActivity extends AppCompatActivity {
     mStampSeekBar.setProgress(selectedStamp.getBrightness());
     mStampSeekBar.setOnSeekBarChangeListener(mStampSeekBarBrightnessListener);
     mPreviewCanvasView.brightnessStamp();
-    setStampSeekBarText(selectedStamp.getBrightness(), STAMP_EDIT_SELECTED.BRIGHTNESS);
+    setStampSeekBarText(selectedStamp.getBrightness(), StampEditSelectedEnum.BRIGHTNESS);
     mPreviewCanvasView.callInvalidate();
   }
 
-  public void setStampSeekBarText(int value, STAMP_EDIT_SELECTED selected){
-    if(selected == STAMP_EDIT_SELECTED.BRIGHTNESS){
+  public void setStampSeekBarText(int value, StampEditSelectedEnum selected){
+    if(selected == StampEditSelectedEnum.BRIGHTNESS){
       int resultProgressValue = (int) ((value - PreviewEditActivity.SeekBarBrightnessMax / 2f) / (PreviewEditActivity.SeekBarBrightnessMax / 2f) * 100f);
       mStampSeekBarTextView.setText(resultProgressValue + "%");
     }
@@ -407,7 +416,7 @@ public class PreviewEditActivity extends AppCompatActivity {
     mRecyclerPreviewView.setAdapter(mPreviewAdapter);
   }
 
-  protected void clickPreviewItem(View v, int position) {
+  public void clickPreviewItem(View v, int position) {
     if (mPreviewCanvasView.isNowEditingStamp()) return;
 
     if (POSITION != position) {

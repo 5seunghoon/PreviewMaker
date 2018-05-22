@@ -1,4 +1,4 @@
-package com.tistory.deque.previewmaker;
+package com.tistory.deque.previewmaker.Util;
 
 import android.Manifest;
 import android.app.Activity;
@@ -8,6 +8,8 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
+
+import com.tistory.deque.previewmaker.R;
 
 import java.util.ArrayList;
 import java.util.List;

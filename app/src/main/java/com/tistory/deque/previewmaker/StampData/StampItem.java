@@ -1,18 +1,9 @@
-package com.tistory.deque.previewmaker;
+package com.tistory.deque.previewmaker.StampData;
 
 import android.net.Uri;
 
-enum StampAnchor{
-  LEFT_TOP,
-  TOP,
-  RIGHT_TOP,
-  LEFT_CENTER,
-  CENTER,
-  RIGHT_CENTER,
-  LEFT_BOTTOM,
-  BOTTOM,
-  RIGHT_BOTTOM
-}
+import com.tistory.deque.previewmaker.Contoler.DBOpenHelper;
+import com.tistory.deque.previewmaker.PreviewEditActivity;
 
 public class StampItem {
   private int ID;
@@ -23,35 +14,35 @@ public class StampItem {
   private int pos_width_per;
   private int pos_height_per;
   private int brightness;
-  private StampAnchor pos_anchor;
+  private StampAnchorEnum pos_anchor;
 
-  public static StampAnchor intToStampAnchor(int value){
+  public static StampAnchorEnum intToStampAnchor(int value){
     switch (value){
       case 0:
-        return StampAnchor.LEFT_TOP;
+        return StampAnchorEnum.LEFT_TOP;
       case 1:
-        return StampAnchor.TOP;
+        return StampAnchorEnum.TOP;
       case 2:
-        return StampAnchor.RIGHT_TOP;
+        return StampAnchorEnum.RIGHT_TOP;
       case 3:
-        return StampAnchor.LEFT_CENTER;
+        return StampAnchorEnum.LEFT_CENTER;
       case 4:
-        return StampAnchor.CENTER;
+        return StampAnchorEnum.CENTER;
       case 5:
-        return StampAnchor.RIGHT_CENTER;
+        return StampAnchorEnum.RIGHT_CENTER;
       case 6:
-        return StampAnchor.LEFT_BOTTOM;
+        return StampAnchorEnum.LEFT_BOTTOM;
       case 7:
-        return StampAnchor.BOTTOM;
+        return StampAnchorEnum.BOTTOM;
       case 8:
-        return StampAnchor.RIGHT_BOTTOM;
+        return StampAnchorEnum.RIGHT_BOTTOM;
       default:
-        return StampAnchor.CENTER;
+        return StampAnchorEnum.CENTER;
     }
   }
 
-  public static int stampAnchorToInt(StampAnchor stampAnchor){
-    switch (stampAnchor) {
+  public static int stampAnchorToInt(StampAnchorEnum stampAnchorEnum){
+    switch (stampAnchorEnum) {
       case LEFT_TOP:
         return 0;
       case TOP:
@@ -98,7 +89,7 @@ public class StampItem {
     this.pos_height_per = DBOpenHelper.STAMP_POS_HEIGHT_PERCENT_KEY_INIT_VALUE;
 
     this.brightness = 0;
-    this.pos_anchor = StampAnchor.CENTER;
+    this.pos_anchor = StampAnchorEnum.CENTER;
   }
 
   public int getBrightness() {
@@ -165,11 +156,11 @@ public class StampItem {
     this.pos_height_per = pos_height_per;
   }
 
-  public StampAnchor getPos_anchor() {
+  public StampAnchorEnum getPos_anchor() {
     return pos_anchor;
   }
 
-  public void setPos_anchor(StampAnchor pos_anchor) {
+  public void setPos_anchor(StampAnchorEnum pos_anchor) {
     this.pos_anchor = pos_anchor;
   }
 }

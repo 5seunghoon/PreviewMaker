@@ -1,10 +1,13 @@
-package com.tistory.deque.previewmaker;
+package com.tistory.deque.previewmaker.PreviewData;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
+
+import com.tistory.deque.previewmaker.Util.Logger;
+import com.tistory.deque.previewmaker.MainActivity;
 
 import java.io.File;
 import java.io.FileNotFoundException;

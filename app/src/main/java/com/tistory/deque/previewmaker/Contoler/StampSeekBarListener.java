@@ -1,22 +1,20 @@
-package com.tistory.deque.previewmaker;
+package com.tistory.deque.previewmaker.Contoler;
 
-import android.app.Activity;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
-import android.widget.TextView;
 
-enum STAMP_EDIT_SELECTED {
-  BRIGHTNESS,
-  CONTRAST
-};
+import com.tistory.deque.previewmaker.PreviewCanvasView;
+import com.tistory.deque.previewmaker.PreviewEditActivity;
+
+;
 
 public class StampSeekBarListener implements OnSeekBarChangeListener {
 
   private PreviewEditActivity mActivity;
-  private STAMP_EDIT_SELECTED mSelected;
+  private StampEditSelectedEnum mSelected;
   private PreviewCanvasView mCanvasView;
 
-  public StampSeekBarListener(PreviewEditActivity mActivity, STAMP_EDIT_SELECTED selected, PreviewCanvasView canvasView){
+  public StampSeekBarListener(PreviewEditActivity mActivity, StampEditSelectedEnum selected, PreviewCanvasView canvasView){
     this.mActivity = mActivity;
     this.mSelected = selected;
     this.mCanvasView = canvasView;
@@ -24,7 +22,7 @@ public class StampSeekBarListener implements OnSeekBarChangeListener {
 
   @Override
   public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-    if(mSelected == STAMP_EDIT_SELECTED.BRIGHTNESS) {
+    if(mSelected == StampEditSelectedEnum.BRIGHTNESS) {
       mCanvasView.onDrawStampBrigtness(progress);
       mActivity.setStampSeekBarText(progress, mSelected);
     }

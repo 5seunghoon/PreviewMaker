@@ -24,6 +24,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import com.tistory.deque.previewmaker.Contoler.DBOpenHelper;
+import com.tistory.deque.previewmaker.StampData.StampAdapter;
+import com.tistory.deque.previewmaker.StampData.StampItem;
+import com.tistory.deque.previewmaker.Util.Logger;
+import com.tistory.deque.previewmaker.Util.Permission;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -376,12 +382,12 @@ public class MainActivity extends AppCompatActivity
     invisibleHint();
   }
 
-  protected void callFromListItem(int stampPosition){
+  public void callFromListItem(int stampPosition){
     getPreviewsFromAlbum();
     this.stampPosition = stampPosition;
   }
 
-  protected void callFromListItemToDelete(View v, int position){
+  public void callFromListItemToDelete(View v, int position){
 
     int id = mStampItems.get(position).getID();
     Uri imageURI = mStampItems.get(position).getImageURI();

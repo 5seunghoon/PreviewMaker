@@ -1,4 +1,4 @@
-package com.tistory.deque.previewmaker;
+package com.tistory.deque.previewmaker.StampData;
 
 import android.content.DialogInterface;
 import android.support.annotation.NonNull;
@@ -11,6 +11,9 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.tistory.deque.previewmaker.MainActivity;
+import com.tistory.deque.previewmaker.R;
 
 import java.util.ArrayList;
 

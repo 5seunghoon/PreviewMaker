@@ -21,6 +21,13 @@ import android.support.v7.app.AlertDialog;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.tistory.deque.previewmaker.Contoler.ClickState;
+import com.tistory.deque.previewmaker.Contoler.ClickStateEnum;
+import com.tistory.deque.previewmaker.PreviewData.PreviewItem;
+import com.tistory.deque.previewmaker.StampData.StampAnchorEnum;
+import com.tistory.deque.previewmaker.StampData.StampItem;
+import com.tistory.deque.previewmaker.Util.Logger;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -50,7 +57,7 @@ public class PreviewCanvasView extends View {
   private Bitmap stampOriginalBitmap;
   private int stampWidthPos, stampHeightPos;
   private double stampRate;
-  private StampAnchor stampPosAnchor;
+  private StampAnchorEnum stampPosAnchor;
 
   private float stampGuideRectWidth = 5f;
   private float stampGuideLineWidth = 2f;

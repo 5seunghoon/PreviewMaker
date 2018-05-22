@@ -1,10 +1,14 @@
-package com.tistory.deque.previewmaker;
+package com.tistory.deque.previewmaker.Contoler;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
+
+import com.tistory.deque.previewmaker.StampData.StampAnchorEnum;
+import com.tistory.deque.previewmaker.StampData.StampItem;
+import com.tistory.deque.previewmaker.Util.Logger;
 
 public class DBOpenHelper extends SQLiteOpenHelper {
   private static DBOpenHelper dbHelper;
@@ -24,7 +28,7 @@ public class DBOpenHelper extends SQLiteOpenHelper {
   public static final int STAMP_POS_HEIGHT_PERCENT_KEY_INIT_VALUE = 50000; // 50,000 = 50%
   public static final int STAMP_WIDTH_KEY_INIT_VALUE = -1;
   public static final int STAMP_HEIGHT_KEY_INIT_VALUE = -1;
-  public static final int STAMP_POS_ANCHOR_KEY_INIT_VALUE = StampItem.stampAnchorToInt(StampAnchor.CENTER);
+  public static final int STAMP_POS_ANCHOR_KEY_INIT_VALUE = StampItem.stampAnchorToInt(StampAnchorEnum.CENTER);
 
   public static final String DP_OPEN_HELPER_NAME = "DB_OPEN_HELPER_NAME";
   public static final int dbVersion = 1;

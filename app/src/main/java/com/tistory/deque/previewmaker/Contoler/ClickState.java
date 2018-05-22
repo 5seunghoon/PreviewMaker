@@ -1,12 +1,6 @@
-package com.tistory.deque.previewmaker;
+package com.tistory.deque.previewmaker.Contoler;
 
-enum ClickStateEnum {
-  STATE_NONE_CLICK,
-  STATE_STAMP_EDIT,
-  STATE_STAMP_ZOOM
-}
-
-class ClickState {
+public class ClickState {
   /**
    * STATE PATTERN
    */

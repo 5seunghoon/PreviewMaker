@@ -12,6 +12,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+import com.tistory.deque.previewmaker.Util.Logger;
+
 import java.io.File;
 
 public class MakeStampActivity extends AppCompatActivity {
