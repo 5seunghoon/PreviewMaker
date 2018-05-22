@@ -327,6 +327,9 @@ public class PreviewEditActivity extends AppCompatActivity {
       }
       mPreviewCanvasView.callInvalidate();
     }
+    else{
+      mPreviewCanvasView.clickStamp();
+    }
   }
 
   public void clickButtonDelete() {

@@ -152,13 +152,23 @@ public class PreviewCanvasView extends View {
     movePrevY = y;
 
     if (isTouchInStamp(x, y) && isStampShown) {
-      CLICK_STATE.clickStamp();
+        clickStamp();
     }
     if (isTouchStampZoom(x, y) && isStampShown) {
-      CLICK_STATE.clickStampZoomStart();
+        clickStampToZoom();
     }
-    mActivity.editButtonGoneOrVisible(CLICK_STATE);
 
+  }
+
+  public void clickStamp(){
+    CLICK_STATE.clickStamp();
+    mActivity.editButtonGoneOrVisible(CLICK_STATE);
+    invalidate();
+  }
+
+  public void clickStampToZoom(){
+    CLICK_STATE.clickStampZoomStart();
+    mActivity.editButtonGoneOrVisible(CLICK_STATE);
     invalidate();
   }
 
