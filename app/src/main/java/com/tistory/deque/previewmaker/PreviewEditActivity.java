@@ -75,7 +75,7 @@ public class PreviewEditActivity extends AppCompatActivity {
   private TextView canvasviewHintTextView;
 
   private Button mButtonSaveEach, mButtonCrop, mButtonStamp, mButtonDelete;
-  private Button mButtonStampFinish, mButtonStampDelete, mButtonStampBrightness;
+  private Button mButtonStampFinish, mButtonStampDelete, mButtonStampBrightness, mButtonStampReset;
 
   private SeekBar mStampSeekBar;
   private StampSeekBarListener mStampSeekBarBrightnessListener;
@@ -225,6 +225,7 @@ public class PreviewEditActivity extends AppCompatActivity {
     mButtonStampFinish = findViewById(R.id.buttonStampFinish);
     mButtonStampDelete = findViewById(R.id.buttonStampDelete);
     mButtonStampBrightness = findViewById(R.id.buttonStampBrightness);
+    mButtonStampReset = findViewById(R.id.buttonStampReset);
 
     mButtonCrop.setOnClickListener(new View.OnClickListener() {
       @Override
@@ -267,6 +268,12 @@ public class PreviewEditActivity extends AppCompatActivity {
       @Override
       public void onClick(View v) {
         clickButtonStampBrightness();
+      }
+    });
+    mButtonStampReset.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        clickButtonStampReset();
       }
     });
   }
@@ -377,6 +384,11 @@ public class PreviewEditActivity extends AppCompatActivity {
     mPreviewCanvasView.brightnessStamp();
     setStampSeekBarText(selectedStamp.getBrightness(), StampEditSelectedEnum.BRIGHTNESS);
     mPreviewCanvasView.callInvalidate();
+  }
+
+  public void clickButtonStampReset(){
+      mLayoutStampEditSeekBar.setVisibility(View.INVISIBLE);
+    mPreviewCanvasView.stampReset();
   }
 
   public void setStampSeekBarText(int value, StampEditSelectedEnum selected){

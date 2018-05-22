@@ -104,6 +104,10 @@ public class StampItem {
     this.brightness = brightness - PreviewEditActivity.SeekBarBrightnessMax / 2;
   }
 
+  public void resetBrightness(){
+    this.brightness = 0;
+  }
+
   public Uri getImageURI() {
     return imageURI;
   }

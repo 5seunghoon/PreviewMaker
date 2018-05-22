@@ -76,6 +76,17 @@
           android:textSize="12sp" />
 
         <Button
+            android:id="@+id/buttonStampReset"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@android:color/white"
+            android:drawableTop="@drawable/ic_settings_backup_restore_black_24dp"
+            android:paddingTop="4dp"
+            android:text="@string/action_stamp_edit_reset"
+            android:textSize="12sp" />
+
+        <Button
           android:id="@+id/buttonStampFinish"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
@@ -85,6 +96,7 @@
           android:paddingTop="4dp"
           android:text="@string/action_stamp_edit_finish_title"
           android:textSize="12sp" />
+
       </LinearLayout>
 
       <LinearLayout

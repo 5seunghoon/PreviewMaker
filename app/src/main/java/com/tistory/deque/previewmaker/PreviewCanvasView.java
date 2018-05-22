@@ -179,6 +179,12 @@ public class PreviewCanvasView extends View {
     invalidate();
   }
 
+  public void stampReset(){
+    stampWidthPos = (int) (previewWidth / 2.0f - stampWidth / 2.0f) + previewPosWidth;
+    stampHeightPos = (int) (previewHeight / 2.0f - stampHeight / 2.0f) + previewPosHeight;
+    stampItem.resetBrightness();
+    invalidate();
+  }
 
   private void touchMove(MotionEvent event) {
     int x, y;
@@ -193,21 +199,8 @@ public class PreviewCanvasView extends View {
         int deltaX = x - movePrevX;
         int deltaY = y - movePrevY;
 
-        int prevPosW = stampWidthPos;
-        int prevPosH = stampHeightPos;
         stampWidthPos += deltaX;
         stampHeightPos += deltaY;
-
-        /*
-        if ( (stampWidthPos < -1 * stampWidth)
-          || (stampWidthPos > canvasWidth) ){
-          stampWidthPos = prevPosW;
-        }
-        if( (stampHeightPos < -1 * stampHeight)
-          || (stampHeightPos > canvasHeight) ){
-          stampHeightPos = prevPosH;
-        }
-        */
 
         invalidate();
         break;
