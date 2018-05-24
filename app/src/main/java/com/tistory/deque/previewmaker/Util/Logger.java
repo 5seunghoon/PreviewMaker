@@ -1,8 +1,8 @@
 package com.tistory.deque.previewmaker.Util;
 
+import android.arch.core.BuildConfig;
 import android.util.Log;
 
-import com.tistory.deque.previewmaker.BuildConfig;
 
 public class Logger {
   private static final String LOGGER_TAG = " [LOGGER TAG]";
