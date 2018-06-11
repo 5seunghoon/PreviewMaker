@@ -1,4 +1,4 @@
-package com.tistory.deque.previewmaker;
+package com.tistory.deque.previewmaker.Controler;
 
 import android.content.ContentResolver;
 import android.content.ContentUris;
@@ -22,14 +22,15 @@ import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import com.tistory.deque.previewmaker.Contoler.ClickState;
-import com.tistory.deque.previewmaker.Contoler.ClickStateEnum;
-import com.tistory.deque.previewmaker.Contoler.DBOpenHelper;
-import com.tistory.deque.previewmaker.Contoler.StampEditSelectedEnum;
-import com.tistory.deque.previewmaker.Contoler.StampSeekBarListener;
-import com.tistory.deque.previewmaker.PreviewData.PreviewAdapter;
-import com.tistory.deque.previewmaker.PreviewData.PreviewItem;
-import com.tistory.deque.previewmaker.StampData.StampItem;
+import com.tistory.deque.previewmaker.Model_Global.ClickState;
+import com.tistory.deque.previewmaker.Model_Global.ClickStateEnum;
+import com.tistory.deque.previewmaker.Model_Global.DBOpenHelper;
+import com.tistory.deque.previewmaker.Model_Global.StampEditSelectedEnum;
+import com.tistory.deque.previewmaker.Model_Global.StampSeekBarListener;
+import com.tistory.deque.previewmaker.Model_PreviewData.PreviewAdapter;
+import com.tistory.deque.previewmaker.Model_PreviewData.PreviewItem;
+import com.tistory.deque.previewmaker.R;
+import com.tistory.deque.previewmaker.Model_StampData.StampItem;
 import com.tistory.deque.previewmaker.Util.Logger;
 import com.yalantis.ucrop.UCrop;
 import com.yalantis.ucrop.model.AspectRatio;
@@ -502,9 +503,6 @@ public class PreviewEditActivity extends AppCompatActivity {
   }
 
   private void viewEveryItemInDB() {
-    if(!BuildConfig.DEBUG){
-      return;
-    }
     int _id;
     String _imageURI;
     String _name;

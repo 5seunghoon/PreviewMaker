@@ -1,4 +1,4 @@
-package com.tistory.deque.previewmaker;
+package com.tistory.deque.previewmaker.Controler;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -21,11 +21,12 @@ import android.support.v7.app.AlertDialog;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.tistory.deque.previewmaker.Contoler.ClickState;
-import com.tistory.deque.previewmaker.Contoler.ClickStateEnum;
-import com.tistory.deque.previewmaker.PreviewData.PreviewItem;
-import com.tistory.deque.previewmaker.StampData.StampAnchorEnum;
-import com.tistory.deque.previewmaker.StampData.StampItem;
+import com.tistory.deque.previewmaker.Model_Global.ClickState;
+import com.tistory.deque.previewmaker.Model_Global.ClickStateEnum;
+import com.tistory.deque.previewmaker.Model_PreviewData.PreviewItem;
+import com.tistory.deque.previewmaker.R;
+import com.tistory.deque.previewmaker.Model_StampData.StampAnchorEnum;
+import com.tistory.deque.previewmaker.Model_StampData.StampItem;
 import com.tistory.deque.previewmaker.Util.Logger;
 
 import java.io.File;

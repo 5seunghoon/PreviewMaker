@@ -1,10 +1,10 @@
-package com.tistory.deque.previewmaker.Contoler;
+package com.tistory.deque.previewmaker.Model_Global;
 
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 
-import com.tistory.deque.previewmaker.PreviewCanvasView;
-import com.tistory.deque.previewmaker.PreviewEditActivity;
+import com.tistory.deque.previewmaker.Controler.PreviewCanvasView;
+import com.tistory.deque.previewmaker.Controler.PreviewEditActivity;
 
 ;
 

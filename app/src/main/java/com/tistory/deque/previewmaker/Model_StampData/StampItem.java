@@ -1,9 +1,9 @@
-package com.tistory.deque.previewmaker.StampData;
+package com.tistory.deque.previewmaker.Model_StampData;
 
 import android.net.Uri;
 
-import com.tistory.deque.previewmaker.Contoler.DBOpenHelper;
-import com.tistory.deque.previewmaker.PreviewEditActivity;
+import com.tistory.deque.previewmaker.Model_Global.DBOpenHelper;
+import com.tistory.deque.previewmaker.Controler.PreviewEditActivity;
 
 public class StampItem {
   private int ID;

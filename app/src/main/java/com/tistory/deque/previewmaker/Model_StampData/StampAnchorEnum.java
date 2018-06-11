@@ -1,4 +1,4 @@
-package com.tistory.deque.previewmaker.StampData;
+package com.tistory.deque.previewmaker.Model_StampData;
 
 public enum StampAnchorEnum {
   LEFT_TOP,

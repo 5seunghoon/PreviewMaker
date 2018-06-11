@@ -1,4 +1,4 @@
-package com.tistory.deque.previewmaker.PreviewData;
+package com.tistory.deque.previewmaker.Model_PreviewData;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
@@ -7,7 +7,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 
 import com.tistory.deque.previewmaker.Util.Logger;
-import com.tistory.deque.previewmaker.MainActivity;
+import com.tistory.deque.previewmaker.Controler.MainActivity;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -18,11 +18,11 @@ import java.util.Locale;
 
 public class PreviewItem {
   private final static String TAG = "PreviewEditActivity";
-  private static int bitmapMaxSize = 2500; // 프리뷰의 장축이 이 사이즈로 제한됨
+  private static int bitmapMaxSize = 2000; // 프리뷰의 장축이 이 사이즈로 제한됨
   private Uri originalImageURI;
   private Uri thumbnailImageURI;
   private Uri resultImageURI;
-  private Bitmap mBitmap;
+  private Bitmap mBitmap; // 생성자에서 받는 originalImageURI에서 비트맵으로 변환하여 바로 저장함
   private Activity mActivity;
   private boolean isSaved;
 

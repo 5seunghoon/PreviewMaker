@@ -1,4 +1,4 @@
-package com.tistory.deque.previewmaker.Contoler;
+package com.tistory.deque.previewmaker.Model_Global;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -6,8 +6,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
 
-import com.tistory.deque.previewmaker.StampData.StampAnchorEnum;
-import com.tistory.deque.previewmaker.StampData.StampItem;
+import com.tistory.deque.previewmaker.Model_StampData.StampAnchorEnum;
+import com.tistory.deque.previewmaker.Model_StampData.StampItem;
 import com.tistory.deque.previewmaker.Util.Logger;
 
 public class DBOpenHelper extends SQLiteOpenHelper {

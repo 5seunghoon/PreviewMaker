@@ -1,4 +1,4 @@
-package com.tistory.deque.previewmaker;
+package com.tistory.deque.previewmaker.Controler;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -24,9 +24,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
-import com.tistory.deque.previewmaker.Contoler.DBOpenHelper;
-import com.tistory.deque.previewmaker.StampData.StampAdapter;
-import com.tistory.deque.previewmaker.StampData.StampItem;
+import com.tistory.deque.previewmaker.Model_Global.DBOpenHelper;
+import com.tistory.deque.previewmaker.R;
+import com.tistory.deque.previewmaker.Model_StampData.StampAdapter;
+import com.tistory.deque.previewmaker.Model_StampData.StampItem;
 import com.tistory.deque.previewmaker.Util.Logger;
 import com.tistory.deque.previewmaker.Util.Permission;
 
@@ -40,6 +41,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import me.nereo.multi_image_selector.MultiImageSelectorActivity;
 
 public class MainActivity extends AppCompatActivity
@@ -59,25 +62,37 @@ public class MainActivity extends AppCompatActivity
   private final int REQUEST_TAKE_PREVIEW_FROM_ALBUM = 103;
   private final String TAG = "MainActivity";
 
-  private DBOpenHelper dbOpenHelper;
 
+  @BindView(R.id.toolbar)
   private Toolbar mToolbar;
-  private Permission mPermission;
+  @BindView(R.id.mainActivityHintText)
   private TextView mMainActivityHintTextView;
-
-  private String mCurrentPhotoPath;
-  private Uri mCropSourceURI, mCropEndURI; //  mCropSourceURI = 자를 uri, mCropEndURI = 자르고 난뒤 uri
-
+  @BindView(R.id.fab)
+  FloatingActionButton fab;
+  @BindView(R.id.drawer_layout)
+  DrawerLayout drawer;
+  @BindView(R.id.nav_view)
+  NavigationView navigationView;
+  @BindView(R.id.recyclerStampView)
   private RecyclerView mRecyclerStampView;
+
   private ArrayList<StampItem> mStampItems;
   private StampAdapter mStampAdapter;
   private LinearLayoutManager mRecyclerViewLayoutManager;
 
   private ArrayList<String> mSeletedPreviews;
 
+  private DBOpenHelper dbOpenHelper;
+
+  private Permission mPermission;
+
+  private String mCurrentPhotoPath;
+  private Uri mCropSourceURI, mCropEndURI; //  mCropSourceURI = 자를 uri, mCropEndURI = 자르고 난뒤 uri
 
   private long mBackPressedTime;
   private int stampPosition;
+
+
 
 
   @Override
@@ -92,12 +107,13 @@ public class MainActivity extends AppCompatActivity
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
+
+    ButterKnife.bind(this);
+
     dbOpen();
 
-    mMainActivityHintTextView = findViewById(R.id.mainActivityHintText);
 
     //setting toolbar
-    mToolbar = (Toolbar) findViewById(R.id.toolbar);
     setSupportActionBar(mToolbar);
 
     //permission
@@ -108,7 +124,6 @@ public class MainActivity extends AppCompatActivity
     setRecyclerView();
 
     //floating action button
-    FloatingActionButton fab = findViewById(R.id.fab);
     fab.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
@@ -120,14 +135,12 @@ public class MainActivity extends AppCompatActivity
     setTitle("프리뷰 메이커");
 
     //setting drawer
-    DrawerLayout drawer = findViewById(R.id.drawer_layout);
     ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
       this, drawer, mToolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
     drawer.addDrawerListener(toggle);
     toggle.syncState();
 
     //setting navigation view
-    NavigationView navigationView = findViewById(R.id.nav_view);
     navigationView.setNavigationItemSelectedListener(this);
 
 
@@ -176,7 +189,6 @@ public class MainActivity extends AppCompatActivity
 
   @Override
   public void onBackPressed() {
-    DrawerLayout drawer = findViewById(R.id.drawer_layout);
     if (drawer.isDrawerOpen(GravityCompat.START)) { // 드로어가 열려있으면 닫고
       drawer.closeDrawer(GravityCompat.START);
     } else { // 드로어가 닫혀있으면 앱 종료
@@ -232,7 +244,6 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    DrawerLayout drawer = findViewById(R.id.drawer_layout);
     drawer.closeDrawer(GravityCompat.START);
     return true;
   }
@@ -252,7 +263,6 @@ public class MainActivity extends AppCompatActivity
   }
 
   private void setRecyclerView(){
-    mRecyclerStampView = findViewById(R.id.recyclerStampView);
     mRecyclerStampView.setHasFixedSize(true);
 
     mRecyclerViewLayoutManager = new LinearLayoutManager(this);

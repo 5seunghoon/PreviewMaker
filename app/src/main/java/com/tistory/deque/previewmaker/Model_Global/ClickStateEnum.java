@@ -1,4 +1,4 @@
-package com.tistory.deque.previewmaker.Contoler;
+package com.tistory.deque.previewmaker.Model_Global;
 
 public enum ClickStateEnum {
   STATE_NONE_CLICK,
