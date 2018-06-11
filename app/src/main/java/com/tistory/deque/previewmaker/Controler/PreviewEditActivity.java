@@ -40,6 +40,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class PreviewEditActivity extends AppCompatActivity {
 
   private final String TAG = "PreviewEditActivity";
@@ -62,26 +65,34 @@ public class PreviewEditActivity extends AppCompatActivity {
 
   private ArrayList<String> previewPaths;
   private ArrayList<PreviewItem> previewItems;
-  private RecyclerView mRecyclerPreviewView;
+
+  @BindView(R.id.previewRecyclerView) RecyclerView mRecyclerPreviewView;
   private PreviewAdapter mPreviewAdapter;
   private LinearLayoutManager mRecyclerPreviewViewLayoutManager;
 
-  private LinearLayout mCanvasPerantLayout;
-  private LinearLayout mCanvasGrandParentLayout;
+  @BindView(R.id.canvasParentLayout) LinearLayout mCanvasPerantLayout;
+  @BindView(R.id.canvasGrandParentLayout) LinearLayout mCanvasGrandParentLayout;
   private PreviewCanvasView mPreviewCanvasView;
-  protected ProgressBar previewLoadingProgressBar;
-  private LinearLayout layoutEditButton;
-  private LinearLayout layoutStampEditButton;
 
-  private TextView canvasviewHintTextView;
+  @BindView(R.id.canvasviewHintTextView) TextView canvasviewHintTextView;
+  @BindView(R.id.previewLoadingProgressBar) ProgressBar previewLoadingProgressBar;
+  @BindView(R.id.layoutEditButton) LinearLayout layoutEditButton;
+  @BindView(R.id.layoutStampEditButton) LinearLayout layoutStampEditButton;
 
-  private Button mButtonSaveEach, mButtonCrop, mButtonStamp, mButtonDelete;
-  private Button mButtonStampFinish, mButtonStampDelete, mButtonStampBrightness, mButtonStampReset;
+  @BindView(R.id.buttonCrop) Button mButtonCrop;
+  @BindView(R.id.buttonStamp) Button mButtonStamp;
+  @BindView(R.id.buttonDelete) Button mButtonDelete;
+  @BindView(R.id.buttonSaveEach) Button mButtonSaveEach;
 
-  private SeekBar mStampSeekBar;
+  @BindView(R.id.buttonStampFinish) Button mButtonStampFinish;
+  @BindView(R.id.buttonStampDelete) Button mButtonStampDelete;
+  @BindView(R.id.buttonStampBrightness) Button mButtonStampBrightness;
+  @BindView(R.id.buttonStampReset) Button mButtonStampReset;
+
   private StampSeekBarListener mStampSeekBarBrightnessListener;
-  private LinearLayout mLayoutStampEditSeekBar;
-  private TextView mStampSeekBarTextView;
+  @BindView(R.id.stampEditSeekBar) SeekBar mStampSeekBar;
+  @BindView(R.id.layoutStampEditSeekBar) LinearLayout mLayoutStampEditSeekBar;
+  @BindView(R.id.stampSeekBarTextView) TextView mStampSeekBarTextView;
 
   public PreviewCanvasView getmPreviewCanvasView() {
     return mPreviewCanvasView;
@@ -92,10 +103,8 @@ public class PreviewEditActivity extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_preview_edit);
 
-    canvasviewHintTextView = findViewById(R.id.canvasviewHintTextView);
-    previewLoadingProgressBar = findViewById(R.id.previewLoadingProgressBar);
-    layoutEditButton = findViewById(R.id.layoutEditButton);
-    layoutStampEditButton = findViewById(R.id.layoutStampEditButton);
+    ButterKnife.bind(this);
+
 
     POSITION = -1;
     isClickPreviewFirst = false;
@@ -218,15 +227,6 @@ public class PreviewEditActivity extends AppCompatActivity {
   }
 
   public void setButtonListener() {
-    mButtonCrop = findViewById(R.id.buttonCrop);
-    mButtonStamp = findViewById(R.id.buttonStamp);
-    mButtonDelete = findViewById(R.id.buttonDelete);
-    mButtonSaveEach = findViewById(R.id.buttonSaveEach);
-
-    mButtonStampFinish = findViewById(R.id.buttonStampFinish);
-    mButtonStampDelete = findViewById(R.id.buttonStampDelete);
-    mButtonStampBrightness = findViewById(R.id.buttonStampBrightness);
-    mButtonStampReset = findViewById(R.id.buttonStampReset);
 
     mButtonCrop.setOnClickListener(new View.OnClickListener() {
       @Override
@@ -280,10 +280,7 @@ public class PreviewEditActivity extends AppCompatActivity {
   }
 
   private void setSeekBar() {
-    mLayoutStampEditSeekBar = findViewById(R.id.layoutStampEditSeekBar);
-    mStampSeekBarTextView = findViewById(R.id.stampSeekBarTextView);
     mStampSeekBarBrightnessListener = new StampSeekBarListener(this, StampEditSelectedEnum.BRIGHTNESS, mPreviewCanvasView);
-    mStampSeekBar = findViewById(R.id.stampEditSeekBar);
     mStampSeekBar.setMax(SeekBarBrightnessMax);
     mStampSeekBar.setProgress(SeekBarBrightnessMax / 2);
   }
@@ -400,8 +397,6 @@ public class PreviewEditActivity extends AppCompatActivity {
   }
 
   private void setPreviewCanvas() {
-    mCanvasGrandParentLayout = findViewById(R.id.canvasGrandParentLayout);
-    mCanvasPerantLayout = findViewById(R.id.canvasParentLayout);
     mPreviewCanvasView = new PreviewCanvasView(this, this, previewItems);
     mCanvasPerantLayout.addView(mPreviewCanvasView);
 
@@ -417,7 +412,6 @@ public class PreviewEditActivity extends AppCompatActivity {
   }
 
   private void setRecyclerView() {
-    mRecyclerPreviewView = findViewById(R.id.previewRecyclerView);
     mRecyclerPreviewView.setHasFixedSize(true);
 
     mRecyclerPreviewViewLayoutManager = new LinearLayoutManager(this);

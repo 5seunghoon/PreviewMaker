@@ -64,9 +64,9 @@ public class MainActivity extends AppCompatActivity
 
 
   @BindView(R.id.toolbar)
-  private Toolbar mToolbar;
+  Toolbar mToolbar;
   @BindView(R.id.mainActivityHintText)
-  private TextView mMainActivityHintTextView;
+  TextView mMainActivityHintTextView;
   @BindView(R.id.fab)
   FloatingActionButton fab;
   @BindView(R.id.drawer_layout)
@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity
   @BindView(R.id.nav_view)
   NavigationView navigationView;
   @BindView(R.id.recyclerStampView)
-  private RecyclerView mRecyclerStampView;
+  RecyclerView mRecyclerStampView;
 
   private ArrayList<StampItem> mStampItems;
   private StampAdapter mStampAdapter;
