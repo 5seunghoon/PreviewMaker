@@ -42,6 +42,7 @@ import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class PreviewEditActivity extends AppCompatActivity {
 
@@ -119,7 +120,6 @@ public class PreviewEditActivity extends AppCompatActivity {
 
     setRecyclerView();
     setPreviewCanvas();
-    setButtonListener();
     setSeekBar();
     setStamp(stampID);
 
@@ -226,59 +226,6 @@ public class PreviewEditActivity extends AppCompatActivity {
 
   }
 
-  public void setButtonListener() {
-
-    mButtonCrop.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        clickButtonCrop();
-      }
-    });
-    mButtonStamp.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        clickButtonStamp();
-      }
-    });
-    mButtonDelete.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        clickButtonDelete();
-      }
-    });
-    mButtonSaveEach.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        clickButtonSaveEach();
-      }
-    });
-
-    mButtonStampFinish.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        clickButtonStampFinish();
-      }
-    });
-    mButtonStampDelete.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        clickButtonStampDelete();
-      }
-    });
-    mButtonStampBrightness.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        clickButtonStampBrightness();
-      }
-    });
-    mButtonStampReset.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        clickButtonStampReset();
-      }
-    });
-  }
-
   private void setSeekBar() {
     mStampSeekBarBrightnessListener = new StampSeekBarListener(this, StampEditSelectedEnum.BRIGHTNESS, mPreviewCanvasView);
     mStampSeekBar.setMax(SeekBarBrightnessMax);
@@ -292,10 +239,12 @@ public class PreviewEditActivity extends AppCompatActivity {
   }
 
 
+  @OnClick(R.id.buttonSaveEach)
   public void clickButtonSaveEach() {
     mPreviewCanvasView.savePreviewEach(-1);
   }
 
+  @OnClick(R.id.buttonCrop)
   public void clickButtonCrop() {
     if(POSITION < 0 || POSITION >= previewItems.size()){
       return;
@@ -331,6 +280,7 @@ public class PreviewEditActivity extends AppCompatActivity {
     return options;
   }
 
+  @OnClick(R.id.buttonStamp)
   public void clickButtonStamp() {
     if(POSITION < 0) return;
 
@@ -346,6 +296,7 @@ public class PreviewEditActivity extends AppCompatActivity {
     }
   }
 
+  @OnClick(R.id.buttonDelete)
   public void clickButtonDelete() {
     mLayoutStampEditSeekBar.setVisibility(View.INVISIBLE);
 
@@ -365,16 +316,19 @@ public class PreviewEditActivity extends AppCompatActivity {
     mPreviewCanvasView.callInvalidate();
   }
 
+  @OnClick(R.id.buttonStampFinish)
   public void clickButtonStampFinish() {
     mLayoutStampEditSeekBar.setVisibility(View.INVISIBLE);
     mPreviewCanvasView.finishStampEdit();
   }
 
+  @OnClick(R.id.buttonStampDelete)
   public void clickButtonStampDelete() {
     mLayoutStampEditSeekBar.setVisibility(View.INVISIBLE);
     mPreviewCanvasView.deleteStamp();
   }
 
+  @OnClick(R.id.buttonStampBrightness)
   public void clickButtonStampBrightness() {
     mLayoutStampEditSeekBar.setVisibility(View.VISIBLE);
     mStampSeekBar.setProgress(selectedStamp.getBrightness());
@@ -384,6 +338,7 @@ public class PreviewEditActivity extends AppCompatActivity {
     mPreviewCanvasView.callInvalidate();
   }
 
+  @OnClick(R.id.buttonStampReset)
   public void clickButtonStampReset(){
       mLayoutStampEditSeekBar.setVisibility(View.INVISIBLE);
     mPreviewCanvasView.stampReset();

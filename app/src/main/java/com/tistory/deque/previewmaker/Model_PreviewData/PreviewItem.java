@@ -18,7 +18,7 @@ import java.util.Locale;
 
 public class PreviewItem {
   private final static String TAG = "PreviewEditActivity";
-  private static int bitmapMaxSize = 2000; // 프리뷰의 장축이 이 사이즈로 제한됨
+  private static int bitmapMaxSize = 2000; // 프리뷰의 비트맵의 장축이 이 사이즈로 제한됨
   private Uri originalImageURI;
   private Uri thumbnailImageURI;
   private Uri resultImageURI;
