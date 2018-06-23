@@ -10,31 +10,31 @@ import com.tistory.deque.previewmaker.Activity.PreviewEditActivity;
 
 public class StampSeekBarListener implements OnSeekBarChangeListener {
 
-  private PreviewEditActivity mActivity;
-  private StampEditSelectedEnum mSelected;
-  private PreviewCanvasView mCanvasView;
+    private PreviewEditActivity mActivity;
+    private StampEditSelectedEnum mSelected;
+    private PreviewCanvasView mCanvasView;
 
-  public StampSeekBarListener(PreviewEditActivity mActivity, StampEditSelectedEnum selected, PreviewCanvasView canvasView){
-    this.mActivity = mActivity;
-    this.mSelected = selected;
-    this.mCanvasView = canvasView;
-  }
-
-  @Override
-  public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-    if(mSelected == StampEditSelectedEnum.BRIGHTNESS) {
-      mCanvasView.onDrawStampBrigtness(progress);
-      mActivity.setStampSeekBarText(progress, mSelected);
+    public StampSeekBarListener(PreviewEditActivity mActivity, StampEditSelectedEnum selected, PreviewCanvasView canvasView) {
+        this.mActivity = mActivity;
+        this.mSelected = selected;
+        this.mCanvasView = canvasView;
     }
-  }
 
-  @Override
-  public void onStartTrackingTouch(SeekBar seekBar) {
+    @Override
+    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        if (mSelected == StampEditSelectedEnum.BRIGHTNESS) {
+            mCanvasView.onDrawStampBrigtness(progress);
+            mActivity.setStampSeekBarText(progress, mSelected);
+        }
+    }
 
-  }
+    @Override
+    public void onStartTrackingTouch(SeekBar seekBar) {
 
-  @Override
-  public void onStopTrackingTouch(SeekBar seekBar) {
+    }
 
-  }
+    @Override
+    public void onStopTrackingTouch(SeekBar seekBar) {
+
+    }
 }

@@ -17,88 +17,98 @@ import com.tistory.deque.previewmaker.R;
 
 import java.util.ArrayList;
 
-public class StampAdapter extends RecyclerView.Adapter<StampAdapter.ViewHolder>  {
-  private MainActivity mActivity;
-  private ArrayList<StampItem> mStampItems;
-  private final String TAG ="MainActivity";
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 
-  public static class ViewHolder extends RecyclerView.ViewHolder {
-    public TextView StampNameTextView;
-    public ImageView StampImageTextView;
-    public LinearLayout selectLayout;
-    public Button deleteItemButton;
+public class StampAdapter extends RecyclerView.Adapter<StampAdapter.ViewHolder> {
+    private MainActivity mActivity;
+    private ArrayList<StampItem> mStampItems;
+    private final String TAG = "MainActivity";
 
-    public ViewHolder(View v) {
-      super(v);
-      StampNameTextView = v.findViewById(R.id.stampListTextView);
-      StampImageTextView = v.findViewById(R.id.stampListImageView);
-      selectLayout = v.findViewById(R.id.selectLayout);
-      deleteItemButton = v.findViewById(R.id.deleteItempButton);
+    public class ViewHolder extends RecyclerView.ViewHolder {
+        @BindView(R.id.stampListTextView)
+        TextView StampNameTextView;
+        @BindView(R.id.stampListImageView)
+        ImageView StampImageTextView;
+        @BindView(R.id.selectLayout)
+        LinearLayout selectLayout;
+        @BindView(R.id.deleteStempButton)
+        Button deleteItemButton;
+
+        public ViewHolder(View v) {
+            super(v);
+
+            ButterKnife.bind(this, v);
+
+            StampNameTextView = v.findViewById(R.id.stampListTextView);
+            StampImageTextView = v.findViewById(R.id.stampListImageView);
+            selectLayout = v.findViewById(R.id.selectLayout);
+            deleteItemButton = v.findViewById(R.id.deleteStempButton);
+        }
+
+        @OnClick(R.id.deleteStempButton)
+        public void onClickDeleteStampButton(View view){
+            clickDel(view, getAdapterPosition());
+        }
+
+        @OnClick(R.id.selectLayout)
+        public void onClickSelectlayout(View view){
+            clickItem(view, getAdapterPosition());
+        }
     }
-  }
 
-  public StampAdapter(ArrayList<StampItem> items, MainActivity activity){
-    mStampItems = items;
-    mActivity = activity;
-  }
 
-  @NonNull
-  @Override
-  public StampAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-    View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item, parent, false);
+    public StampAdapter(ArrayList<StampItem> items, MainActivity activity) {
+        mStampItems = items;
+        mActivity = activity;
+    }
 
-    ViewHolder vh = new ViewHolder(v);
-    return vh;
-  }
+    @NonNull
+    @Override
+    public StampAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item, parent, false);
 
-  @Override
-  public void onBindViewHolder(@NonNull StampAdapter.ViewHolder holder, final int position) {
-    holder.StampNameTextView.setText(mStampItems.get(position).getStampName());
-    holder.StampImageTextView.setImageURI(mStampItems.get(position).getImageURI());
-    holder.deleteItemButton.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        clickDel(v, position);
-      }
-    });
-    holder.selectLayout.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        clickItem(v, position);
-      }
-    });
-  }
+        ViewHolder vh = new ViewHolder(v);
+        return vh;
+    }
 
-  private void clickItem(View v, int position){
-    mActivity.callFromListItem(position);
-  }
+    @Override
+    public void onBindViewHolder(@NonNull StampAdapter.ViewHolder holder, final int position) {
+        holder.StampNameTextView.setText(mStampItems.get(position).getStampName());
+        holder.StampImageTextView.setImageURI(mStampItems.get(position).getImageURI());
+    }
 
-  private void clickDel(final View v, final int position){
-    AlertDialog.Builder stampDeleteAlert = new AlertDialog.Builder(mActivity);
-    stampDeleteAlert.setMessage("낙관 [" + mStampItems.get(position).getStampName() + "] 을 정말 삭제하시겠습니까?").setCancelable(true)
-      .setPositiveButton("YES", new DialogInterface.OnClickListener() {
-        @Override
-        public void onClick(DialogInterface dialog, int which) {
-          deleteStampAndScan(v, position);
-        }
-      })
-      .setNegativeButton("NO",
-      new DialogInterface.OnClickListener() {
-        @Override
-        public void onClick(DialogInterface dialog, int which) {
-          return;
-        }
-      });
-    AlertDialog alert = stampDeleteAlert.create();
-    alert.show();
-  }
+    private void clickItem(View v, int position) {
+        mActivity.callFromListItem(position);
+    }
 
-  private void deleteStampAndScan(View v, int position){
-    mActivity.callFromListItemToDelete(v, position);
-  }
+    private void clickDel(final View v, final int position) {
+        AlertDialog.Builder stampDeleteAlert = new AlertDialog.Builder(mActivity);
+        stampDeleteAlert.setMessage("낙관 [" + mStampItems.get(position).getStampName() + "] 을 정말 삭제하시겠습니까?").setCancelable(true)
+                .setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        deleteStampAndScan(v, position);
+                    }
+                })
+                .setNegativeButton("NO",
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                return;
+                            }
+                        });
+        AlertDialog alert = stampDeleteAlert.create();
+        alert.show();
+    }
 
-  @Override
-  public int getItemCount() {
-    return mStampItems.size();
-  }
+    private void deleteStampAndScan(View v, int position) {
+        mActivity.callFromListItemToDelete(v, position);
+    }
+
+    @Override
+    public int getItemCount() {
+        return mStampItems.size();
+    }
 }

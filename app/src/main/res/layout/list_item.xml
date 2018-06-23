@@ -58,7 +58,7 @@
     android:orientation="horizontal">
 
     <Button
-        android:id="@+id/deleteItempButton"
+        android:id="@+id/deleteStempButton"
         android:layout_width="32dp"
         android:layout_height="32dp"
         android:background="@drawable/ic_close_highlight_48dp" />
