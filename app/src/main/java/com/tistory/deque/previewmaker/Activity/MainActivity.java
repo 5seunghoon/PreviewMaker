@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity
     public final static String PREVIEW_SAVED_DIRECTORY = "Preview Maker";
     public final static String STAMP_SAVED_DIRECTORY = "Stamp";
 
-    private static int MAX_SELECT_IMAGE_ACCOUNT = 20;
+    private static int MAX_SELECT_IMAGE_ACCOUNT = 99;
 
     private final int REQUEST_TAKE_STAMP_FROM_ALBUM = 101;
     private final int REQUEST_MAKE_STAMP_ACTIVITY = 102;
