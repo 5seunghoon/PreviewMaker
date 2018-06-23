@@ -71,6 +71,7 @@ public class PreviewCanvasView extends View {
     private ProgressDialog previewLoadProgressDialog;
 
     private boolean isSaveRoutine = false;
+    private boolean isLoadRoutine = false;
     private Snackbar saveInformationSnackbar;
 
     private PreviewBitmapControler pbc;
@@ -95,6 +96,7 @@ public class PreviewCanvasView extends View {
         previewLoadProgressDialog.setCancelable(false);
         previewLoadProgressDialog.setCanceledOnTouchOutside(false);
         previewLoadProgressDialog.setMessage(mActivity.getString(R.string.message_preview_load_dialog));
+
     }
 
     @Override
@@ -111,7 +113,7 @@ public class PreviewCanvasView extends View {
 
                 drawCanvasOriginalSize(PreviewEditActivity.POSITION);
 
-            } else {
+            } else if (!isLoadRoutine) {
 
                 drawBellowBitmap();
                 if (isStampShown) {
@@ -620,24 +622,59 @@ public class PreviewCanvasView extends View {
         previewItems.get(nextPosition).saved();
 
         //프리뷰 비트맵을 변경
-        pbc.setPreviewBitmap(previewItems.get(nextPosition));
+        changeStartPreviewBitmap();
 
-        invalidate();
         if (saveInformationSnackbar != null) {
             saveInformationSnackbar.dismiss();
         }
     }
 
     public void changeCanvasToSave() {
-        isSaveRoutine = true;
         callInvalidate();
+        isSaveRoutine = true;
     }
 
     public void cropPreview() {
         //프리뷰를 잘랐을때 마지막으로 호출되는 함수
 
+        changeStartPreviewBitmap();
+    }
+
+    public void changeStartPreviewBitmap(){
+        previewLoadProgressDialog.show();
+        isLoadRoutine = true;
+        LoadPreviewAsyncTask loadPreviewAsyncTask = new LoadPreviewAsyncTask();
+        loadPreviewAsyncTask.execute(0);
+    }
+
+    public void changeProgressPreviewBitmap(){
+        //프리뷰 비트맵을 바꿈
         pbc.setPreviewBitmap(previewItems.get(PreviewEditActivity.POSITION));
+    }
+
+
+    public void changeSuccessPreviewBitmap(){
+        isLoadRoutine = false;
+        try {
+            previewLoadProgressDialog.dismiss();
+        } catch (Exception e) {
+        }
         invalidate();
+    }
+
+    protected class LoadPreviewAsyncTask extends AsyncTask<Integer, Integer, Integer>{
+        @Override
+        protected Integer doInBackground(Integer... integers) {
+            changeProgressPreviewBitmap();
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Integer integer) {
+            super.onPostExecute(integer);
+            changeSuccessPreviewBitmap();
+        }
+
     }
 
     protected class SaveAllAsyncTask extends AsyncTask<Integer, Integer, String> {

@@ -338,7 +338,7 @@ public class PreviewEditActivity extends AppCompatActivity {
         previewItems.remove(removePos);
         previewPaths.remove(removePos);
 
-        mPreviewCanvasView.callInvalidate();
+        mPreviewCanvasView.changeAndInitPreviewInCanvas(POSITION);
     }
 
     @OnClick(R.id.buttonStampFinish)
@@ -508,6 +508,7 @@ public class PreviewEditActivity extends AppCompatActivity {
         @Override
         protected Boolean doInBackground(PreviewEditActivity... param) { // 스래드 실행 중
             Uri thumbnailUri, originalUri;
+            boolean firstAdd = true;
 
             for (String previewPath : previewPaths) { // previewPaths -> previewItems
                 thumbnailUri = thumbnailURIFromOriginalURI(previewPath);
@@ -518,6 +519,10 @@ public class PreviewEditActivity extends AppCompatActivity {
                 }
                 Logger.d(TAG, "Thumbnail parsing success : " + thumbnailUri);
                 previewItems.add(new PreviewItem(originalUri, thumbnailUri, param[0]));
+                if(firstAdd) {
+                    pbc.setPreviewBitmap(previewItems.get(0));
+                    firstAdd = false;
+                }
                 Logger.d(TAG, "previewItem success : " + originalUri);
 
                 loadingCounter++;
