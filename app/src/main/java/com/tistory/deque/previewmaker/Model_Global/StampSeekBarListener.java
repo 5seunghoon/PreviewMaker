@@ -3,8 +3,8 @@ package com.tistory.deque.previewmaker.Model_Global;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 
-import com.tistory.deque.previewmaker.Controler.PreviewCanvasView;
-import com.tistory.deque.previewmaker.Controler.PreviewEditActivity;
+import com.tistory.deque.previewmaker.Activity.PreviewCanvasView;
+import com.tistory.deque.previewmaker.Activity.PreviewEditActivity;
 
 ;
 

@@ -7,7 +7,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 
 import com.tistory.deque.previewmaker.Util.Logger;
-import com.tistory.deque.previewmaker.Controler.MainActivity;
+import com.tistory.deque.previewmaker.Activity.MainActivity;
 
 import java.io.File;
 import java.io.FileNotFoundException;

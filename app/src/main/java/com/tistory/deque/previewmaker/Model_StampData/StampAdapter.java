@@ -12,7 +12,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.tistory.deque.previewmaker.Controler.MainActivity;
+import com.tistory.deque.previewmaker.Activity.MainActivity;
 import com.tistory.deque.previewmaker.R;
 
 import java.util.ArrayList;

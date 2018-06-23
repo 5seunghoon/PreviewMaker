@@ -7,7 +7,7 @@
   android:layout_height="match_parent"
   android:background="@color/backgroundGray"
   android:orientation="vertical"
-  tools:context=".Controler.MakeStampActivity">
+  tools:context=".Activity.MakeStampActivity">
 
   <LinearLayout
     android:layout_width="match_parent"

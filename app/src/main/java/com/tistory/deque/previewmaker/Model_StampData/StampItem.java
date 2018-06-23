@@ -3,7 +3,7 @@ package com.tistory.deque.previewmaker.Model_StampData;
 import android.net.Uri;
 
 import com.tistory.deque.previewmaker.Model_Global.DBOpenHelper;
-import com.tistory.deque.previewmaker.Controler.PreviewEditActivity;
+import com.tistory.deque.previewmaker.Activity.PreviewEditActivity;
 
 public class StampItem {
   private int ID;

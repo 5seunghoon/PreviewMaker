@@ -1,4 +1,4 @@
-package com.tistory.deque.previewmaker.Controler;
+package com.tistory.deque.previewmaker.Activity;
 
 import android.content.ContentResolver;
 import android.content.ContentUris;

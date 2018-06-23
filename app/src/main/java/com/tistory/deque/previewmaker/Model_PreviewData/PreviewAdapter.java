@@ -7,7 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.tistory.deque.previewmaker.Controler.PreviewEditActivity;
+import com.tistory.deque.previewmaker.Activity.PreviewEditActivity;
 import com.tistory.deque.previewmaker.R;
 
 import java.util.ArrayList;
