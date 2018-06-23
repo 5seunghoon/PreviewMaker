@@ -8,6 +8,7 @@ import com.tistory.deque.previewmaker.Model_PreviewData.PreviewItem;
 public class PreviewBitmapControler {
     private static PreviewBitmapControler pbc;
     private Bitmap previewBitmap;
+    private int bitmapWidth, bitmapHeight;
     private Activity mActivity;
 
     private PreviewBitmapControler(Activity mActivity){
@@ -29,5 +30,16 @@ public class PreviewBitmapControler {
     public void setPreviewBitmap(PreviewItem previewItem){
         this.previewBitmap = null;
         this.previewBitmap = previewItem.getBitmap();
+        this.bitmapHeight = this.previewBitmap.getHeight();
+        this.bitmapWidth = this.previewBitmap.getWidth();
     }
+
+    public int getBitmapWidth() {
+        return bitmapWidth;
+    }
+
+    public int getBitmapHeight() {
+        return bitmapHeight;
+    }
+
 }

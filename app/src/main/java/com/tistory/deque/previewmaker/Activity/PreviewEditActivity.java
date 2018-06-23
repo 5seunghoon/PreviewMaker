@@ -308,6 +308,10 @@ public class PreviewEditActivity extends AppCompatActivity {
 
     @OnClick(R.id.buttonStamp)
     public void clickButtonStamp() {
+        doClickButtonStamp();
+    }
+
+    public void doClickButtonStamp(){
         if (POSITION < 0) return;
 
         if (!mPreviewCanvasView.isStampShown()) {

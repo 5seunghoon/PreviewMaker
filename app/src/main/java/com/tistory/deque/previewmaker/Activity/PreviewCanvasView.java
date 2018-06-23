@@ -290,8 +290,8 @@ public class PreviewCanvasView extends View {
     private void drawCanvasOriginalSize(int previewPosition) {
         //Bitmap previewBitmap = previewItems.get(previewPosition).getmBitmap();
         Bitmap previewBitmap = pbc.getPreviewBitmap();
-        int previewOrigBitmapWidth = previewBitmap.getWidth();
-        int previewOrigBitmapHeight = previewBitmap.getHeight();
+        int previewOrigBitmapWidth = pbc.getBitmapWidth();
+        int previewOrigBitmapHeight = pbc.getBitmapHeight();
 
         Rect previewDst = new Rect(0, 0, previewOrigBitmapWidth, previewOrigBitmapHeight);
         mCanvas.drawBitmap(previewBitmap, null, previewDst, null);
@@ -328,10 +328,10 @@ public class PreviewCanvasView extends View {
     private void drawBellowBitmap() {
         //Bitmap previewBitmap = previewItems.get(PreviewEditActivity.POSITION).getmBitmap();
         Bitmap previewBitmap = pbc.getPreviewBitmap();
+        int previewBitmapWidth = pbc.getBitmapWidth();
+        int previewBitmapHeight = pbc.getBitmapHeight();
         canvasWidth = grandParentWidth - 16;
         canvasHeight = grandParentHeight - 16; // layout margin
-        int previewBitmapWidth = previewBitmap.getWidth();
-        int previewBitmapHeight = previewBitmap.getHeight();
         Logger.d(TAG, "CANVAS : W : " + canvasWidth + " , H : " + canvasHeight);
 
         double rate = (double) previewBitmapWidth / (double) previewBitmapHeight;
@@ -545,11 +545,12 @@ public class PreviewCanvasView extends View {
     }
 
     public void saveEnd() {
-        isSaveRoutine = false;
         try {
             saveProgressDialog.dismiss();
         } catch (Exception e) {
         }
+        isSaveRoutine = false;
+        callInvalidate();
     }
 
     public void savePreviewEach(int nextPosition) {
@@ -654,12 +655,13 @@ public class PreviewCanvasView extends View {
 
 
     public void changeSuccessPreviewBitmap(){
-        isLoadRoutine = false;
         try {
             previewLoadProgressDialog.dismiss();
         } catch (Exception e) {
         }
-        invalidate();
+        isLoadRoutine = false;
+        callInvalidate();
+        //mActivity.doClickButtonStamp();
     }
 
     protected class LoadPreviewAsyncTask extends AsyncTask<Integer, Integer, Integer>{
@@ -698,8 +700,8 @@ public class PreviewCanvasView extends View {
             Bitmap screenshot = Bitmap.createBitmap(
                     //previewItems.get(previewPosition).getmBitmap().getWidth(),
                     //previewItems.get(previewPosition).getmBitmap().getHeight(),
-                    pbc.getPreviewBitmap().getWidth(),
-                    pbc.getPreviewBitmap().getHeight(),
+                    pbc.getBitmapWidth(),
+                    pbc.getBitmapHeight(),
                     Bitmap.Config.ARGB_8888);
 
             Canvas canvas = new Canvas(screenshot);
@@ -764,7 +766,6 @@ public class PreviewCanvasView extends View {
                 }
             }
             saveEnd();
-            super.onPostExecute(str);
         }
     }
 }
