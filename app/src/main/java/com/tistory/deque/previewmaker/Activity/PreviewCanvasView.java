@@ -633,6 +633,13 @@ public class PreviewCanvasView extends View {
         callInvalidate();
     }
 
+    public void cropPreview() {
+        //프리뷰를 잘랐을때 마지막으로 호출되는 함수
+
+        pbc.setPreviewBitmap(previewItems.get(PreviewEditActivity.POSITION));
+        invalidate();
+    }
+
     protected class SaveAllAsyncTask extends AsyncTask<Integer, Integer, String> {
 
         int nextPosition;

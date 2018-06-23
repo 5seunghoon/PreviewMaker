@@ -191,6 +191,8 @@ public class PreviewEditActivity extends AppCompatActivity {
                     previewItem.setOriginalImageURI(resultUri);
                     previewItem.editted();
 
+                    mPreviewCanvasView.cropPreview();
+
                 } else if (resultCode == UCrop.RESULT_ERROR) {
                     final Throwable cropError = UCrop.getError(data);
                     Logger.d(TAG, "CROP ERROR");
