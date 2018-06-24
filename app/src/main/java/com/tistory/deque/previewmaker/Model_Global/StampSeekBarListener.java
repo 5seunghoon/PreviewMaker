@@ -22,9 +22,10 @@ public class StampSeekBarListener implements OnSeekBarChangeListener {
 
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        //시크바가 바뀔때마다 콜백
         if (mSelected == StampEditSelectedEnum.BRIGHTNESS) {
-            mCanvasView.onDrawStampBrigtness(progress);
-            mActivity.setStampSeekBarText(progress, mSelected);
+            mCanvasView.onDrawStampBrigtness(progress); // 스탬프의 밝기를 바꿈
+            mActivity.setStampSeekBarText(progress, mSelected); // 시크바 옆의 텍스트를 바꿈
         }
     }
 

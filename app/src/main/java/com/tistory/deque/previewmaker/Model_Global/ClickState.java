@@ -18,6 +18,10 @@ public class ClickState {
         return clickState;
     }
 
+    public void clickFilterButton(){
+        clickStateEnum = ClickStateEnum.STATE_BITMAP_FILTER;
+    }
+
     public ClickStateEnum getClickStateEnum() {
         return clickStateEnum;
     }
@@ -34,6 +38,20 @@ public class ClickState {
         return clickStateEnum != ClickStateEnum.STATE_NONE_CLICK;
     }
 
+    public void clickFinishFilterEdit(){
+        switch (clickStateEnum) {
+            case STATE_NONE_CLICK:
+                break;
+            case STATE_STAMP_EDIT:
+                break;
+            case STATE_STAMP_ZOOM:
+                break;
+            case STATE_BITMAP_FILTER:
+                clickStateEnum = ClickStateEnum.STATE_NONE_CLICK;
+                break;
+        }
+    }
+
     public void clickFinishStampEdit() {
         switch ((clickStateEnum)) {
             case STATE_NONE_CLICK:
@@ -43,6 +61,8 @@ public class ClickState {
                 break;
             case STATE_STAMP_ZOOM:
                 clickStateEnum = ClickStateEnum.STATE_NONE_CLICK;
+                break;
+            case STATE_BITMAP_FILTER:
                 break;
         }
     }
@@ -56,6 +76,8 @@ public class ClickState {
                 break;
             case STATE_STAMP_ZOOM:
                 break;
+            case STATE_BITMAP_FILTER:
+                break;
         }
     }
 
@@ -67,6 +89,8 @@ public class ClickState {
                 clickStateEnum = ClickStateEnum.STATE_STAMP_ZOOM;
                 break;
             case STATE_STAMP_ZOOM:
+                break;
+            case STATE_BITMAP_FILTER:
                 break;
         }
     }
@@ -80,6 +104,8 @@ public class ClickState {
             case STATE_STAMP_ZOOM:
                 clickStateEnum = ClickStateEnum.STATE_STAMP_EDIT;
                 break;
+            case STATE_BITMAP_FILTER:
+                break;
         }
     }
 
@@ -92,6 +118,8 @@ public class ClickState {
                 break;
             case STATE_STAMP_ZOOM:
                 clickStateEnum = ClickStateEnum.STATE_NONE_CLICK;
+                break;
+            case STATE_BITMAP_FILTER:
                 break;
         }
     }

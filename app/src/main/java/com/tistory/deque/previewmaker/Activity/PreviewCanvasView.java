@@ -183,13 +183,13 @@ public class PreviewCanvasView extends View {
 
     public void clickStamp() {
         CLICK_STATE.clickStamp();
-        mActivity.editButtonGoneOrVisible(CLICK_STATE);
+        mActivity.editButtonInvisibleOrVisible(CLICK_STATE);
         invalidate();
     }
 
     public void clickStampToZoom() {
         CLICK_STATE.clickStampZoomStart();
-        mActivity.editButtonGoneOrVisible(CLICK_STATE);
+        mActivity.editButtonInvisibleOrVisible(CLICK_STATE);
         invalidate();
     }
 
@@ -404,6 +404,17 @@ public class PreviewCanvasView extends View {
         return paint;
     }
 
+    public void clickFilterEditStart() {
+        CLICK_STATE.clickFilterButton();
+        mActivity.editButtonInvisibleOrVisible(CLICK_STATE);
+    }
+
+    public void finishFilterEdit() {
+        CLICK_STATE.clickFinishFilterEdit();
+        mActivity.editButtonInvisibleOrVisible(CLICK_STATE);
+    }
+
+
     private void drawStampEditGuide() {
         int x_s = stampWidthPos; //x start
         int x_e = stampWidthPos + stampWidth; //x end
@@ -437,7 +448,7 @@ public class PreviewCanvasView extends View {
 
     public void finishStampEdit() {
         CLICK_STATE.clickFinishStampEdit();
-        mActivity.editButtonGoneOrVisible(CLICK_STATE);
+        mActivity.editButtonInvisibleOrVisible(CLICK_STATE);
 
         int id = stampItem.getID();
         stampPosWidthPer = (int) (((stampWidth / 2.0f) + stampWidthPos - previewPosWidth) * 100000.0f / (previewWidth));
@@ -466,20 +477,18 @@ public class PreviewCanvasView extends View {
 
     public void deleteStamp() {
         CLICK_STATE.clickFinishStampEdit();
-        mActivity.editButtonGoneOrVisible(CLICK_STATE);
+        mActivity.editButtonInvisibleOrVisible(CLICK_STATE);
 
         isStampShown = false;
         invalidate();
     }
 
-    public void brightnessStamp() {
-    }
 
     protected void showStamp() {
         setStampShown(true);
         CLICK_STATE.clickStampButton();
         previewItems.get(PreviewEditActivity.POSITION).editted();
-        mActivity.editButtonGoneOrVisible(CLICK_STATE);
+        mActivity.editButtonInvisibleOrVisible(CLICK_STATE);
     }
 
     protected void callInvalidate() {
@@ -619,7 +628,7 @@ public class PreviewCanvasView extends View {
         PreviewEditActivity.POSITION = nextPosition;
         isStampShown = false;
         CLICK_STATE.finish();
-        mActivity.editButtonGoneOrVisible(CLICK_STATE);
+        mActivity.editButtonInvisibleOrVisible(CLICK_STATE);
         previewItems.get(nextPosition).saved();
 
         //프리뷰 비트맵을 변경

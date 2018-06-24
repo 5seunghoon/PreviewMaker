@@ -25,6 +25,7 @@
   <string name="action_saveeach_title">개별 저장</string>
   <string name="action_sticker_title">스티커</string>
   <string name="action_delete_title">삭제</string>
+  <string name="action_filter_title">간편 보정</string>
 
   <string name="action_stamp_edit_finish_title">편집 완료</string>
   <string name="action_stamp_edit_delete_title">낙관 삭제</string>
