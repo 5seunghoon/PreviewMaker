@@ -1,64 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-  xmlns:app="http://schemas.android.com/apk/res-auto"
-  xmlns:tools="http://schemas.android.com/tools"
-  android:id="@+id/activityMakeStampMainLayout"
-  android:layout_width="match_parent"
-  android:layout_height="match_parent"
-  android:background="@color/backgroundGray"
-  android:orientation="vertical"
-  tools:context=".Activity.MakeStampActivity">
-
-  <LinearLayout
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activityMakeStampMainLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginTop="8dp"
-    android:layout_weight="12"
-    android:background="@android:color/white"
-    android:gravity="center"
+    android:background="@color/backgroundGray"
     android:orientation="vertical"
-    android:padding="20dp">
+    tools:context=".Activity.MakeStampActivity">
 
     <LinearLayout
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:orientation="horizontal">
-
-      <EditText
-        android:id="@+id/stampNameEditText"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="7"
-        android:hint="@string/hint_stamp_name"
-        android:inputType="textPersonName" />
+        android:layout_height="match_parent"
+        android:layout_marginTop="8dp"
+        android:layout_weight="12"
+        android:background="@android:color/white"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="20dp">
 
-      <Button
-        android:id="@+id/stampNameOkButton"
-        style="@style/Widget.AppCompat.Button.ButtonBar.AlertDialog"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:text="OK" />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/stampNameEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="7"
+                android:hint="@string/hint_stamp_name"
+                android:inputType="textPersonName" />
+
+            <Button
+                android:id="@+id/stampNameOkButton"
+                style="@style/Widget.AppCompat.Button.ButtonBar.AlertDialog"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="OK" />
+        </LinearLayout>
+
     </LinearLayout>
 
-  </LinearLayout>
+    <LinearLayout
+        android:id="@+id/stampImageLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_weight="3"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="16dp">
 
-  <LinearLayout
-    android:id="@+id/stampImageLayout"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_marginBottom="8dp"
-    android:layout_marginTop="8dp"
-    android:layout_weight="3"
-    android:gravity="center"
-    android:orientation="vertical"
-    android:padding="16dp">
+        <ImageView
+            android:id="@+id/stampImageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent" />
 
-    <ImageView
-      android:id="@+id/stampImageView"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:background="@android:color/transparent" />
-
-  </LinearLayout>
+    </LinearLayout>
 </LinearLayout>

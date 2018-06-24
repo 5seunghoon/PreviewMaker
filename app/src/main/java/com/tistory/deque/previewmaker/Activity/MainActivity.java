@@ -8,16 +8,18 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.tistory.deque.previewmaker.Model_Global.DBOpenHelper;
@@ -58,14 +60,14 @@ public class MainActivity extends AppCompatActivity {
     private final String TAG = "MainActivity";
 
 
-    @BindView(R.id.toolbar)
-    Toolbar mToolbar;
     @BindView(R.id.mainActivityHintText)
     TextView mMainActivityHintTextView;
     @BindView(R.id.fab)
     FloatingActionButton fab;
     @BindView(R.id.recyclerStampView)
     RecyclerView mRecyclerStampView;
+    @BindView(R.id.mainActivityMainLayout)
+    CoordinatorLayout mainActivityMainLayout;
 
     private ArrayList<StampItem> mStampItems;
     private StampAdapter mStampAdapter;
@@ -99,15 +101,18 @@ public class MainActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
 
+        setTitle("프리뷰 메이커");
+
+
         dbOpen();
 
 
+
         //setting toolbar
-        setSupportActionBar(mToolbar);
 
         //permission
         mPermission = new Permission(getApplicationContext(), this);
-        mPermission.permissionSnackbarInit(mToolbar);
+        mPermission.permissionSnackbarInit(mainActivityMainLayout);
 
         //setting recycler view
         setRecyclerView();
@@ -120,8 +125,6 @@ public class MainActivity extends AppCompatActivity {
                 getStampFromAlbum();
             }
         });
-
-        setTitle("프리뷰 메이커");
 
 
         //setting navigation view
@@ -174,7 +177,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {// 드로어가 닫혀있으면 앱 종료
         if (System.currentTimeMillis() - mBackPressedTime > 2000) {
-            Snackbar.make(mToolbar, getString(R.string.snackbar_main_acti_back_to_exit), Snackbar.LENGTH_LONG)
+            Snackbar.make(mainActivityMainLayout, getString(R.string.snackbar_main_acti_back_to_exit), Snackbar.LENGTH_LONG)
                     .setAction(getString(R.string.snackbar_main_acti_back_to_exit_btn), new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -297,7 +300,7 @@ public class MainActivity extends AppCompatActivity {
                 fis.close();
             } catch (IOException e) {
                 Logger.d(TAG, "FILE COPY FAIL");
-                Snackbar.make(mToolbar, getString(R.string.snackbar_main_acti_stamp_copy_err), Snackbar.LENGTH_LONG);
+                Snackbar.make(mainActivityMainLayout, getString(R.string.snackbar_main_acti_stamp_copy_err), Snackbar.LENGTH_LONG);
                 e.printStackTrace();
             }
         } else {
