@@ -150,8 +150,8 @@ public class PreviewCanvasView extends View {
         }
         return false;
     }
-    
-    private int getPosition(){
+
+    private int getPosition() {
         return PreviewEditActivity.POSITION;
     }
 
@@ -159,7 +159,7 @@ public class PreviewCanvasView extends View {
         PreviewEditActivity.POSITION = nextPosition;
     }
 
-    public void setIsSaveReady(boolean value){
+    public void setIsSaveReady(boolean value) {
         isSaveReady = true;
     }
 
@@ -383,7 +383,7 @@ public class PreviewCanvasView extends View {
         Paint paintPreviewContrastBrightness = getPaintContrastBrightnessPaint(previewItems.get(getPosition()).getAbsoluteContrast(), previewItems.get(getPosition()).getAbsoluteBrightness());
 
         Logger.d(TAG, previewPosWidth + "," + previewPosHeight + "," + (previewPosWidth + previewWidth) + "," + (previewPosHeight + previewHeight));
-        mCanvas.drawBitmap(previewBitmap, null, dst, paintPreviewContrastBrightness  );
+        mCanvas.drawBitmap(previewBitmap, null, dst, paintPreviewContrastBrightness);
     }
 
     private void drawStamp() {
@@ -408,15 +408,15 @@ public class PreviewCanvasView extends View {
         stampItem.setBrightness(value);
         callInvalidate();
     }
-    
-    public void onDrawPreviewBCK(int value, SeekBarSelectedEnum sem){
+
+    public void onDrawPreviewBCK(int value, SeekBarSelectedEnum sem) {
         /**
          * 프리뷰의 밝기, 대비, 색온도를 변경
          */
-        if(previewItems == null){
+        if (previewItems == null) {
             return;
         }
-        if(previewItems.get(getPosition()) == null){
+        if (previewItems.get(getPosition()) == null) {
             return;
         }
 
@@ -606,9 +606,8 @@ public class PreviewCanvasView extends View {
     }
 
     public void saveEnd() {
-        previewItems.get(getPosition()).resetFilterValue();
-        isSaveRoutine = false;
         isSaveReady = false;
+        previewItems.get(getPosition()).resetFilterValue();
         try {
             saveProgressDialog.dismiss();
         } catch (Exception e) {
@@ -623,7 +622,9 @@ public class PreviewCanvasView extends View {
          * 만약 nextPosition이 -1이면, 저장 버튼을 눌린것임.
          * 그렇지 않으면, "저장하시겠습니까" 에서 YES를 눌린 것임.
          */
+        if (isLoadRoutine) return;
 
+        isSaveRoutine = true;
         saveProgressDialog.show();
         changeCanvasToSave();
         SaveAllAsyncTask saveAllAsyncTask = new SaveAllAsyncTask();
@@ -678,6 +679,8 @@ public class PreviewCanvasView extends View {
     public void changeAndInitPreviewInCanvas(int nextPosition) {
         //프리뷰를 다른걸 눌렀을때 캔버스의 프리뷰를 완전히 새로 바꿔주는 함수
 
+        if (isSaveRoutine) return;
+
         previewItems.get(nextPosition).resetFilterValue();
         previewValueInit();
 
@@ -697,7 +700,6 @@ public class PreviewCanvasView extends View {
 
 
     public void changeCanvasToSave() {
-        isSaveRoutine = true;
         callInvalidate();
     }
 
@@ -707,20 +709,20 @@ public class PreviewCanvasView extends View {
         changeStartPreviewBitmap();
     }
 
-    public void changeStartPreviewBitmap(){
-        previewLoadProgressDialog.show();
+    public void changeStartPreviewBitmap() {
         isLoadRoutine = true;
+        previewLoadProgressDialog.show();
         LoadPreviewAsyncTask loadPreviewAsyncTask = new LoadPreviewAsyncTask();
         loadPreviewAsyncTask.execute(0);
     }
 
-    public void changeProgressPreviewBitmap(){
+    public void changeProgressPreviewBitmap() {
         //프리뷰 비트맵을 바꿈
         pbc.setPreviewBitmap(previewItems.get(getPosition()));
     }
 
 
-    public void changeSuccessPreviewBitmap(){
+    public void changeSuccessPreviewBitmap() {
         try {
             previewLoadProgressDialog.dismiss();
         } catch (Exception e) {
@@ -730,7 +732,7 @@ public class PreviewCanvasView extends View {
         //mActivity.doClickButtonStamp();
     }
 
-    protected class LoadPreviewAsyncTask extends AsyncTask<Integer, Integer, Integer>{
+    protected class LoadPreviewAsyncTask extends AsyncTask<Integer, Integer, Integer> {
         @Override
         protected Integer doInBackground(Integer... integers) {
             changeProgressPreviewBitmap();
@@ -758,7 +760,8 @@ public class PreviewCanvasView extends View {
 
         @Override
         protected String doInBackground(Integer... param) {
-            while(!isSaveReady) {}
+            while (!isSaveReady) {
+            }
             nextPosition = param[0];
 
             if (getPosition() == -1) return ERROR_INVALID_POSITION;
@@ -804,6 +807,7 @@ public class PreviewCanvasView extends View {
         @Override
         protected void onPostExecute(String str) {
             if (str != ERROR_INVALID_POSITION) {
+                isSaveRoutine = false;
 
                 if (nextPosition != -1) {
                     changeAndInitPreviewInCanvas(nextPosition);
@@ -819,16 +823,18 @@ public class PreviewCanvasView extends View {
                     File resultFile = new File(str);
                     saveInformationSnackbar = Snackbar.make(mActivity.getCurrentFocus(),
                             "저장 폴더 : " + MainActivity.PREVIEW_SAVED_DIRECTORY + "\n파일 이름 : " + resultFile.getName(),
-                            Snackbar.LENGTH_LONG)
-                            .setAction("NEXT", new OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    if (getPosition() + 1 < previewItems.size()) {
-                                        nextPosition = getPosition() + 1;
-                                        changeAndInitPreviewInCanvas(nextPosition);
-                                    }
+                            Snackbar.LENGTH_LONG);
+                    if (nextPosition == -1) {
+                        saveInformationSnackbar.setAction("NEXT", new OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                if (getPosition() + 1 < previewItems.size()) {
+                                    nextPosition = getPosition() + 1;
+                                    changeAndInitPreviewInCanvas(nextPosition);
                                 }
-                            });
+                            }
+                        });
+                    }
                     saveInformationSnackbar.show();
                 }
             }
