@@ -3,7 +3,7 @@ package com.tistory.deque.previewmaker.Model_StampData;
 import android.net.Uri;
 
 import com.tistory.deque.previewmaker.Model_Global.DBOpenHelper;
-import com.tistory.deque.previewmaker.Activity.PreviewEditActivity;
+import com.tistory.deque.previewmaker.Model_Global.SeekBarListener;
 
 public class StampItem {
     private int ID;
@@ -93,15 +93,18 @@ public class StampItem {
     }
 
     public int getBrightness() {
-        return brightness + PreviewEditActivity.SeekBarBrightnessMax / 2;
+        //시크바에 들어갈 값이 리턴됨 (0~512)
+        //실제 brightness 는 -255~+255
+        return brightness + SeekBarListener.SeekBarStampBrightnessMax / 2;
     }
 
     public int getAbsoluteBrightness() {
+        //-255~255값을 반환, 스탬프에 실제로 필터를 적용할때 이용
         return brightness;
     }
 
     public void setBrightness(int brightness) {
-        this.brightness = brightness - PreviewEditActivity.SeekBarBrightnessMax / 2;
+        this.brightness = brightness - SeekBarListener.SeekBarStampBrightnessMax / 2;
     }
 
     public void resetBrightness() {

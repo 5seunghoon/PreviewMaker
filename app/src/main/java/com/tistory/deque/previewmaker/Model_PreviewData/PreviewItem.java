@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
 
+import com.tistory.deque.previewmaker.Model_Global.SeekBarListener;
 import com.tistory.deque.previewmaker.Util.Logger;
 import com.tistory.deque.previewmaker.Activity.MainActivity;
 
@@ -26,12 +27,15 @@ public class PreviewItem {
     private Activity mActivity;
     private boolean isSaved;
 
+    private int brightness;
+
     public PreviewItem(Uri originalImageURI, Uri thumbnailImageURI, Activity activity) {
         this.originalImageURI = originalImageURI;
         this.thumbnailImageURI = thumbnailImageURI;
         this.mActivity = activity;
         this.isSaved = true;
         this.resultImageURI = makeResultImageFile();
+        this.brightness = 0;
         //mBitmap = URIToBitmap(originalImageURI, mActivity);
     }
 
@@ -91,6 +95,22 @@ public class PreviewItem {
         Logger.d(TAG, "image file uri : " + resultUri);
 
         return resultUri;
+    }
+
+    public int getBrightness() {
+        //시크바에 들어갈 값이 리턴됨 (0~512)
+        //실제 brightness 는 -255~+255
+        return brightness + SeekBarListener.SeekBarPreviewBrightnessMax / 2;
+    }
+
+    public int getAbsoluteBrightness() {
+        //실제 필터를 적용할 때 이용. -255 ~ +255를 리턴
+        return brightness;
+    }
+
+    public void setBrightness(int brightness) {
+        //0~512를 인자로 받아서 -255~+255로 수정후 저장
+        this.brightness = brightness - SeekBarListener.SeekBarPreviewBrightnessMax / 2;
     }
 
     public static void setBitmapMaxSize(int size) {

@@ -1,6 +1,6 @@
 package com.tistory.deque.previewmaker.Model_Global;
 
-public enum StampEditSelectedEnum {
+public enum SeekBarSelectedEnum {
     BRIGHTNESS,
     CONTRAST,
     PREVIEW_BRIGHTNESS,

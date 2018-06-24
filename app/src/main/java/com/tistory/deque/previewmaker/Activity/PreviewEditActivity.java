@@ -25,8 +25,8 @@ import com.tistory.deque.previewmaker.Controler.PreviewBitmapControler;
 import com.tistory.deque.previewmaker.Model_Global.ClickState;
 import com.tistory.deque.previewmaker.Model_Global.ClickStateEnum;
 import com.tistory.deque.previewmaker.Model_Global.DBOpenHelper;
-import com.tistory.deque.previewmaker.Model_Global.StampEditSelectedEnum;
-import com.tistory.deque.previewmaker.Model_Global.StampSeekBarListener;
+import com.tistory.deque.previewmaker.Model_Global.SeekBarSelectedEnum;
+import com.tistory.deque.previewmaker.Model_Global.SeekBarListener;
 import com.tistory.deque.previewmaker.Model_PreviewData.PreviewAdapter;
 import com.tistory.deque.previewmaker.Model_PreviewData.PreviewItem;
 import com.tistory.deque.previewmaker.R;
@@ -50,7 +50,6 @@ public class PreviewEditActivity extends AppCompatActivity {
 
     public static final String EXTRA_STAMP_ID = "STAMP_ID";
     public static final String EXTRA_PREVIEW_LIST = "PREVIEW_LIST";
-    public static int SeekBarBrightnessMax = 512;
 
     public static int canvasGrandParentViewWidth, canvasGrandParentViewHeight;
 
@@ -91,8 +90,8 @@ public class PreviewEditActivity extends AppCompatActivity {
     @BindView(R.id.layoutFilterButtonLayout)
     LinearLayout layoutFilterButtonLayout;
 
-    private StampSeekBarListener mSeekBarStampBrightnessListener;
-    private StampSeekBarListener mSeekBarPreviewBrightnessListener;
+    private SeekBarListener mSeekBarStampBrightnessListener;
+    private SeekBarListener mSeekBarPreviewBrightnessListener;
 
     @BindView(R.id.editSeekBar)
     SeekBar editSeekbar;
@@ -240,11 +239,11 @@ public class PreviewEditActivity extends AppCompatActivity {
     }
 
     private void setSeekBar() {
-        mSeekBarStampBrightnessListener = new StampSeekBarListener(this, StampEditSelectedEnum.BRIGHTNESS, mPreviewCanvasView);
-        mSeekBarPreviewBrightnessListener = new StampSeekBarListener(this, StampEditSelectedEnum.PREVIEW_BRIGHTNESS, mPreviewCanvasView);
+        mSeekBarStampBrightnessListener = new SeekBarListener(this, SeekBarSelectedEnum.BRIGHTNESS, mPreviewCanvasView);
+        mSeekBarPreviewBrightnessListener = new SeekBarListener(this, SeekBarSelectedEnum.PREVIEW_BRIGHTNESS, mPreviewCanvasView);
 
-        editSeekbar.setMax(SeekBarBrightnessMax);
-        editSeekbar.setProgress(SeekBarBrightnessMax / 2);
+        editSeekbar.setMax(SeekBarListener.SeekBarStampBrightnessMax);
+        editSeekbar.setProgress(SeekBarListener.SeekBarStampBrightnessMax / 2);
 
     }
 
@@ -345,9 +344,19 @@ public class PreviewEditActivity extends AppCompatActivity {
 
     @OnClick(R.id.buttonFilter)
     public void clickButtonFilter(){
+        if (POSITION < 0) return;
+
+        mPreviewCanvasView.clickFilterEditStart();
+    }
+
+    @OnClick(R.id.buttonPreviewBrightness)
+    public void clickButtonPreviewBrightness(){
         editSeekbar.setOnSeekBarChangeListener(mSeekBarPreviewBrightnessListener);
         editSeekBarLayout.setVisibility(View.VISIBLE);
-        mPreviewCanvasView.clickFilterEditStart();
+        editSeekbar.setMax(SeekBarListener.SeekBarPreviewBrightnessMax);
+        editSeekbar.setProgress(previewItems.get(POSITION).getBrightness());
+        setStampSeekBarText(previewItems.get(POSITION).getBrightness(), SeekBarSelectedEnum.PREVIEW_BRIGHTNESS);
+        mPreviewCanvasView.callInvalidate();
     }
 
     @OnClick(R.id.buttonFilterFinish)
@@ -370,10 +379,14 @@ public class PreviewEditActivity extends AppCompatActivity {
 
     @OnClick(R.id.buttonStampBrightness)
     public void clickButtonStampBrightness() {
+        /**
+         * 할일 : 시크바의 max변경, 비저빌리티 변경, 프로그레스값 변경, 리스너 변경, 텍스트 변경
+         */
+        editSeekbar.setMax(SeekBarListener.SeekBarStampBrightnessMax);
         editSeekBarLayout.setVisibility(View.VISIBLE);
         editSeekbar.setProgress(selectedStamp.getBrightness());
         editSeekbar.setOnSeekBarChangeListener(mSeekBarStampBrightnessListener);
-        setStampSeekBarText(selectedStamp.getBrightness(), StampEditSelectedEnum.BRIGHTNESS);
+        setStampSeekBarText(selectedStamp.getBrightness(), SeekBarSelectedEnum.BRIGHTNESS);
         mPreviewCanvasView.callInvalidate();
     }
 
@@ -383,10 +396,25 @@ public class PreviewEditActivity extends AppCompatActivity {
         mPreviewCanvasView.stampReset();
     }
 
-    public void setStampSeekBarText(int value, StampEditSelectedEnum selected) {
-        if (selected == StampEditSelectedEnum.BRIGHTNESS) {
-            int resultProgressValue = (int) ((value - PreviewEditActivity.SeekBarBrightnessMax / 2f) / (PreviewEditActivity.SeekBarBrightnessMax / 2f) * 100f);
-            seekBarTextViewLeft.setText(resultProgressValue + "%");
+    public void setStampSeekBarText(int value, SeekBarSelectedEnum selected) {
+        int resultProgressValue;
+        switch (selected){
+            case BRIGHTNESS:
+                resultProgressValue = (int) ((value - SeekBarListener.SeekBarStampBrightnessMax / 2f) / (SeekBarListener.SeekBarStampBrightnessMax / 2f) * 100f);
+                seekBarTextViewLeft.setText(resultProgressValue + "%");
+                break;
+            case CONTRAST:
+                break;
+            case PREVIEW_BRIGHTNESS:
+                resultProgressValue = (int) ((value - SeekBarListener.SeekBarPreviewBrightnessMax / 2f) / (SeekBarListener.SeekBarPreviewBrightnessMax / 2f) * 100f);
+                seekBarTextViewLeft.setText(resultProgressValue + "%");
+                break;
+            case PREVIEW_TEMPER:
+                break;
+            case PREVIEW_CONTRAST:
+                break;
+            case PREVIEW_SATURATION:
+                break;
         }
     }
 

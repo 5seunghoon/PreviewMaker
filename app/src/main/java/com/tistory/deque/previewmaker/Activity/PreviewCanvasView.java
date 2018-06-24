@@ -105,13 +105,13 @@ public class PreviewCanvasView extends View {
         mCanvas = canvas;
         setBackgroundColor(ContextCompat.getColor(getContext(), R.color.backgroundGray));
 
-        if (PreviewEditActivity.POSITION < 0) { // 프리뷰들중에서 아무런 프리뷰도 선택하지 않았을 때
+        if (getPosition() < 0) { // 프리뷰들중에서 아무런 프리뷰도 선택하지 않았을 때
             setBackgroundColor(Color.WHITE);
         } else {
 
             if (isSaveRoutine) {
 
-                drawCanvasOriginalSize(PreviewEditActivity.POSITION);
+                drawCanvasOriginalSize(getPosition());
 
             } else if (!isLoadRoutine) {
 
@@ -146,6 +146,14 @@ public class PreviewCanvasView extends View {
             return true;
         }
         return false;
+    }
+    
+    private int getPosition(){
+        return PreviewEditActivity.POSITION;
+    }
+
+    private void setPosition(int nextPosition) {
+        PreviewEditActivity.POSITION = nextPosition;
     }
 
     @Override
@@ -326,7 +334,7 @@ public class PreviewCanvasView extends View {
 
 
     private void drawBellowBitmap() {
-        //Bitmap previewBitmap = previewItems.get(PreviewEditActivity.POSITION).getmBitmap();
+        //Bitmap previewBitmap = previewItems.get(getPosition()).getmBitmap();
         Bitmap previewBitmap = pbc.getPreviewBitmap();
         int previewBitmapWidth = pbc.getBitmapWidth();
         int previewBitmapHeight = pbc.getBitmapHeight();
@@ -386,6 +394,16 @@ public class PreviewCanvasView extends View {
         }
         stampItem.setBrightness(value);
         callInvalidate();
+    }
+    
+    public void onDrawPreviewBrightness(int value){
+        if(previewItems == null){
+            return;
+        }
+        if(previewItems.get(getPosition()) == null){
+            return;
+        }
+
     }
 
     public Paint getPaintContrastBrightnessPaint(float contrast, float brightness) {
@@ -487,7 +505,7 @@ public class PreviewCanvasView extends View {
     protected void showStamp() {
         setStampShown(true);
         CLICK_STATE.clickStampButton();
-        previewItems.get(PreviewEditActivity.POSITION).editted();
+        previewItems.get(getPosition()).editted();
         mActivity.editButtonInvisibleOrVisible(CLICK_STATE);
     }
 
@@ -610,8 +628,8 @@ public class PreviewCanvasView extends View {
                         });
 
 
-        if (PreviewEditActivity.POSITION != -1) {
-            if (!previewItems.get(PreviewEditActivity.POSITION).getIsSaved()) {
+        if (getPosition() != -1) {
+            if (!previewItems.get(getPosition()).getIsSaved()) {
                 AlertDialog alert = stampDeleteAlert.create();
                 alert.setCanceledOnTouchOutside(false);
                 alert.show();
@@ -625,7 +643,7 @@ public class PreviewCanvasView extends View {
         //프리뷰를 다른걸 눌렀을때 캔버스의 프리뷰를 완전히 새로 바꿔주는 함수
 
         previewValueInit();
-        PreviewEditActivity.POSITION = nextPosition;
+        setPosition(nextPosition);
         isStampShown = false;
         CLICK_STATE.finish();
         mActivity.editButtonInvisibleOrVisible(CLICK_STATE);
@@ -638,6 +656,7 @@ public class PreviewCanvasView extends View {
             saveInformationSnackbar.dismiss();
         }
     }
+
 
     public void changeCanvasToSave() {
         callInvalidate();
@@ -659,7 +678,7 @@ public class PreviewCanvasView extends View {
 
     public void changeProgressPreviewBitmap(){
         //프리뷰 비트맵을 바꿈
-        pbc.setPreviewBitmap(previewItems.get(PreviewEditActivity.POSITION));
+        pbc.setPreviewBitmap(previewItems.get(getPosition()));
     }
 
 
@@ -703,8 +722,8 @@ public class PreviewCanvasView extends View {
         protected String doInBackground(Integer... param) {
             nextPosition = param[0];
 
-            if (PreviewEditActivity.POSITION == -1) return ERROR_INVALID_POSITION;
-            int previewPosition = PreviewEditActivity.POSITION;
+            if (getPosition() == -1) return ERROR_INVALID_POSITION;
+            int previewPosition = getPosition();
 
             Bitmap screenshot = Bitmap.createBitmap(
                     //previewItems.get(previewPosition).getmBitmap().getWidth(),
@@ -750,7 +769,7 @@ public class PreviewCanvasView extends View {
                 if (nextPosition != -1) {
                     changeAndInitPreviewInCanvas(nextPosition);
                 } else {
-                    changeAndInitPreviewInCanvas(PreviewEditActivity.POSITION);
+                    changeAndInitPreviewInCanvas(getPosition());
                 }
 
 
@@ -765,8 +784,8 @@ public class PreviewCanvasView extends View {
                             .setAction("NEXT", new OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
-                                    if (PreviewEditActivity.POSITION + 1 < previewItems.size()) {
-                                        nextPosition = PreviewEditActivity.POSITION + 1;
+                                    if (getPosition() + 1 < previewItems.size()) {
+                                        nextPosition = getPosition() + 1;
                                         changeAndInitPreviewInCanvas(nextPosition);
                                     }
                                 }
