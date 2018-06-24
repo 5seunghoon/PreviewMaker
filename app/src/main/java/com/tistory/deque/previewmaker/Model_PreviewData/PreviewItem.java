@@ -126,7 +126,7 @@ public class PreviewItem {
 
     public float getAbsoluteContrast() {
         //실제 필터를 적용할 때 이용. -255 ~ +255를 리턴
-        return ((float)contrast / 255.0f) + 1.0f;
+        return ((float)contrast - 128.0f / 255.0f) + 1.0f;
     }
 
     public void setContrast(int contrast) {
