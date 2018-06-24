@@ -12,6 +12,7 @@ public class SeekBarListener implements OnSeekBarChangeListener {
 
     public static int SeekBarStampBrightnessMax = 512;
     public static int SeekBarPreviewBrightnessMax = 512;
+    public static int SeekBarPreviewContrastMax = 512;
 
     private PreviewEditActivity mActivity;
     private SeekBarSelectedEnum mSelected;
@@ -26,7 +27,7 @@ public class SeekBarListener implements OnSeekBarChangeListener {
 
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-        //시크바가 바뀔때마다 콜백
+        //시크바의 값이 바뀔때마다 콜백
         switch (mSelected){
             case BRIGHTNESS:
                 mCanvasView.onDrawStampBrigtness(progress); // 스탬프의 밝기를 바꿈
@@ -35,10 +36,14 @@ public class SeekBarListener implements OnSeekBarChangeListener {
             case CONTRAST:
                 break;
             case PREVIEW_BRIGHTNESS:
+                mCanvasView.onDrawPreviewBCK(progress, mSelected);
+                mActivity.setStampSeekBarText(progress, mSelected);
                 break;
-            case PREVIEW_TEMPER:
+            case PREVIEW_KELVIN:
                 break;
             case PREVIEW_CONTRAST:
+                mCanvasView.onDrawPreviewBCK(progress, mSelected);
+                mActivity.setStampSeekBarText(progress, mSelected);
                 break;
             case PREVIEW_SATURATION:
                 break;

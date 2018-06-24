@@ -24,6 +24,7 @@ import android.view.View;
 import com.tistory.deque.previewmaker.Controler.PreviewBitmapControler;
 import com.tistory.deque.previewmaker.Model_Global.ClickState;
 import com.tistory.deque.previewmaker.Model_Global.ClickStateEnum;
+import com.tistory.deque.previewmaker.Model_Global.SeekBarSelectedEnum;
 import com.tistory.deque.previewmaker.Model_PreviewData.PreviewItem;
 import com.tistory.deque.previewmaker.R;
 import com.tistory.deque.previewmaker.Model_StampData.StampAnchorEnum;
@@ -75,6 +76,8 @@ public class PreviewCanvasView extends View {
     private Snackbar saveInformationSnackbar;
 
     private PreviewBitmapControler pbc;
+
+    private boolean isSaveReady = false;
 
 
     public PreviewCanvasView(Context context, PreviewEditActivity activity, ArrayList<PreviewItem> previewItems, PreviewBitmapControler pbc) {
@@ -154,6 +157,10 @@ public class PreviewCanvasView extends View {
 
     private void setPosition(int nextPosition) {
         PreviewEditActivity.POSITION = nextPosition;
+    }
+
+    public void setIsSaveReady(boolean value){
+        isSaveReady = true;
     }
 
     @Override
@@ -302,7 +309,8 @@ public class PreviewCanvasView extends View {
         int previewOrigBitmapHeight = pbc.getBitmapHeight();
 
         Rect previewDst = new Rect(0, 0, previewOrigBitmapWidth, previewOrigBitmapHeight);
-        mCanvas.drawBitmap(previewBitmap, null, previewDst, null);
+        Paint paintPreviewContrastBrightness = getPaintContrastBrightnessPaint(previewItems.get(previewPosition).getAbsoluteContrast(), previewItems.get(previewPosition).getAbsoluteBrightness());
+        mCanvas.drawBitmap(previewBitmap, null, previewDst, paintPreviewContrastBrightness);
 
         if (isStampShown) {
             int widthAnchor, heightAnchor, anchorInt;
@@ -330,6 +338,8 @@ public class PreviewCanvasView extends View {
             Logger.d(TAG + "[SAVE]", changedStampCenterX + ", " + changedStampCenterY + ", " + changedStampWidth + ", " + changedStampHeight);
             mCanvas.drawBitmap(stampOriginalBitmap, null, stampDst, paintContrastBrightness);
         }
+
+        isSaveReady = true;
     }
 
 
@@ -369,8 +379,11 @@ public class PreviewCanvasView extends View {
 
         }
         dst = new Rect(previewPosWidth, previewPosHeight, previewPosWidth + previewWidth, previewPosHeight + previewHeight);
+
+        Paint paintPreviewContrastBrightness = getPaintContrastBrightnessPaint(previewItems.get(getPosition()).getAbsoluteContrast(), previewItems.get(getPosition()).getAbsoluteBrightness());
+
         Logger.d(TAG, previewPosWidth + "," + previewPosHeight + "," + (previewPosWidth + previewWidth) + "," + (previewPosHeight + previewHeight));
-        mCanvas.drawBitmap(previewBitmap, null, dst, null);
+        mCanvas.drawBitmap(previewBitmap, null, dst, paintPreviewContrastBrightness  );
     }
 
     private void drawStamp() {
@@ -396,7 +409,10 @@ public class PreviewCanvasView extends View {
         callInvalidate();
     }
     
-    public void onDrawPreviewBrightness(int value){
+    public void onDrawPreviewBCK(int value, SeekBarSelectedEnum sem){
+        /**
+         * 프리뷰의 밝기, 대비, 색온도를 변경
+         */
         if(previewItems == null){
             return;
         }
@@ -404,6 +420,24 @@ public class PreviewCanvasView extends View {
             return;
         }
 
+        switch (sem) {
+            case BRIGHTNESS:
+                break;
+            case CONTRAST:
+                break;
+            case PREVIEW_BRIGHTNESS:
+                previewItems.get(getPosition()).setBrightness(value);
+                break;
+            case PREVIEW_KELVIN:
+                break;
+            case PREVIEW_CONTRAST:
+                previewItems.get(getPosition()).setContrast(value);
+                break;
+            case PREVIEW_SATURATION:
+                break;
+        }
+
+        callInvalidate();
     }
 
     public Paint getPaintContrastBrightnessPaint(float contrast, float brightness) {
@@ -572,11 +606,13 @@ public class PreviewCanvasView extends View {
     }
 
     public void saveEnd() {
+        previewItems.get(getPosition()).resetFilterValue();
+        isSaveRoutine = false;
+        isSaveReady = false;
         try {
             saveProgressDialog.dismiss();
         } catch (Exception e) {
         }
-        isSaveRoutine = false;
         callInvalidate();
     }
 
@@ -642,7 +678,9 @@ public class PreviewCanvasView extends View {
     public void changeAndInitPreviewInCanvas(int nextPosition) {
         //프리뷰를 다른걸 눌렀을때 캔버스의 프리뷰를 완전히 새로 바꿔주는 함수
 
+        previewItems.get(nextPosition).resetFilterValue();
         previewValueInit();
+
         setPosition(nextPosition);
         isStampShown = false;
         CLICK_STATE.finish();
@@ -659,8 +697,8 @@ public class PreviewCanvasView extends View {
 
 
     public void changeCanvasToSave() {
-        callInvalidate();
         isSaveRoutine = true;
+        callInvalidate();
     }
 
     public void cropPreview() {
@@ -720,6 +758,7 @@ public class PreviewCanvasView extends View {
 
         @Override
         protected String doInBackground(Integer... param) {
+            while(!isSaveReady) {}
             nextPosition = param[0];
 
             if (getPosition() == -1) return ERROR_INVALID_POSITION;

@@ -35,7 +35,8 @@ public class ClickState {
     }
 
     public boolean isShowGuideLine() {
-        return clickStateEnum != ClickStateEnum.STATE_NONE_CLICK;
+        return (clickStateEnum == ClickStateEnum.STATE_STAMP_EDIT ||
+                clickStateEnum == ClickStateEnum.STATE_STAMP_ZOOM);
     }
 
     public void clickFinishFilterEdit(){

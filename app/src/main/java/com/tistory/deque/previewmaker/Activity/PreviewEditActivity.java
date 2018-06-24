@@ -92,6 +92,7 @@ public class PreviewEditActivity extends AppCompatActivity {
 
     private SeekBarListener mSeekBarStampBrightnessListener;
     private SeekBarListener mSeekBarPreviewBrightnessListener;
+    private SeekBarListener mSeekBarPreviewContrastListener;
 
     @BindView(R.id.editSeekBar)
     SeekBar editSeekbar;
@@ -241,9 +242,10 @@ public class PreviewEditActivity extends AppCompatActivity {
     private void setSeekBar() {
         mSeekBarStampBrightnessListener = new SeekBarListener(this, SeekBarSelectedEnum.BRIGHTNESS, mPreviewCanvasView);
         mSeekBarPreviewBrightnessListener = new SeekBarListener(this, SeekBarSelectedEnum.PREVIEW_BRIGHTNESS, mPreviewCanvasView);
+        mSeekBarPreviewContrastListener = new SeekBarListener(this, SeekBarSelectedEnum.PREVIEW_CONTRAST, mPreviewCanvasView);
 
         editSeekbar.setMax(SeekBarListener.SeekBarStampBrightnessMax);
-        editSeekbar.setProgress(SeekBarListener.SeekBarStampBrightnessMax / 2);
+        //editSeekbar.setProgress(SeekBarListener.SeekBarStampBrightnessMax / 2);
 
     }
 
@@ -346,6 +348,8 @@ public class PreviewEditActivity extends AppCompatActivity {
     public void clickButtonFilter(){
         if (POSITION < 0) return;
 
+        previewItems.get(POSITION).editted();
+
         mPreviewCanvasView.clickFilterEditStart();
     }
 
@@ -356,6 +360,16 @@ public class PreviewEditActivity extends AppCompatActivity {
         editSeekbar.setMax(SeekBarListener.SeekBarPreviewBrightnessMax);
         editSeekbar.setProgress(previewItems.get(POSITION).getBrightness());
         setStampSeekBarText(previewItems.get(POSITION).getBrightness(), SeekBarSelectedEnum.PREVIEW_BRIGHTNESS);
+        mPreviewCanvasView.callInvalidate();
+    }
+
+    @OnClick(R.id.buttonPreviewContrast)
+    public void clickButtonPreviewContrast(){
+        editSeekbar.setOnSeekBarChangeListener(mSeekBarPreviewContrastListener);
+        editSeekBarLayout.setVisibility(View.VISIBLE);
+        editSeekbar.setMax(SeekBarListener.SeekBarPreviewContrastMax);
+        editSeekbar.setProgress(previewItems.get(POSITION).getContrast());
+        setStampSeekBarText(previewItems.get(POSITION).getContrast(), SeekBarSelectedEnum.PREVIEW_CONTRAST);
         mPreviewCanvasView.callInvalidate();
     }
 
@@ -382,10 +396,10 @@ public class PreviewEditActivity extends AppCompatActivity {
         /**
          * 할일 : 시크바의 max변경, 비저빌리티 변경, 프로그레스값 변경, 리스너 변경, 텍스트 변경
          */
+        editSeekbar.setOnSeekBarChangeListener(mSeekBarStampBrightnessListener);
         editSeekbar.setMax(SeekBarListener.SeekBarStampBrightnessMax);
         editSeekBarLayout.setVisibility(View.VISIBLE);
         editSeekbar.setProgress(selectedStamp.getBrightness());
-        editSeekbar.setOnSeekBarChangeListener(mSeekBarStampBrightnessListener);
         setStampSeekBarText(selectedStamp.getBrightness(), SeekBarSelectedEnum.BRIGHTNESS);
         mPreviewCanvasView.callInvalidate();
     }
@@ -409,9 +423,11 @@ public class PreviewEditActivity extends AppCompatActivity {
                 resultProgressValue = (int) ((value - SeekBarListener.SeekBarPreviewBrightnessMax / 2f) / (SeekBarListener.SeekBarPreviewBrightnessMax / 2f) * 100f);
                 seekBarTextViewLeft.setText(resultProgressValue + "%");
                 break;
-            case PREVIEW_TEMPER:
+            case PREVIEW_KELVIN:
                 break;
             case PREVIEW_CONTRAST:
+                resultProgressValue = (int) ((value - SeekBarListener.SeekBarPreviewContrastMax / 2f) / (SeekBarListener.SeekBarPreviewContrastMax / 2f) * 100f);
+                seekBarTextViewLeft.setText(resultProgressValue + "%");
                 break;
             case PREVIEW_SATURATION:
                 break;

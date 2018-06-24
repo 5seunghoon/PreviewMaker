@@ -28,6 +28,8 @@ public class PreviewItem {
     private boolean isSaved;
 
     private int brightness;
+    private int contrast;
+    private int kelvin;
 
     public PreviewItem(Uri originalImageURI, Uri thumbnailImageURI, Activity activity) {
         this.originalImageURI = originalImageURI;
@@ -35,7 +37,10 @@ public class PreviewItem {
         this.mActivity = activity;
         this.isSaved = true;
         this.resultImageURI = makeResultImageFile();
+
         this.brightness = 0;
+        this.contrast = 0;
+        this.kelvin = 0;
         //mBitmap = URIToBitmap(originalImageURI, mActivity);
     }
 
@@ -112,6 +117,31 @@ public class PreviewItem {
         //0~512를 인자로 받아서 -255~+255로 수정후 저장
         this.brightness = brightness - SeekBarListener.SeekBarPreviewBrightnessMax / 2;
     }
+
+    public int getContrast(){
+        //시크바에 들어갈 값이 리턴됨 (0~512)
+        //실제 brightness 는 -255~+255
+        return contrast + SeekBarListener.SeekBarPreviewContrastMax / 2;
+    }
+
+    public float getAbsoluteContrast() {
+        //실제 필터를 적용할 때 이용. -255 ~ +255를 리턴
+        return ((float)contrast / 255.0f) + 1.0f;
+    }
+
+    public void setContrast(int contrast) {
+        //0~512를 인자로 받아서 -255~+255로 수정후 저장
+        this.contrast = contrast - SeekBarListener.SeekBarPreviewContrastMax / 2;
+    }
+
+    public void resetFilterValue(){
+        this.brightness = 0;
+        this.contrast = 0;
+        this.kelvin = 0;
+    }
+
+
+
 
     public static void setBitmapMaxSize(int size) {
         bitmapMaxSize = size;
