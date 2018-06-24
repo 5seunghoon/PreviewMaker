@@ -44,113 +44,131 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <LinearLayout
-                android:id="@+id/layoutStampEditButton"
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="right"
-                android:orientation="horizontal"
-                android:visibility="visible">
+                android:layout_height="match_parent"
+                android:layout_weight="1">
 
-                <Button
-                    android:id="@+id/buttonStampDelete"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:id="@+id/layoutEditButton"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     android:background="@android:color/white"
-                    android:drawableTop="@drawable/ic_delete_black_48dp"
-                    android:paddingTop="4dp"
-                    android:text="@string/action_stamp_edit_delete_title"
-                    android:textSize="12sp" />
+                    android:orientation="horizontal"
+                    android:visibility="visible">
 
-                <Button
-                    android:id="@+id/buttonStampBrightness"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="@android:color/white"
-                    android:drawableTop="@drawable/ic_settings_brightness_black_24dp"
-                    android:paddingTop="4dp"
-                    android:text="@string/action_stamp_edit_brightness_title"
-                    android:textSize="12sp" />
+                    <Button
+                        android:id="@+id/buttonDelete"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@android:color/white"
+                        android:drawableTop="@drawable/ic_delete_black_48dp"
+                        android:paddingTop="4dp"
+                        android:text="@string/action_delete_title"
+                        android:textSize="12sp" />
 
-                <Button
-                    android:id="@+id/buttonStampReset"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="@android:color/white"
-                    android:drawableTop="@drawable/ic_settings_backup_restore_black_24dp"
-                    android:paddingTop="4dp"
-                    android:text="@string/action_stamp_edit_reset"
-                    android:textSize="12sp" />
+                    <Button
+                        android:id="@+id/buttonCrop"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@android:color/white"
+                        android:drawableTop="@drawable/ic_crop_rotate_black_48dp"
+                        android:paddingTop="4dp"
+                        android:text="@string/action_crop_title"
+                        android:textSize="12sp" />
 
-                <Button
-                    android:id="@+id/buttonStampFinish"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="@android:color/white"
-                    android:drawableTop="@drawable/ic_check_black_48dp"
-                    android:paddingTop="4dp"
-                    android:text="@string/action_stamp_edit_finish_title"
-                    android:textSize="12sp" />
+                    <Button
+                        android:id="@+id/buttonStamp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@android:color/white"
+                        android:drawableTop="@drawable/ic_attach_file_black_48dp"
+                        android:paddingTop="4dp"
+                        android:text="@string/action_stamp_title"
+                        android:textSize="12sp" />
 
-            </LinearLayout>
+                    <Button
+                        android:id="@+id/buttonFilter"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@android:color/white"
+                        android:drawableTop="@drawable/ic_photo_filter_black_24dp"
+                        android:paddingTop="4dp"
+                        android:text="@string/action_delete_title"
+                        android:textSize="12sp" />
 
-            <LinearLayout
-                android:id="@+id/layoutEditButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@android:color/white"
-                android:orientation="horizontal">
+                    <Button
+                        android:id="@+id/buttonSaveEach"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@android:color/white"
+                        android:drawableTop="@drawable/ic_save_black_48dp"
+                        android:paddingTop="4dp"
+                        android:text="@string/action_saveeach_title"
+                        android:textSize="12sp" />
 
-                <Button
-                    android:id="@+id/buttonDelete"
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/layoutStampEditButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:background="@android:color/white"
-                    android:drawableTop="@drawable/ic_delete_black_48dp"
-                    android:paddingTop="4dp"
-                    android:text="@string/action_delete_title"
-                    android:textSize="12sp" />
+                    android:gravity="right"
+                    android:orientation="horizontal"
+                    android:visibility="invisible">
 
-                <Button
-                    android:id="@+id/buttonCrop"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="@android:color/white"
-                    android:drawableTop="@drawable/ic_crop_rotate_black_48dp"
-                    android:paddingTop="4dp"
-                    android:text="@string/action_crop_title"
-                    android:textSize="12sp" />
+                    <Button
+                        android:id="@+id/buttonStampDelete"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@android:color/white"
+                        android:drawableTop="@drawable/ic_delete_black_48dp"
+                        android:paddingTop="4dp"
+                        android:text="@string/action_stamp_edit_delete_title"
+                        android:textSize="12sp" />
 
-                <Button
-                    android:id="@+id/buttonStamp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="@android:color/white"
-                    android:drawableTop="@drawable/ic_attach_file_black_48dp"
-                    android:paddingTop="4dp"
-                    android:text="@string/action_stamp_title"
-                    android:textSize="12sp" />
+                    <Button
+                        android:id="@+id/buttonStampBrightness"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@android:color/white"
+                        android:drawableTop="@drawable/ic_settings_brightness_black_24dp"
+                        android:paddingTop="4dp"
+                        android:text="@string/action_stamp_edit_brightness_title"
+                        android:textSize="12sp" />
 
-                <Button
-                    android:id="@+id/buttonSaveEach"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="@android:color/white"
-                    android:drawableTop="@drawable/ic_save_black_48dp"
-                    android:paddingTop="4dp"
-                    android:text="@string/action_saveeach_title"
-                    android:textSize="12sp" />
+                    <Button
+                        android:id="@+id/buttonStampReset"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@android:color/white"
+                        android:drawableTop="@drawable/ic_settings_backup_restore_black_24dp"
+                        android:paddingTop="4dp"
+                        android:text="@string/action_stamp_edit_reset"
+                        android:textSize="12sp" />
 
-            </LinearLayout>
+                    <Button
+                        android:id="@+id/buttonStampFinish"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@android:color/white"
+                        android:drawableTop="@drawable/ic_check_black_48dp"
+                        android:paddingTop="4dp"
+                        android:text="@string/action_stamp_edit_finish_title"
+                        android:textSize="12sp" />
+
+                </LinearLayout>
+            </FrameLayout>
 
             <LinearLayout
                 android:id="@+id/layoutStampEditSeekBar"

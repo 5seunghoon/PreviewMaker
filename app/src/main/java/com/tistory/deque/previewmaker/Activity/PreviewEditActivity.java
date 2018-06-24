@@ -86,27 +86,9 @@ public class PreviewEditActivity extends AppCompatActivity {
     @BindView(R.id.previewLoadingProgressBar)
     ProgressBar previewLoadingProgressBar;
     @BindView(R.id.layoutEditButton)
-    LinearLayout layoutEditButton;
+    LinearLayout layoutEditButtonLayout;
     @BindView(R.id.layoutStampEditButton)
-    LinearLayout layoutStampEditButton;
-
-    @BindView(R.id.buttonCrop)
-    Button mButtonCrop;
-    @BindView(R.id.buttonStamp)
-    Button mButtonStamp;
-    @BindView(R.id.buttonDelete)
-    Button mButtonDelete;
-    @BindView(R.id.buttonSaveEach)
-    Button mButtonSaveEach;
-
-    @BindView(R.id.buttonStampFinish)
-    Button mButtonStampFinish;
-    @BindView(R.id.buttonStampDelete)
-    Button mButtonStampDelete;
-    @BindView(R.id.buttonStampBrightness)
-    Button mButtonStampBrightness;
-    @BindView(R.id.buttonStampReset)
-    Button mButtonStampReset;
+    LinearLayout layoutStampEditButtonLayout;
 
     private StampSeekBarListener mStampSeekBarBrightnessListener;
     @BindView(R.id.stampEditSeekBar)
@@ -259,8 +241,8 @@ public class PreviewEditActivity extends AppCompatActivity {
     }
 
     private void setVisibleInit() {
-        layoutStampEditButton.setVisibility(View.GONE);
-        layoutEditButton.setVisibility(View.VISIBLE);
+        layoutStampEditButtonLayout.setVisibility(View.GONE);
+        layoutEditButtonLayout.setVisibility(View.VISIBLE);
         mLayoutStampEditSeekBar.setVisibility(View.INVISIBLE);
     }
 
@@ -345,6 +327,11 @@ public class PreviewEditActivity extends AppCompatActivity {
         mPreviewCanvasView.changeAndInitPreviewInCanvas(POSITION);
     }
 
+    @OnClick(R.id.buttonFilter)
+    public void clickButtonFilter(){
+
+    }
+
     @OnClick(R.id.buttonStampFinish)
     public void clickButtonStampFinish() {
         mLayoutStampEditSeekBar.setVisibility(View.INVISIBLE);
@@ -425,11 +412,11 @@ public class PreviewEditActivity extends AppCompatActivity {
     public void editButtonGoneOrVisible(ClickState CLICK_STATE) {
         if (CLICK_STATE.getClickStateEnum() == ClickStateEnum.STATE_STAMP_EDIT ||
                 CLICK_STATE.getClickStateEnum() == ClickStateEnum.STATE_STAMP_ZOOM) {
-            layoutEditButton.setVisibility(View.GONE);
-            layoutStampEditButton.setVisibility(View.VISIBLE);
+            layoutEditButtonLayout.setVisibility(View.GONE);
+            layoutStampEditButtonLayout.setVisibility(View.VISIBLE);
         } else {
-            layoutStampEditButton.setVisibility(View.GONE);
-            layoutEditButton.setVisibility(View.VISIBLE);
+            layoutStampEditButtonLayout.setVisibility(View.GONE);
+            layoutEditButtonLayout.setVisibility(View.VISIBLE);
         }
     }
 
