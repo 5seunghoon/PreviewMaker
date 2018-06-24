@@ -4,8 +4,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -46,15 +48,27 @@ public class MakeStampActivity extends AppCompatActivity {
         setTitle(R.string.title_make_stamp_activity);
         stampImageView.setImageURI(imageURI);
 
+        ActionBar actionBar = getSupportActionBar();
+        //뒤로가기 버튼
+        actionBar.setDisplayHomeAsUpEnabled(true);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                //뒤로가기 버튼
+                cancleAndFinish();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override
     public void onBackPressed() {
         if (System.currentTimeMillis() - backPressedTime < 2000) {
-            deleteFile(imageURI);
-            Intent resultIntent = new Intent();
-            setResult(RESULT_CANCELED, resultIntent);
-            finish();
+            cancleAndFinish();
         } else {
             Snackbar
                     .make(findViewById(R.id.activityMakeStampMainLayout)
@@ -63,6 +77,13 @@ public class MakeStampActivity extends AppCompatActivity {
                     .show();
             backPressedTime = System.currentTimeMillis();
         }
+    }
+
+    public void cancleAndFinish(){
+        deleteFile(imageURI);
+        Intent resultIntent = new Intent();
+        setResult(RESULT_CANCELED, resultIntent);
+        finish();
     }
 
     private void deleteFile(Uri uri) {
