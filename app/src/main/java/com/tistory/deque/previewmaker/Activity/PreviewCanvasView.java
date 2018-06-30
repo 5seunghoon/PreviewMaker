@@ -440,18 +440,22 @@ public class PreviewCanvasView extends View {
         callInvalidate();
     }
 
-    public Paint getPaintContrastBrightnessPaint(float contrast, float brightness) {
+    public Paint getPaintContrastBrightnessPaint(float c, float b) {
         //contrast : 1, brightness : 0 is init value
+        float t = (1.0f - c) * 128.0f;
+        b += t;
         ColorMatrix cm = new ColorMatrix(new float[]
                 {
-                        contrast, 0, 0, 0, brightness,
-                        0, contrast, 0, 0, brightness,
-                        0, 0, contrast, 0, brightness,
+                        c, 0, 0, 0, b,
+                        0, c, 0, 0, b,
+                        0, 0, c, 0, b,
                         0, 0, 0, 1, 0
                 });
 
         Paint paint = new Paint();
         paint.setColorFilter(new ColorMatrixColorFilter(cm));
+
+
 
         return paint;
     }
@@ -761,6 +765,8 @@ public class PreviewCanvasView extends View {
         @Override
         protected String doInBackground(Integer... param) {
             while (!isSaveReady) {
+                //spin ready to save
+                //캔버스에 오리지널 크기로 비트맵을 다 그리고 나면 save ready가 true가 됨
             }
             nextPosition = param[0];
 
