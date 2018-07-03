@@ -22,6 +22,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.tistory.deque.previewmaker.Controler.PreviewBitmapControler;
+import com.tistory.deque.previewmaker.Controler.PreviewPaintControler;
 import com.tistory.deque.previewmaker.Model_Global.ClickState;
 import com.tistory.deque.previewmaker.Model_Global.ClickStateEnum;
 import com.tistory.deque.previewmaker.Model_Global.SeekBarSelectedEnum;
@@ -265,11 +266,6 @@ public class PreviewCanvasView extends View {
         CLICK_STATE.clickStampZoomEnd();
     }
 
-    private boolean isInBox(int x, int y, int x1, int y1, int x2, int y2) {
-        if (x > x1 && x < x2 && y > y1 && y < y2) return true;
-        else return false;
-    }
-
     private boolean isInBoxWithWidth(int x, int y, int x1, int y1, int xWidth, int yWidth) {
         if (x > x1 && x < x1 + xWidth && y > y1 && y < y1 + yWidth) return true;
         else return false;
@@ -309,7 +305,14 @@ public class PreviewCanvasView extends View {
         int previewOrigBitmapHeight = pbc.getBitmapHeight();
 
         Rect previewDst = new Rect(0, 0, previewOrigBitmapWidth, previewOrigBitmapHeight);
-        Paint paintPreviewContrastBrightness = getPaintContrastBrightnessPaint(previewItems.get(previewPosition).getAbsoluteContrast(), previewItems.get(previewPosition).getAbsoluteBrightness());
+
+        PreviewItem nowPreview = previewItems.get(previewPosition);
+        Paint paintPreviewContrastBrightness = PreviewPaintControler.getPaint(
+                nowPreview.getAbsoluteContrast()
+                , nowPreview.getAbsoluteBrightness()
+                , nowPreview.getAbsoluteSaturation()
+                , nowPreview.getAbsoluteKelvin()
+        );
         mCanvas.drawBitmap(previewBitmap, null, previewDst, paintPreviewContrastBrightness);
 
         if (isStampShown) {
@@ -328,7 +331,7 @@ public class PreviewCanvasView extends View {
             changedStampCenterX = (int) ((double) stampItem.getPos_width_per() * (double) previewOrigBitmapWidth / 100000d);
             changedStampCenterY = (int) ((double) stampItem.getPos_height_per() * (double) previewOrigBitmapHeight / 100000d);
 
-            Paint paintContrastBrightness = getPaintContrastBrightnessPaint(1, stampItem.getAbsoluteBrightness());
+            Paint paintContrastBrightness = PreviewPaintControler.getPaint(1, stampItem.getAbsoluteBrightness(), 1, 1);
 
             Rect stampDst = new Rect(
                     (int) (changedStampCenterX - changedStampWidth * widthAnchor / 2f),
@@ -380,7 +383,13 @@ public class PreviewCanvasView extends View {
         }
         dst = new Rect(previewPosWidth, previewPosHeight, previewPosWidth + previewWidth, previewPosHeight + previewHeight);
 
-        Paint paintPreviewContrastBrightness = getPaintContrastBrightnessPaint(previewItems.get(getPosition()).getAbsoluteContrast(), previewItems.get(getPosition()).getAbsoluteBrightness());
+        PreviewItem nowPreview = previewItems.get(getPosition());
+        Paint paintPreviewContrastBrightness = PreviewPaintControler.getPaint(
+                nowPreview.getAbsoluteContrast()
+                , nowPreview.getAbsoluteBrightness()
+                , nowPreview.getAbsoluteSaturation()
+                , nowPreview.getAbsoluteKelvin()
+        );
 
         Logger.d(TAG, previewPosWidth + "," + previewPosHeight + "," + (previewPosWidth + previewWidth) + "," + (previewPosHeight + previewHeight));
         mCanvas.drawBitmap(previewBitmap, null, dst, paintPreviewContrastBrightness);
@@ -395,7 +404,7 @@ public class PreviewCanvasView extends View {
                 stampWidth + ", " + stampHeight + ", " +
                 stampPosWidthPer + ", " + stampPosHeightPer + ", " + stampURI);
 
-        Paint paintContrastBrightness = getPaintContrastBrightnessPaint(1, stampItem.getAbsoluteBrightness());
+        Paint paintContrastBrightness = PreviewPaintControler.getPaint(1, stampItem.getAbsoluteBrightness(), 1, 1);
 
         Rect dst = new Rect(stampWidthPos, stampHeightPos, stampWidthPos + stampWidth, stampHeightPos + stampHeight);
         mCanvas.drawBitmap(stampOriginalBitmap, null, dst, paintContrastBrightness);
@@ -409,7 +418,7 @@ public class PreviewCanvasView extends View {
         callInvalidate();
     }
 
-    public void onDrawPreviewBCK(int value, SeekBarSelectedEnum sem) {
+    public void onDrawPreviewColorParam(int value, SeekBarSelectedEnum sem) {
         /**
          * 프리뷰의 밝기, 대비, 색온도를 변경
          */
@@ -429,35 +438,17 @@ public class PreviewCanvasView extends View {
                 previewItems.get(getPosition()).setBrightness(value);
                 break;
             case PREVIEW_KELVIN:
+                previewItems.get(getPosition()).setKelvin(value);
                 break;
             case PREVIEW_CONTRAST:
                 previewItems.get(getPosition()).setContrast(value);
                 break;
             case PREVIEW_SATURATION:
+                previewItems.get(getPosition()).setSaturation(value);
                 break;
         }
 
         callInvalidate();
-    }
-
-    public Paint getPaintContrastBrightnessPaint(float c, float b) {
-        //contrast : 1, brightness : 0 is init value
-        float t = (1.0f - c) * 128.0f;
-        b += t;
-        ColorMatrix cm = new ColorMatrix(new float[]
-                {
-                        c, 0, 0, 0, b,
-                        0, c, 0, 0, b,
-                        0, 0, c, 0, b,
-                        0, 0, 0, 1, 0
-                });
-
-        Paint paint = new Paint();
-        paint.setColorFilter(new ColorMatrixColorFilter(cm));
-
-
-
-        return paint;
     }
 
     public void clickFilterEditStart() {
@@ -465,8 +456,8 @@ public class PreviewCanvasView extends View {
         mActivity.editButtonInvisibleOrVisible(CLICK_STATE);
     }
 
-    public void finishFilterEdit() {
-        CLICK_STATE.clickFinishFilterEdit();
+    public void finishPreviewEdit() {
+        //CLICK_STATE.clickFinishFilterEdit();
         mActivity.editButtonInvisibleOrVisible(CLICK_STATE);
     }
 
@@ -642,7 +633,8 @@ public class PreviewCanvasView extends View {
 
     public void clickNewPreview(final int nextPosition) {
         AlertDialog.Builder stampDeleteAlert = new AlertDialog.Builder(mActivity);
-        stampDeleteAlert.setMessage(mActivity.getString(R.string.snackbar_preview_edit_acti_clk_new_preview)).setCancelable(true)
+        stampDeleteAlert
+                .setMessage(mActivity.getString(R.string.snackbar_preview_edit_acti_clk_new_preview)).setCancelable(true)
                 .setPositiveButton("YES",
                         new DialogInterface.OnClickListener() {
                             @Override
@@ -774,8 +766,6 @@ public class PreviewCanvasView extends View {
             int previewPosition = getPosition();
 
             Bitmap screenshot = Bitmap.createBitmap(
-                    //previewItems.get(previewPosition).getmBitmap().getWidth(),
-                    //previewItems.get(previewPosition).getmBitmap().getHeight(),
                     pbc.getBitmapWidth(),
                     pbc.getBitmapHeight(),
                     Bitmap.Config.ARGB_8888);

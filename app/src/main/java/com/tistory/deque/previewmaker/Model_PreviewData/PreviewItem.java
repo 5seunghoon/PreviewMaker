@@ -30,6 +30,7 @@ public class PreviewItem {
     private int brightness;
     private int contrast;
     private int kelvin;
+    private int saturation;
 
     public PreviewItem(Uri originalImageURI, Uri thumbnailImageURI, Activity activity) {
         this.originalImageURI = originalImageURI;
@@ -41,6 +42,7 @@ public class PreviewItem {
         this.brightness = 0;
         this.contrast = 0;
         this.kelvin = 0;
+        this.saturation = 0;
         //mBitmap = URIToBitmap(originalImageURI, mActivity);
     }
 
@@ -134,10 +136,35 @@ public class PreviewItem {
         this.contrast = contrast - SeekBarListener.SeekBarPreviewContrastMax / 2;
     }
 
+    public int getSaturation(){
+        return saturation + SeekBarListener.SeekBarPreviewSaturationMax / 2;
+    }
+
+    public float getAbsoluteSaturation(){
+        return ((float)saturation / 512.0f) + 1.0f;
+    }
+
+    public void setSaturation(int saturation){
+        this.saturation = saturation - SeekBarListener.SeekBarPreviewSaturationMax / 2;
+    }
+
+    public int getKelvin(){
+        return kelvin + SeekBarListener.SeekBarPreviewKelvinMax / 2;
+    }
+
+    public float getAbsoluteKelvin(){
+        return ((float)kelvin / 512.0f) + 1.0f;
+    }
+
+    public void setKelvin(int kelvin){
+        this.kelvin = kelvin - SeekBarListener.SeekBarPreviewKelvinMax / 2;
+    }
+
     public void resetFilterValue(){
         this.brightness = 0;
         this.contrast = 0;
         this.kelvin = 0;
+        this.saturation = 0;
     }
 
 

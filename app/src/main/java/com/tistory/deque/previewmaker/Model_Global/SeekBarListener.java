@@ -13,6 +13,8 @@ public class SeekBarListener implements OnSeekBarChangeListener {
     public static int SeekBarStampBrightnessMax = 512;
     public static int SeekBarPreviewBrightnessMax = 512;
     public static int SeekBarPreviewContrastMax = 512;
+    public static int SeekBarPreviewSaturationMax = 512;
+    public static int SeekBarPreviewKelvinMax = 512;
 
     private PreviewEditActivity mActivity;
     private SeekBarSelectedEnum mSelected;
@@ -36,16 +38,11 @@ public class SeekBarListener implements OnSeekBarChangeListener {
             case CONTRAST:
                 break;
             case PREVIEW_BRIGHTNESS:
-                mCanvasView.onDrawPreviewBCK(progress, mSelected);
-                mActivity.setStampSeekBarText(progress, mSelected);
-                break;
-            case PREVIEW_KELVIN:
-                break;
             case PREVIEW_CONTRAST:
-                mCanvasView.onDrawPreviewBCK(progress, mSelected);
-                mActivity.setStampSeekBarText(progress, mSelected);
-                break;
             case PREVIEW_SATURATION:
+            case PREVIEW_KELVIN:
+                mCanvasView.onDrawPreviewColorParam(progress, mSelected);
+                mActivity.setStampSeekBarText(progress, mSelected);
                 break;
         }
     }

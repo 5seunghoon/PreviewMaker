@@ -95,15 +95,39 @@ public class PreviewEditActivity extends AppCompatActivity {
     private SeekBarListener mSeekBarStampBrightnessListener;
     private SeekBarListener mSeekBarPreviewBrightnessListener;
     private SeekBarListener mSeekBarPreviewContrastListener;
+    private SeekBarListener mSeekBarPreviewSaturationListener;
+    private SeekBarListener mSeekBarPreviewKelvinListener;
 
-    @BindView(R.id.editSeekBar)
-    SeekBar editSeekbar;
-    @BindView(R.id.editSeekBarLayout)
-    LinearLayout editSeekBarLayout;
-    @BindView(R.id.seekBarTextViewLeft)
-    TextView seekBarTextViewLeft;
-    @BindView(R.id.seekBarTextViewRight)
-    TextView seekBarTextViewRight;
+
+    @BindView(R.id.editSeekBarLayoutDouble)
+    LinearLayout editSeekBarLayoutDouble;
+
+    @BindView(R.id.editSeekBar1)
+    SeekBar editSeekbar1;
+    @BindView(R.id.editSeekBarLayout1)
+    LinearLayout editSeekBarLayout1;
+    @BindView(R.id.seekBarTextViewLeft1)
+    TextView seekBarTextViewLeft1;
+    @BindView(R.id.seekBarTextViewRight1)
+    TextView seekBarTextViewRight1;
+
+    @BindView(R.id.editSeekBar2)
+    SeekBar editSeekbar2;
+    @BindView(R.id.editSeekBarLayout2)
+    LinearLayout editSeekBarLayout2;
+    @BindView(R.id.seekBarTextViewLeft2)
+    TextView seekBarTextViewLeft2;
+    @BindView(R.id.seekBarTextViewRight2)
+    TextView seekBarTextViewRight2;
+
+    @BindView(R.id.editSeekBarSingle)
+    SeekBar editSeekbarSingle;
+    @BindView(R.id.editSeekBarLayoutSingle)
+    LinearLayout editSeekBarLayoutSingle;
+    @BindView(R.id.seekBarTextViewLeftSingle)
+    TextView seekBarTextViewLeftSingle;
+    @BindView(R.id.seekBarTextViewRightSingle)
+    TextView seekBarTextViewRightSingle;
 
     public PreviewCanvasView getmPreviewCanvasView() {
         return mPreviewCanvasView;
@@ -262,9 +286,13 @@ public class PreviewEditActivity extends AppCompatActivity {
         mSeekBarStampBrightnessListener = new SeekBarListener(this, SeekBarSelectedEnum.BRIGHTNESS, mPreviewCanvasView);
         mSeekBarPreviewBrightnessListener = new SeekBarListener(this, SeekBarSelectedEnum.PREVIEW_BRIGHTNESS, mPreviewCanvasView);
         mSeekBarPreviewContrastListener = new SeekBarListener(this, SeekBarSelectedEnum.PREVIEW_CONTRAST, mPreviewCanvasView);
+        mSeekBarPreviewSaturationListener = new SeekBarListener(this, SeekBarSelectedEnum.PREVIEW_SATURATION, mPreviewCanvasView);
+        mSeekBarPreviewKelvinListener = new SeekBarListener(this, SeekBarSelectedEnum.PREVIEW_KELVIN, mPreviewCanvasView);
 
-        editSeekbar.setMax(SeekBarListener.SeekBarStampBrightnessMax);
-        //editSeekbar.setProgress(SeekBarListener.SeekBarStampBrightnessMax / 2);
+        editSeekbarSingle.setMax(SeekBarListener.SeekBarStampBrightnessMax);
+        editSeekbar1.setMax(SeekBarListener.SeekBarPreviewSaturationMax);
+        editSeekbar2.setMax(SeekBarListener.SeekBarPreviewSaturationMax);
+        //editSeekbar1.setProgress(SeekBarListener.SeekBarStampBrightnessMax / 2);
 
     }
 
@@ -279,7 +307,12 @@ public class PreviewEditActivity extends AppCompatActivity {
         layoutFilterButtonLayout.setVisibility(View.INVISIBLE);
 
         //시크바 레이아웃
-        editSeekBarLayout.setVisibility(View.INVISIBLE);
+        allSeekbarInvisible();
+    }
+
+    private void allSeekbarInvisible(){
+        editSeekBarLayoutSingle.setVisibility(View.INVISIBLE);
+        editSeekBarLayoutDouble.setVisibility(View.INVISIBLE);
     }
 
 
@@ -345,7 +378,7 @@ public class PreviewEditActivity extends AppCompatActivity {
 
     @OnClick(R.id.buttonDelete)
     public void clickButtonDelete() {
-        editSeekBarLayout.setVisibility(View.INVISIBLE);
+        allSeekbarInvisible();
 
         if (previewItems.size() == 1) return;
 
@@ -372,41 +405,80 @@ public class PreviewEditActivity extends AppCompatActivity {
         mPreviewCanvasView.clickFilterEditStart();
     }
 
-    @OnClick(R.id.buttonPreviewBrightness)
-    public void clickButtonPreviewBrightness(){
-        editSeekbar.setOnSeekBarChangeListener(mSeekBarPreviewBrightnessListener);
-        editSeekBarLayout.setVisibility(View.VISIBLE);
-        editSeekbar.setMax(SeekBarListener.SeekBarPreviewBrightnessMax);
-        editSeekbar.setProgress(previewItems.get(POSITION).getBrightness());
+    @OnClick(R.id.buttonPreviewBrightnessContrast)
+    public void clickButtonPreviewBrightnessContrast(){
+        seekBarTextViewLeft1.setText(getString(R.string.action_preview_edit_brightness_title));
+        seekBarTextViewLeft2.setText(getString(R.string.action_preview_edit_contrast_title));
+
+        editSeekbar1.setOnSeekBarChangeListener(mSeekBarPreviewBrightnessListener);
+        editSeekbar1.setMax(SeekBarListener.SeekBarPreviewBrightnessMax);
+        editSeekbar1.setProgress(previewItems.get(POSITION).getBrightness());
         setStampSeekBarText(previewItems.get(POSITION).getBrightness(), SeekBarSelectedEnum.PREVIEW_BRIGHTNESS);
-        mPreviewCanvasView.callInvalidate();
-    }
 
-    @OnClick(R.id.buttonPreviewContrast)
-    public void clickButtonPreviewContrast(){
-        editSeekbar.setOnSeekBarChangeListener(mSeekBarPreviewContrastListener);
-        editSeekBarLayout.setVisibility(View.VISIBLE);
-        editSeekbar.setMax(SeekBarListener.SeekBarPreviewContrastMax);
-        editSeekbar.setProgress(previewItems.get(POSITION).getContrast());
+        editSeekbar2.setOnSeekBarChangeListener(mSeekBarPreviewContrastListener);
+        editSeekbar2.setMax(SeekBarListener.SeekBarPreviewContrastMax);
+        editSeekbar2.setProgress(previewItems.get(POSITION).getContrast());
         setStampSeekBarText(previewItems.get(POSITION).getContrast(), SeekBarSelectedEnum.PREVIEW_CONTRAST);
+
+        editSeekBarLayoutDouble.setVisibility(View.VISIBLE);
         mPreviewCanvasView.callInvalidate();
     }
 
-    @OnClick(R.id.buttonFilterFinish)
-    public void clickButtonFilterFinish(){
-        editSeekBarLayout.setVisibility(View.INVISIBLE);
-        mPreviewCanvasView.finishFilterEdit();
+
+    @OnClick(R.id.buttonPreviewSaturationKelvin)
+    public void clickButtonPreviewSaturationKelvin(){
+        seekBarTextViewLeft1.setText(getString(R.string.action_preview_edit_saturation_title));
+        seekBarTextViewLeft2.setText(getString(R.string.action_preview_edit_kelvin_title));
+
+
+        editSeekbar1.setOnSeekBarChangeListener(mSeekBarPreviewSaturationListener);
+        editSeekbar1.setMax(SeekBarListener.SeekBarPreviewSaturationMax);
+        editSeekbar1.setProgress(previewItems.get(POSITION).getSaturation());
+        setStampSeekBarText(previewItems.get(POSITION).getSaturation(), SeekBarSelectedEnum.PREVIEW_SATURATION);
+
+
+        editSeekbar2.setOnSeekBarChangeListener(mSeekBarPreviewKelvinListener);
+        editSeekbar2.setMax(SeekBarListener.SeekBarPreviewSaturationMax);
+        editSeekbar2.setProgress(previewItems.get(POSITION).getSaturation());
+        setStampSeekBarText(previewItems.get(POSITION).getSaturation(), SeekBarSelectedEnum.PREVIEW_SATURATION);
+
+
+        editSeekBarLayoutDouble.setVisibility(View.VISIBLE);
+        mPreviewCanvasView.callInvalidate();
+    }
+
+    @OnClick(R.id.buttonPreviewBlur)
+    public void clickButtonPreivewBlur(){
+
+    }
+
+    @OnClick(R.id.buttonFilterReset)
+    public void clickButtonFilterReset(){
+        allSeekbarInvisible();
+        previewItems.get(POSITION).resetFilterValue();
+        mPreviewCanvasView.callInvalidate();
+    }
+
+
+    @OnClick(R.id.buttonPreviewEditFinish)
+    public void clickButtonPreviewEditFinish(){
+        //editSeekBarLayout1.setVisibility(View.INVISIBLE);
+        allSeekbarInvisible();
+        mPreviewCanvasView.finishPreviewEdit();
+        mPreviewCanvasView.savePreviewEach(-1);
     }
 
     @OnClick(R.id.buttonStampFinish)
     public void clickButtonStampFinish() {
-        editSeekBarLayout.setVisibility(View.INVISIBLE);
+        //editSeekBarLayout1.setVisibility(View.INVISIBLE);
+        allSeekbarInvisible();
         mPreviewCanvasView.finishStampEdit();
     }
 
     @OnClick(R.id.buttonStampDelete)
     public void clickButtonStampDelete() {
-        editSeekBarLayout.setVisibility(View.INVISIBLE);
+        //editSeekBarLayout1.setVisibility(View.INVISIBLE);
+        allSeekbarInvisible();
         mPreviewCanvasView.deleteStamp();
     }
 
@@ -415,17 +487,19 @@ public class PreviewEditActivity extends AppCompatActivity {
         /**
          * 할일 : 시크바의 max변경, 비저빌리티 변경, 프로그레스값 변경, 리스너 변경, 텍스트 변경
          */
-        editSeekbar.setOnSeekBarChangeListener(mSeekBarStampBrightnessListener);
-        editSeekbar.setMax(SeekBarListener.SeekBarStampBrightnessMax);
-        editSeekBarLayout.setVisibility(View.VISIBLE);
-        editSeekbar.setProgress(selectedStamp.getBrightness());
+        seekBarTextViewLeftSingle.setText(getString(R.string.action_stamp_edit_brightness_title_short));
+        editSeekbarSingle.setOnSeekBarChangeListener(mSeekBarStampBrightnessListener);
+        editSeekbarSingle.setMax(SeekBarListener.SeekBarStampBrightnessMax);
+        editSeekBarLayoutSingle.setVisibility(View.VISIBLE);
+        editSeekbarSingle.setProgress(selectedStamp.getBrightness());
         setStampSeekBarText(selectedStamp.getBrightness(), SeekBarSelectedEnum.BRIGHTNESS);
         mPreviewCanvasView.callInvalidate();
     }
 
     @OnClick(R.id.buttonStampReset)
     public void clickButtonStampReset() {
-        editSeekBarLayout.setVisibility(View.INVISIBLE);
+        //editSeekBarLayout1.setVisibility(View.INVISIBLE);
+        allSeekbarInvisible();
         mPreviewCanvasView.stampReset();
     }
 
@@ -434,21 +508,25 @@ public class PreviewEditActivity extends AppCompatActivity {
         switch (selected){
             case BRIGHTNESS:
                 resultProgressValue = (int) ((value - SeekBarListener.SeekBarStampBrightnessMax / 2f) / (SeekBarListener.SeekBarStampBrightnessMax / 2f) * 100f);
-                seekBarTextViewLeft.setText(resultProgressValue + "%");
+                seekBarTextViewRightSingle.setText(resultProgressValue + "%");
                 break;
             case CONTRAST:
                 break;
             case PREVIEW_BRIGHTNESS:
                 resultProgressValue = (int) ((value - SeekBarListener.SeekBarPreviewBrightnessMax / 2f) / (SeekBarListener.SeekBarPreviewBrightnessMax / 2f) * 100f);
-                seekBarTextViewLeft.setText(resultProgressValue + "%");
-                break;
-            case PREVIEW_KELVIN:
+                seekBarTextViewRight1.setText(resultProgressValue + "%");
                 break;
             case PREVIEW_CONTRAST:
                 resultProgressValue = (int) ((value - SeekBarListener.SeekBarPreviewContrastMax / 2f) / (SeekBarListener.SeekBarPreviewContrastMax / 2f) * 100f);
-                seekBarTextViewLeft.setText(resultProgressValue + "%");
+                seekBarTextViewRight2.setText(resultProgressValue + "%");
                 break;
             case PREVIEW_SATURATION:
+                resultProgressValue = (int) ((value - SeekBarListener.SeekBarPreviewSaturationMax / 2f) / (SeekBarListener.SeekBarPreviewSaturationMax / 2f) * 100f);
+                seekBarTextViewRight1.setText(resultProgressValue + "%");
+                break;
+            case PREVIEW_KELVIN:
+                resultProgressValue = (int) ((value - SeekBarListener.SeekBarPreviewKelvinMax / 2f) / (SeekBarListener.SeekBarPreviewKelvinMax / 2f) * 100f);
+                seekBarTextViewRight2.setText(resultProgressValue + "%");
                 break;
         }
     }

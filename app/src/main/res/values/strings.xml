@@ -30,11 +30,20 @@
     <string name="action_stamp_edit_finish_title">편집 완료</string>
     <string name="action_stamp_edit_delete_title">낙관 삭제</string>
     <string name="action_stamp_edit_brightness_title">밝기 조정</string>
+    <string name="action_stamp_edit_brightness_title_short">밝기</string>
     <string name="action_stamp_edit_reset">초기화</string>
 
 
     <string name="action_preview_edit_brightness_title">밝기</string>
     <string name="action_preview_edit_contrast_title">대비</string>
+    <string name="action_preview_edit_brightness_contrast_title">밝기/대비</string>
+    <string name="action_preview_edit_saturation_title">색조</string>
+    <string name="action_preview_edit_kelvin_title">색온도</string>
+    <string name="action_preview_edit_saturation_kelvin_title">색조/온도</string>
+
+    <string name="action_preview_edit_reset_title">초기화</string>
+    <string name="action_preview_blur_title">블러</string>
+    <string name="action_preview_edit_finish_title">저장</string>
 
 
     <string name="snackbar_main_acti_back_to_exit">뒤로 버튼을 한번 더 누르시면 종료합니다.</string>
