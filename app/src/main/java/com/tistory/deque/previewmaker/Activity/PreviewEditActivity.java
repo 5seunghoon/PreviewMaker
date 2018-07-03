@@ -318,7 +318,7 @@ public class PreviewEditActivity extends AppCompatActivity {
 
     @OnClick(R.id.buttonSaveEach)
     public void clickButtonSaveEach() {
-        mPreviewCanvasView.savePreviewEach(-1);
+        mPreviewCanvasView.savePreviewEach(-1, false);
     }
 
     @OnClick(R.id.buttonCrop)
@@ -393,7 +393,7 @@ public class PreviewEditActivity extends AppCompatActivity {
         previewItems.remove(removePos);
         previewPaths.remove(removePos);
 
-        mPreviewCanvasView.changeAndInitPreviewInCanvas(POSITION);
+        mPreviewCanvasView.changeAndInitPreviewInCanvas(POSITION, false);
     }
 
     @OnClick(R.id.buttonFilter)
@@ -465,7 +465,7 @@ public class PreviewEditActivity extends AppCompatActivity {
         //editSeekBarLayout1.setVisibility(View.INVISIBLE);
         allSeekbarInvisible();
         mPreviewCanvasView.finishPreviewEdit();
-        mPreviewCanvasView.savePreviewEach(-1);
+        mPreviewCanvasView.savePreviewEach(-1, true);
     }
 
     @OnClick(R.id.buttonStampFinish)
@@ -569,7 +569,7 @@ public class PreviewEditActivity extends AppCompatActivity {
             isClickPreviewFirst = true;
             canvasviewHintTextView.setVisibility(View.INVISIBLE);
             mCanvasPerantLayout.setVisibility(View.VISIBLE);
-            mPreviewCanvasView.changeAndInitPreviewInCanvas(position);
+            mPreviewCanvasView.changeAndInitPreviewInCanvas(position, false);
         }
     }
 

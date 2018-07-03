@@ -8,8 +8,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.ColorMatrix;
-import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.net.Uri;
@@ -74,6 +72,8 @@ public class PreviewCanvasView extends View {
 
     private boolean isSaveRoutine = false;
     private boolean isLoadRoutine = false;
+    private boolean isSaveRoutineWithStamp = false;
+    //스탬프와 함께 저장해야 하는지에 대한 boolean. 만약 프리뷰'만' 저장하는 경우(간단보정같이) 이걸 false로 해야함
     private Snackbar saveInformationSnackbar;
 
     private PreviewBitmapControler pbc;
@@ -115,7 +115,7 @@ public class PreviewCanvasView extends View {
 
             if (isSaveRoutine) {
 
-                drawCanvasOriginalSize(getPosition());
+                drawCanvasOriginalSize(getPosition(), isSaveRoutineWithStamp);
 
             } else if (!isLoadRoutine) {
 
@@ -298,7 +298,7 @@ public class PreviewCanvasView extends View {
         }
     }
 
-    private void drawCanvasOriginalSize(int previewPosition) {
+    private void drawCanvasOriginalSize(int previewPosition, boolean isSaveRoutineWithStamp) {
         //Bitmap previewBitmap = previewItems.get(previewPosition).getmBitmap();
         Bitmap previewBitmap = pbc.getPreviewBitmap();
         int previewOrigBitmapWidth = pbc.getBitmapWidth();
@@ -315,7 +315,7 @@ public class PreviewCanvasView extends View {
         );
         mCanvas.drawBitmap(previewBitmap, null, previewDst, paintPreviewContrastBrightness);
 
-        if (isStampShown) {
+        if (isStampShown && isSaveRoutineWithStamp) {
             int widthAnchor, heightAnchor, anchorInt;
             anchorInt = StampItem.stampAnchorToInt(stampPosAnchor);
             widthAnchor = anchorInt % 3;
@@ -610,7 +610,7 @@ public class PreviewCanvasView extends View {
         callInvalidate();
     }
 
-    public void savePreviewEach(int nextPosition) {
+    public void savePreviewEach(int nextPosition, boolean isSaveToSimplePreviewFilter) {
         /**
          * if nextPosition == -1 , there is only click 'save',
          * or not, there is only click 'YES' in save question dialog.
@@ -620,9 +620,14 @@ public class PreviewCanvasView extends View {
         if (isLoadRoutine) return;
 
         isSaveRoutine = true;
+
+        //isSaveToSimplePreviewFilter가 true라는 말은 간단 보정이라는 말임
+        //그말은 스탬프랑 같이 저장하는게 아니라는 말(false)임
+        isSaveRoutineWithStamp = !isSaveToSimplePreviewFilter;
+
         saveProgressDialog.show();
         changeCanvasToSave();
-        SaveAllAsyncTask saveAllAsyncTask = new SaveAllAsyncTask();
+        SaveAllAsyncTask saveAllAsyncTask = new SaveAllAsyncTask(isSaveToSimplePreviewFilter);
         saveAllAsyncTask.execute(nextPosition);
     }
 
@@ -639,7 +644,7 @@ public class PreviewCanvasView extends View {
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                savePreviewEach(nextPosition);
+                                savePreviewEach(nextPosition, false);
                                 //changeAndInitPreviewInCanvas(nextPosition);
                                 return;
                             }
@@ -648,7 +653,7 @@ public class PreviewCanvasView extends View {
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                changeAndInitPreviewInCanvas(nextPosition);
+                                changeAndInitPreviewInCanvas(nextPosition, false);
                                 return;
                             }
                         })
@@ -667,24 +672,23 @@ public class PreviewCanvasView extends View {
                 alert.setCanceledOnTouchOutside(false);
                 alert.show();
             } else {
-                changeAndInitPreviewInCanvas(nextPosition);
+                changeAndInitPreviewInCanvas(nextPosition, false);
             }
         }
     }
 
-    public void changeAndInitPreviewInCanvas(int nextPosition) {
+    public void changeAndInitPreviewInCanvas(int nextPosition, boolean isSaveToSimplePreviewFilter) {
         //프리뷰를 다른걸 눌렀을때 캔버스의 프리뷰를 완전히 새로 바꿔주는 함수
-
+        //isSaveToSimplePreviewFilter가 true면 isStampShown을 가만히 둔다
         if (isSaveRoutine) return;
 
         previewItems.get(nextPosition).resetFilterValue();
         previewValueInit();
 
+        if(!isSaveToSimplePreviewFilter) isStampShown = false;
         setPosition(nextPosition);
-        isStampShown = false;
         CLICK_STATE.finish();
         mActivity.editButtonInvisibleOrVisible(CLICK_STATE);
-        previewItems.get(nextPosition).saved();
 
         //프리뷰 비트맵을 변경
         changeStartPreviewBitmap();
@@ -746,8 +750,17 @@ public class PreviewCanvasView extends View {
     protected class SaveAllAsyncTask extends AsyncTask<Integer, Integer, String> {
 
         int nextPosition;
+        boolean isSaveToSimplePreviewFilter;
         final String ERROR_INVALID_POSITION = "ERROR_INVALID_POSITION";
         final String ERROR_IO_EXCEPTION = "ERROR_IO_EXCEPTION";
+
+        SaveAllAsyncTask(boolean isSaveToSimplePreviewFilter){
+            /**
+             * 프리뷰 간단 보정 후 저장을 눌렀을 때 : isSaveToSimplePreviewFilter는 ture
+             * 그냥 저장을 눌렀을 때 : isSaveToSimplePreviewFilter는 false
+             */
+            this.isSaveToSimplePreviewFilter = isSaveToSimplePreviewFilter;
+        }
 
         @Override
         protected void onPreExecute() {
@@ -795,7 +808,8 @@ public class PreviewCanvasView extends View {
 
             PreviewItem previewItem = previewItems.get(previewPosition);
             previewItem.setOriginalImageURI(resultUri);
-            previewItem.saved();
+            //스탬프가 보여지고 있는데, 간단보정후 저장하는건 진짜 저장하는게 아님
+            if(!(isSaveToSimplePreviewFilter && isStampShown)) previewItem.saved();
 
             return resultFilePath;
         }
@@ -806,9 +820,10 @@ public class PreviewCanvasView extends View {
                 isSaveRoutine = false;
 
                 if (nextPosition != -1) {
-                    changeAndInitPreviewInCanvas(nextPosition);
+                    changeAndInitPreviewInCanvas(nextPosition, isSaveToSimplePreviewFilter);
+                    previewItems.get(nextPosition).saved();
                 } else {
-                    changeAndInitPreviewInCanvas(getPosition());
+                    changeAndInitPreviewInCanvas(getPosition(), isSaveToSimplePreviewFilter);
                 }
 
 
@@ -816,22 +831,25 @@ public class PreviewCanvasView extends View {
                     saveInformationSnackbar = Snackbar.make(mActivity.getCurrentFocus(), "저장 실패!", Snackbar.LENGTH_LONG);
                     saveInformationSnackbar.show();
                 } else {
-                    File resultFile = new File(str);
-                    saveInformationSnackbar = Snackbar.make(mActivity.getCurrentFocus(),
-                            "저장 폴더 : " + MainActivity.PREVIEW_SAVED_DIRECTORY + "\n파일 이름 : " + resultFile.getName(),
-                            Snackbar.LENGTH_LONG);
-                    if (nextPosition == -1) {
-                        saveInformationSnackbar.setAction("NEXT", new OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                if (getPosition() + 1 < previewItems.size()) {
-                                    nextPosition = getPosition() + 1;
-                                    changeAndInitPreviewInCanvas(nextPosition);
+                    if(!isSaveToSimplePreviewFilter){
+                        File resultFile = new File(str);
+                        saveInformationSnackbar = Snackbar.make(mActivity.getCurrentFocus(),
+                                "저장 폴더 : " + MainActivity.PREVIEW_SAVED_DIRECTORY + "\n파일 이름 : " + resultFile.getName(),
+                                Snackbar.LENGTH_LONG);
+                        if (nextPosition == -1) {
+                            saveInformationSnackbar.setAction("NEXT", new OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    if (getPosition() + 1 < previewItems.size()) {
+                                        nextPosition = getPosition() + 1;
+                                        changeAndInitPreviewInCanvas(nextPosition, isSaveToSimplePreviewFilter);
+                                    }
                                 }
-                            }
-                        });
+                            });
+                        }
+                        //저장 위치 등을 알려주는 스낵바
+                        saveInformationSnackbar.show();
                     }
-                    saveInformationSnackbar.show();
                 }
             }
             saveEnd();
