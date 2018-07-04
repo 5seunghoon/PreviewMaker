@@ -101,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
 
-        setTitle("프리뷰 메이커");
+        setTitle(getString(R.string.app_name));
 
 
         dbOpen();
