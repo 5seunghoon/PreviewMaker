@@ -110,9 +110,9 @@ public class PreviewItem {
         return brightness + SeekBarListener.SeekBarPreviewBrightnessMax / 2;
     }
 
-    public int getAbsoluteBrightness() {
-        //실제 필터를 적용할 때 이용. -255 ~ +255를 리턴
-        return brightness;
+    public float getBrightnessForFilter() {
+        //실제 필터를 적용할 때 이용. -256~+256을 -128 ~ +128로 바꿔서 리턴
+        return brightness / 2f;
     }
 
     public void setBrightness(int brightness) {
@@ -126,7 +126,7 @@ public class PreviewItem {
         return contrast + SeekBarListener.SeekBarPreviewContrastMax / 2;
     }
 
-    public float getAbsoluteContrast() {
+    public float getContrastForFilter() {
         //실제 필터를 적용할 때 이용. 0.5~1.5를 리턴
         return ((float)contrast / 512.0f) + 1.0f;
     }
@@ -140,8 +140,9 @@ public class PreviewItem {
         return saturation + SeekBarListener.SeekBarPreviewSaturationMax / 2;
     }
 
-    public float getAbsoluteSaturation(){
-        return ((float)saturation / 512.0f) + 1.0f;
+    public float getSaturationForFilter(){
+        //0.75~1.25를 리턴
+        return ((float)saturation / 1024.0f) + 1.0f;
     }
 
     public void setSaturation(int saturation){
@@ -152,8 +153,9 @@ public class PreviewItem {
         return kelvin + SeekBarListener.SeekBarPreviewKelvinMax / 2;
     }
 
-    public float getAbsoluteKelvin(){
-        return ((float)kelvin / 512.0f) + 1.0f;
+    public float getKelvinForFilter(){
+        //0.75~1.25를 리턴
+        return ((float)kelvin / 1024.0f) + 1.0f;
     }
 
     public void setKelvin(int kelvin){
@@ -165,17 +167,6 @@ public class PreviewItem {
         this.contrast = 0;
         this.kelvin = 0;
         this.saturation = 0;
-    }
-
-
-
-
-    public static void setBitmapMaxSize(int size) {
-        bitmapMaxSize = size;
-    }
-
-    public static int getBitmapMaxSize() {
-        return bitmapMaxSize;
     }
 
     public Uri getOriginalImageURI() {
