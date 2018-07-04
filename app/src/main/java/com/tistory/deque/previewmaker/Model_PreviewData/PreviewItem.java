@@ -111,8 +111,8 @@ public class PreviewItem {
     }
 
     public float getBrightnessForFilter() {
-        //실제 필터를 적용할 때 이용. -256~+256을 -128 ~ +128로 바꿔서 리턴
-        return brightness / 2f;
+        //실제 필터를 적용할 때 이용. -256~+256을 -64 ~ +64로 바꿔서 리턴
+        return brightness / 4.0f;
     }
 
     public void setBrightness(int brightness) {
@@ -141,8 +141,8 @@ public class PreviewItem {
     }
 
     public float getSaturationForFilter(){
-        //0.75~1.25를 리턴
-        return ((float)saturation / 1024.0f) + 1.0f;
+        //0.875~1.125를 리턴
+        return ((float)saturation / 2048.0f) + 1.0f;
     }
 
     public void setSaturation(int saturation){
@@ -154,8 +154,8 @@ public class PreviewItem {
     }
 
     public float getKelvinForFilter(){
-        //0.75~1.25를 리턴
-        return ((float)kelvin / 1024.0f) + 1.0f;
+        //0.875~1.125를 리턴
+        return ((float)kelvin / 2048.0f) + 1.0f;
     }
 
     public void setKelvin(int kelvin){

@@ -341,6 +341,7 @@ public class PreviewEditActivity extends AppCompatActivity {
 
     @OnClick(R.id.buttonSaveEach)
     public void clickButtonSaveEach() {
+        if(POSITION < 0) return;
         mPreviewCanvasView.savePreviewEach(-1, false);
     }
 
@@ -382,6 +383,7 @@ public class PreviewEditActivity extends AppCompatActivity {
 
     @OnClick(R.id.buttonStamp)
     public void clickButtonStamp() {
+        setTitle(getString(R.string.action_stamp_title));
         doClickButtonStamp();
     }
 
@@ -424,6 +426,7 @@ public class PreviewEditActivity extends AppCompatActivity {
     public void clickButtonFilter(){
         if (POSITION < 0) return;
 
+        setTitle(getString(R.string.action_filter_title));
         previewItems.get(POSITION).editted();
 
         mPreviewCanvasView.clickFilterEditStart();
@@ -480,7 +483,6 @@ public class PreviewEditActivity extends AppCompatActivity {
 
     @OnClick(R.id.buttonFilterReset)
     public void clickButtonFilterReset(){
-        //allSeekbarInvisible();
         seekbarInvisibleAllBtnVisible();
         previewItems.get(POSITION).resetFilterValue();
         mPreviewCanvasView.callInvalidate();
@@ -489,8 +491,8 @@ public class PreviewEditActivity extends AppCompatActivity {
 
     @OnClick(R.id.buttonPreviewEditFinish)
     public void clickButtonPreviewEditFinish(){
-        //editSeekBarLayout1.setVisibility(View.INVISIBLE);
-        //allSeekbarInvisible();
+        if(POSITION < 0) return;
+        setTitle(getString(R.string.title_preview_make_activity));
         seekbarInvisibleAllBtnVisible();
         mPreviewCanvasView.finishPreviewEdit();
         mPreviewCanvasView.savePreviewEach(-1, true);
@@ -498,16 +500,13 @@ public class PreviewEditActivity extends AppCompatActivity {
 
     @OnClick(R.id.buttonStampFinish)
     public void clickButtonStampFinish() {
-        //editSeekBarLayout1.setVisibility(View.INVISIBLE);
-        //allSeekbarInvisible();
+        setTitle(getString(R.string.title_preview_make_activity));
         seekbarInvisibleAllBtnVisible();
         mPreviewCanvasView.finishStampEdit();
     }
 
     @OnClick(R.id.buttonStampDelete)
     public void clickButtonStampDelete() {
-        //editSeekBarLayout1.setVisibility(View.INVISIBLE);
-        //allSeekbarInvisible();
         seekbarInvisibleAllBtnVisible();
         mPreviewCanvasView.deleteStamp();
     }
