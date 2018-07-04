@@ -308,10 +308,10 @@ public class PreviewCanvasView extends View {
 
         PreviewItem nowPreview = previewItems.get(previewPosition);
         Paint paintPreviewContrastBrightness = PreviewPaintControler.getPaint(
-                nowPreview.getAbsoluteContrast()
-                , nowPreview.getAbsoluteBrightness()
-                , nowPreview.getAbsoluteSaturation()
-                , nowPreview.getAbsoluteKelvin()
+                nowPreview.getContrastForFilter()
+                , nowPreview.getBrightnessForFilter()
+                , nowPreview.getSaturationForFilter()
+                , nowPreview.getKelvinForFilter()
         );
         mCanvas.drawBitmap(previewBitmap, null, previewDst, paintPreviewContrastBrightness);
 
@@ -385,10 +385,10 @@ public class PreviewCanvasView extends View {
 
         PreviewItem nowPreview = previewItems.get(getPosition());
         Paint paintPreviewContrastBrightness = PreviewPaintControler.getPaint(
-                nowPreview.getAbsoluteContrast()
-                , nowPreview.getAbsoluteBrightness()
-                , nowPreview.getAbsoluteSaturation()
-                , nowPreview.getAbsoluteKelvin()
+                nowPreview.getContrastForFilter()
+                , nowPreview.getBrightnessForFilter()
+                , nowPreview.getSaturationForFilter()
+                , nowPreview.getKelvinForFilter()
         );
 
         Logger.d(TAG, previewPosWidth + "," + previewPosHeight + "," + (previewPosWidth + previewWidth) + "," + (previewPosHeight + previewHeight));

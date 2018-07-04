@@ -439,8 +439,8 @@ public class PreviewEditActivity extends AppCompatActivity {
 
         editSeekbar2.setOnSeekBarChangeListener(mSeekBarPreviewKelvinListener);
         editSeekbar2.setMax(SeekBarListener.SeekBarPreviewSaturationMax);
-        editSeekbar2.setProgress(previewItems.get(POSITION).getSaturation());
-        setStampSeekBarText(previewItems.get(POSITION).getSaturation(), SeekBarSelectedEnum.PREVIEW_SATURATION);
+        editSeekbar2.setProgress(previewItems.get(POSITION).getKelvin());
+        setStampSeekBarText(previewItems.get(POSITION).getKelvin(), SeekBarSelectedEnum.PREVIEW_SATURATION);
 
 
         editSeekBarLayoutDouble.setVisibility(View.VISIBLE);

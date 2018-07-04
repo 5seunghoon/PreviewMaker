@@ -14,7 +14,8 @@
         android:layout_marginBottom="8dp"
         android:background="@android:color/white"
         android:orientation="vertical"
-        android:padding="4dp">
+        android:paddingLeft="4dp"
+        android:paddingRight="4dp">
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/previewRecyclerView"
@@ -54,7 +55,7 @@
                     android:layout_height="wrap_content"
                     android:background="@android:color/white"
                     android:orientation="horizontal"
-                    android:visibility="invisible">
+                    android:visibility="visible">
 
                     <Button
                         android:id="@+id/buttonDelete"
@@ -62,7 +63,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:background="@android:color/white"
-                        android:drawableTop="@drawable/ic_delete_black_48dp"
+                        android:drawableTop="@drawable/btn_all_use_delete_30dp"
                         android:paddingTop="4dp"
                         android:text="@string/action_delete_title"
                         android:textSize="12sp" />
@@ -73,7 +74,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:background="@android:color/white"
-                        android:drawableTop="@drawable/ic_crop_rotate_black_48dp"
+                        android:drawableTop="@drawable/btn_edit_main_crop_30dp"
                         android:paddingTop="4dp"
                         android:text="@string/action_crop_title"
                         android:textSize="12sp" />
@@ -84,7 +85,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:background="@android:color/white"
-                        android:drawableTop="@drawable/ic_attach_file_black_48dp"
+                        android:drawableTop="@drawable/btn_edit_main_attachstamp_30dp"
                         android:paddingTop="4dp"
                         android:text="@string/action_stamp_title"
                         android:textSize="12sp" />
@@ -95,7 +96,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:background="@android:color/white"
-                        android:drawableTop="@drawable/ic_photo_filter_black_24dp"
+                        android:drawableTop="@drawable/btn_edit_main_previewfilter_30dp"
                         android:paddingTop="4dp"
                         android:text="@string/action_filter_title"
                         android:textSize="12sp" />
@@ -106,7 +107,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:background="@android:color/white"
-                        android:drawableTop="@drawable/ic_save_black_48dp"
+                        android:drawableTop="@drawable/btn_edit_main_save_30dp"
                         android:paddingTop="4dp"
                         android:text="@string/action_saveeach_title"
                         android:textSize="12sp" />
@@ -127,7 +128,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:background="@android:color/white"
-                        android:drawableTop="@drawable/ic_delete_black_48dp"
+                        android:drawableTop="@drawable/btn_all_use_delete_30dp"
                         android:paddingTop="4dp"
                         android:text="@string/action_stamp_edit_delete_title"
                         android:textSize="12sp" />
@@ -138,7 +139,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:background="@android:color/white"
-                        android:drawableTop="@drawable/ic_settings_brightness_black_24dp"
+                        android:drawableTop="@drawable/btn_stamp_edit_bright_30dp"
                         android:paddingTop="4dp"
                         android:text="@string/action_stamp_edit_brightness_title"
                         android:textSize="12sp" />
@@ -149,7 +150,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:background="@android:color/white"
-                        android:drawableTop="@drawable/ic_settings_backup_restore_black_24dp"
+                        android:drawableTop="@drawable/btn_all_use_reset_30dp"
                         android:paddingTop="4dp"
                         android:text="@string/action_stamp_edit_reset"
                         android:textSize="12sp" />
@@ -160,7 +161,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:background="@android:color/white"
-                        android:drawableTop="@drawable/ic_check_black_48dp"
+                        android:drawableTop="@drawable/btn_all_use_finish_30dp"
                         android:paddingTop="4dp"
                         android:text="@string/action_stamp_edit_finish_title"
                         android:textSize="12sp" />
@@ -172,7 +173,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:visibility="visible">
+                    android:visibility="invisible">
 
                     <Button
                         android:id="@+id/buttonPreviewBrightnessContrast"
@@ -180,7 +181,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:background="@android:color/white"
-                        android:drawableTop="@drawable/ic_iso_black_36dp"
+                        android:drawableTop="@drawable/btn_preview_edit_brigtconst_30dp"
                         android:paddingTop="4dp"
                         android:text="@string/action_preview_edit_brightness_contrast_title"
                         android:textSize="12sp" />
@@ -191,7 +192,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:background="@android:color/white"
-                        android:drawableTop="@drawable/ic_wb_sunny_black_24dp"
+                        android:drawableTop="@drawable/btn_preview_edit_satukelv_30dp"
                         android:paddingTop="4dp"
                         android:text="@string/action_preview_edit_saturation_kelvin_title"
                         android:textSize="12sp" />
@@ -202,7 +203,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:background="@android:color/white"
-                        android:drawableTop="@drawable/ic_opacity_black_24dp"
+                        android:drawableTop="@drawable/btn_preview_edit_blur_30dp"
                         android:paddingTop="4dp"
                         android:text="@string/action_preview_blur_title"
                         android:textSize="12sp" />
@@ -213,7 +214,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:background="@android:color/white"
-                        android:drawableTop="@drawable/ic_settings_backup_restore_black_24dp"
+                        android:drawableTop="@drawable/btn_all_use_reset_30dp"
                         android:paddingTop="4dp"
                         android:text="@string/action_preview_edit_reset_title"
                         android:textSize="12sp" />
@@ -224,7 +225,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:background="@android:color/white"
-                        android:drawableTop="@drawable/ic_check_black_48dp"
+                        android:drawableTop="@drawable/btn_all_use_finish_30dp"
                         android:paddingTop="4dp"
                         android:text="@string/action_preview_edit_finish_title"
                         android:textSize="12sp" />
@@ -291,7 +292,9 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:orientation="horizontal">
+                        android:orientation="horizontal"
+                        android:paddingBottom="4dp"
+                        android:paddingTop="8dp">
 
                         <EditText
                             android:id="@+id/seekBarTextViewLeft1"
@@ -333,7 +336,9 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:orientation="horizontal">
+                        android:orientation="horizontal"
+                        android:paddingBottom="8dp"
+                        android:paddingTop="4dp">
 
                         <EditText
                             android:id="@+id/seekBarTextViewLeft2"
