@@ -18,6 +18,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Toast;
 
 import com.tistory.deque.previewmaker.Controler.PreviewBitmapControler;
 import com.tistory.deque.previewmaker.Controler.PreviewPaintControler;
@@ -392,7 +393,11 @@ public class PreviewCanvasView extends View {
         );
 
         Logger.d(TAG, previewPosWidth + "," + previewPosHeight + "," + (previewPosWidth + previewWidth) + "," + (previewPosHeight + previewHeight));
-        mCanvas.drawBitmap(previewBitmap, null, dst, paintPreviewContrastBrightness);
+        try{
+            mCanvas.drawBitmap(previewBitmap, null, dst, paintPreviewContrastBrightness);
+        } catch (NullPointerException e){
+            Toast.makeText(mActivity.getApplicationContext(), "NullPointerException: canvas.drawBitmap", Toast.LENGTH_LONG).show();
+        }
     }
 
     private void drawStamp() {

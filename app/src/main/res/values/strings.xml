@@ -45,6 +45,9 @@
     <string name="action_preview_blur_title">블러</string>
     <string name="action_preview_edit_finish_title">저장</string>
 
+    <string name="action_preview_edit_ok_title">확인</string>
+    <string name="action_preview_edit_cancle_title">취소</string>
+
 
     <string name="snackbar_main_acti_back_to_exit">뒤로 버튼을 한번 더 누르시면 종료합니다.</string>
     <string name="snackbar_main_acti_back_to_exit_btn">EXIT</string>

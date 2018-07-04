@@ -92,6 +92,11 @@ public class PreviewEditActivity extends AppCompatActivity {
     @BindView(R.id.layoutFilterButtonLayout)
     LinearLayout layoutFilterButtonLayout;
 
+    @BindView(R.id.seekbarParentLinearLayout)
+    LinearLayout seekbarParentLinearLayout;
+    @BindView(R.id.previewEditAllBtnParentLinearLayout)
+    LinearLayout previewEditAllBtnParentLinearLayout;
+
     private SeekBarListener mSeekBarStampBrightnessListener;
     private SeekBarListener mSeekBarPreviewBrightnessListener;
     private SeekBarListener mSeekBarPreviewContrastListener;
@@ -297,6 +302,8 @@ public class PreviewEditActivity extends AppCompatActivity {
     }
 
     private void setVisibleInit() {
+        seekbarInvisibleAllBtnVisible();
+
         //프리뷰 보여질 캔버스와 힌트 텍스트
         mCanvasPerantLayout.setVisibility(View.INVISIBLE);
         canvasviewHintTextView.setVisibility(View.VISIBLE);
@@ -307,14 +314,30 @@ public class PreviewEditActivity extends AppCompatActivity {
         layoutFilterButtonLayout.setVisibility(View.INVISIBLE);
 
         //시크바 레이아웃
-        allSeekbarInvisible();
+        //allSeekbarInvisible();
+
     }
 
-    private void allSeekbarInvisible(){
+    private void seekbarVisibleAllBtnInvisible(){
+        seekbarParentLinearLayout.setVisibility(View.VISIBLE);
+        previewEditAllBtnParentLinearLayout.setVisibility(View.INVISIBLE);
+    }
+    private void seekbarInvisibleAllBtnVisible(){
+        seekbarParentLinearLayout.setVisibility(View.INVISIBLE);
+        previewEditAllBtnParentLinearLayout.setVisibility(View.VISIBLE);
+    }
+
+    private void visibleDoubleSeekbar(){
+        editSeekBarLayoutDouble.setVisibility(View.VISIBLE);
         editSeekBarLayoutSingle.setVisibility(View.INVISIBLE);
-        editSeekBarLayoutDouble.setVisibility(View.INVISIBLE);
+        seekbarVisibleAllBtnInvisible();
     }
 
+    private void visibleSingleSeekbar(){
+        editSeekBarLayoutDouble.setVisibility(View.INVISIBLE);
+        editSeekBarLayoutSingle.setVisibility(View.VISIBLE);
+        seekbarVisibleAllBtnInvisible();
+    }
 
     @OnClick(R.id.buttonSaveEach)
     public void clickButtonSaveEach() {
@@ -378,7 +401,8 @@ public class PreviewEditActivity extends AppCompatActivity {
 
     @OnClick(R.id.buttonDelete)
     public void clickButtonDelete() {
-        allSeekbarInvisible();
+        //allSeekbarInvisible();
+        seekbarInvisibleAllBtnVisible();
 
         if (previewItems.size() == 1) return;
 
@@ -420,7 +444,8 @@ public class PreviewEditActivity extends AppCompatActivity {
         editSeekbar2.setProgress(previewItems.get(POSITION).getContrast());
         setStampSeekBarText(previewItems.get(POSITION).getContrast(), SeekBarSelectedEnum.PREVIEW_CONTRAST);
 
-        editSeekBarLayoutDouble.setVisibility(View.VISIBLE);
+        //editSeekBarLayoutDouble.setVisibility(View.VISIBLE);
+        visibleDoubleSeekbar();
         mPreviewCanvasView.callInvalidate();
     }
 
@@ -443,7 +468,8 @@ public class PreviewEditActivity extends AppCompatActivity {
         setStampSeekBarText(previewItems.get(POSITION).getKelvin(), SeekBarSelectedEnum.PREVIEW_SATURATION);
 
 
-        editSeekBarLayoutDouble.setVisibility(View.VISIBLE);
+        //editSeekBarLayoutDouble.setVisibility(View.VISIBLE);
+        visibleDoubleSeekbar();
         mPreviewCanvasView.callInvalidate();
     }
 
@@ -454,7 +480,8 @@ public class PreviewEditActivity extends AppCompatActivity {
 
     @OnClick(R.id.buttonFilterReset)
     public void clickButtonFilterReset(){
-        allSeekbarInvisible();
+        //allSeekbarInvisible();
+        seekbarInvisibleAllBtnVisible();
         previewItems.get(POSITION).resetFilterValue();
         mPreviewCanvasView.callInvalidate();
     }
@@ -463,7 +490,8 @@ public class PreviewEditActivity extends AppCompatActivity {
     @OnClick(R.id.buttonPreviewEditFinish)
     public void clickButtonPreviewEditFinish(){
         //editSeekBarLayout1.setVisibility(View.INVISIBLE);
-        allSeekbarInvisible();
+        //allSeekbarInvisible();
+        seekbarInvisibleAllBtnVisible();
         mPreviewCanvasView.finishPreviewEdit();
         mPreviewCanvasView.savePreviewEach(-1, true);
     }
@@ -471,14 +499,16 @@ public class PreviewEditActivity extends AppCompatActivity {
     @OnClick(R.id.buttonStampFinish)
     public void clickButtonStampFinish() {
         //editSeekBarLayout1.setVisibility(View.INVISIBLE);
-        allSeekbarInvisible();
+        //allSeekbarInvisible();
+        seekbarInvisibleAllBtnVisible();
         mPreviewCanvasView.finishStampEdit();
     }
 
     @OnClick(R.id.buttonStampDelete)
     public void clickButtonStampDelete() {
         //editSeekBarLayout1.setVisibility(View.INVISIBLE);
-        allSeekbarInvisible();
+        //allSeekbarInvisible();
+        seekbarInvisibleAllBtnVisible();
         mPreviewCanvasView.deleteStamp();
     }
 
@@ -490,18 +520,27 @@ public class PreviewEditActivity extends AppCompatActivity {
         seekBarTextViewLeftSingle.setText(getString(R.string.action_stamp_edit_brightness_title_short));
         editSeekbarSingle.setOnSeekBarChangeListener(mSeekBarStampBrightnessListener);
         editSeekbarSingle.setMax(SeekBarListener.SeekBarStampBrightnessMax);
-        editSeekBarLayoutSingle.setVisibility(View.VISIBLE);
+        //editSeekBarLayoutSingle.setVisibility(View.VISIBLE);
         editSeekbarSingle.setProgress(selectedStamp.getBrightness());
         setStampSeekBarText(selectedStamp.getBrightness(), SeekBarSelectedEnum.BRIGHTNESS);
+
+        visibleSingleSeekbar();
         mPreviewCanvasView.callInvalidate();
     }
 
     @OnClick(R.id.buttonStampReset)
     public void clickButtonStampReset() {
         //editSeekBarLayout1.setVisibility(View.INVISIBLE);
-        allSeekbarInvisible();
+        //allSeekbarInvisible();
+        seekbarInvisibleAllBtnVisible();
         mPreviewCanvasView.stampReset();
     }
+
+    @OnClick(R.id.buttonPreviewEditOK)
+    public void clickButtonPreviewEditOK(){
+        seekbarInvisibleAllBtnVisible();
+    }
+
 
     public void setStampSeekBarText(int value, SeekBarSelectedEnum selected) {
         int resultProgressValue;
