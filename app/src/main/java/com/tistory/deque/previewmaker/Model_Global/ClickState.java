@@ -4,10 +4,12 @@ public class ClickState implements ClickStateInterface{
     /**
      * STATE PATTERN
      */
+    private ClickStateEnum prevStateEnum;
     private ClickStateEnum clickStateEnum;
     private static ClickState clickState;
 
     private ClickState() {
+        prevStateEnum = ClickStateEnum.STATE_NONE_CLICK;
         clickStateEnum = ClickStateEnum.STATE_NONE_CLICK;
     }
 
@@ -18,29 +20,34 @@ public class ClickState implements ClickStateInterface{
         return clickState;
     }
 
-    public void clickFilterButton(){
-        clickStateEnum = ClickStateEnum.STATE_BITMAP_FILTER;
-    }
-
     @Override
     public ClickStateEnum getClickStateEnum() {
         return clickStateEnum;
     }
 
+    @Override
+    public ClickStateEnum getPrevClickStateEnum(){
+        return prevStateEnum;
+    }
+
+
+    public void clickFilterButton(){
+        prevStateEnum = clickStateEnum;
+        clickStateEnum = ClickStateEnum.STATE_BITMAP_FILTER;
+    }
+
     public void start() {
+        prevStateEnum = clickStateEnum;
         clickStateEnum = ClickStateEnum.STATE_NONE_CLICK;
     }
 
     public void clickStampButton() {
+        prevStateEnum = clickStateEnum;
         clickStateEnum = ClickStateEnum.STATE_STAMP_EDIT;
     }
 
-    public boolean isShowGuideLine() {
-        return (clickStateEnum == ClickStateEnum.STATE_STAMP_EDIT ||
-                clickStateEnum == ClickStateEnum.STATE_STAMP_ZOOM);
-    }
-
     public void clickFinishFilterEdit(){
+        prevStateEnum = clickStateEnum;
         switch (clickStateEnum) {
             case STATE_NONE_CLICK:
                 break;
@@ -55,6 +62,7 @@ public class ClickState implements ClickStateInterface{
     }
 
     public void clickFinishStampEdit() {
+        prevStateEnum = clickStateEnum;
         switch ((clickStateEnum)) {
             case STATE_NONE_CLICK:
                 break;
@@ -70,6 +78,7 @@ public class ClickState implements ClickStateInterface{
     }
 
     public void clickStamp() {
+        prevStateEnum = clickStateEnum;
         switch (clickStateEnum) {
             case STATE_NONE_CLICK:
                 clickStateEnum = ClickStateEnum.STATE_STAMP_EDIT;
@@ -84,6 +93,7 @@ public class ClickState implements ClickStateInterface{
     }
 
     public void clickStampZoomStart() {
+        prevStateEnum = clickStateEnum;
         switch (clickStateEnum) {
             case STATE_NONE_CLICK:
                 break;
@@ -98,6 +108,7 @@ public class ClickState implements ClickStateInterface{
     }
 
     public void clickStampZoomEnd() {
+        prevStateEnum = clickStateEnum;
         switch (clickStateEnum) {
             case STATE_NONE_CLICK:
                 break;
@@ -112,6 +123,7 @@ public class ClickState implements ClickStateInterface{
     }
 
     public void clickSave() {
+        prevStateEnum = clickStateEnum;
         switch (clickStateEnum) {
             case STATE_NONE_CLICK:
                 break;
@@ -127,7 +139,14 @@ public class ClickState implements ClickStateInterface{
     }
 
     public void finish() {
+        prevStateEnum = clickStateEnum;
         clickStateEnum = ClickStateEnum.STATE_NONE_CLICK;
     }
+
+    public boolean isShowGuideLine() {
+        return (clickStateEnum == ClickStateEnum.STATE_STAMP_EDIT ||
+                clickStateEnum == ClickStateEnum.STATE_STAMP_ZOOM);
+    }
+
 
 }

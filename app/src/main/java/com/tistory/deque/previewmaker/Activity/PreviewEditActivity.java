@@ -624,8 +624,8 @@ public class PreviewEditActivity extends AppCompatActivity {
         }
     }
 
-    public void editButtonInvisibleOrVisible(ClickStateInterface PREV_STATE, ClickStateInterface CLICK_STATE) {
-        ClickStateEnum p = PREV_STATE.getClickStateEnum();
+    public void editButtonInvisibleOrVisible(ClickStateInterface CLICK_STATE) {
+        ClickStateEnum p = CLICK_STATE.getPrevClickStateEnum();
         ClickStateEnum n = CLICK_STATE.getClickStateEnum();
 
         if (p == n) return;
