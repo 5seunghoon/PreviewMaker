@@ -1,6 +1,6 @@
 package com.tistory.deque.previewmaker.Model_Global;
 
-public class ClickState {
+public class ClickState implements ClickStateInterface{
     /**
      * STATE PATTERN
      */
@@ -22,6 +22,7 @@ public class ClickState {
         clickStateEnum = ClickStateEnum.STATE_BITMAP_FILTER;
     }
 
+    @Override
     public ClickStateEnum getClickStateEnum() {
         return clickStateEnum;
     }

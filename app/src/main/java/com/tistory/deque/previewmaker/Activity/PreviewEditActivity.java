@@ -15,17 +15,21 @@ import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Layout;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.view.animation.Animation;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.tistory.deque.previewmaker.Controler.AnimationControler;
 import com.tistory.deque.previewmaker.Controler.PreviewBitmapControler;
 import com.tistory.deque.previewmaker.Model_Global.ClickState;
 import com.tistory.deque.previewmaker.Model_Global.ClickStateEnum;
+import com.tistory.deque.previewmaker.Model_Global.ClickStateInterface;
 import com.tistory.deque.previewmaker.Model_Global.DBOpenHelper;
 import com.tistory.deque.previewmaker.Model_Global.SeekBarSelectedEnum;
 import com.tistory.deque.previewmaker.Model_Global.SeekBarListener;
@@ -134,6 +138,8 @@ public class PreviewEditActivity extends AppCompatActivity {
     @BindView(R.id.seekBarTextViewRightSingle)
     TextView seekBarTextViewRightSingle;
 
+    Animation aniFadeIn, aniFadeOut;
+
     public PreviewCanvasView getmPreviewCanvasView() {
         return mPreviewCanvasView;
     }
@@ -165,6 +171,7 @@ public class PreviewEditActivity extends AppCompatActivity {
 
         pbc = PreviewBitmapControler.getPreviewBitmapControler(this);
 
+        getAnimation();
         setRecyclerView();
         setPreviewCanvas();
         setSeekBar();
@@ -287,6 +294,11 @@ public class PreviewEditActivity extends AppCompatActivity {
 
     }
 
+    private void getAnimation() {
+        aniFadeIn = AnimationControler.getFadeInAnimation(this);
+        aniFadeOut = AnimationControler.getFadeOutAnimation(this);
+    }
+
     private void setSeekBar() {
         mSeekBarStampBrightnessListener = new SeekBarListener(this, SeekBarSelectedEnum.BRIGHTNESS, mPreviewCanvasView);
         mSeekBarPreviewBrightnessListener = new SeekBarListener(this, SeekBarSelectedEnum.PREVIEW_BRIGHTNESS, mPreviewCanvasView);
@@ -318,22 +330,23 @@ public class PreviewEditActivity extends AppCompatActivity {
 
     }
 
-    private void seekbarVisibleAllBtnInvisible(){
+    private void seekbarVisibleAllBtnInvisible() {
         seekbarParentLinearLayout.setVisibility(View.VISIBLE);
         previewEditAllBtnParentLinearLayout.setVisibility(View.INVISIBLE);
     }
-    private void seekbarInvisibleAllBtnVisible(){
+
+    private void seekbarInvisibleAllBtnVisible() {
         seekbarParentLinearLayout.setVisibility(View.INVISIBLE);
         previewEditAllBtnParentLinearLayout.setVisibility(View.VISIBLE);
     }
 
-    private void visibleDoubleSeekbar(){
+    private void visibleDoubleSeekbar() {
         editSeekBarLayoutDouble.setVisibility(View.VISIBLE);
         editSeekBarLayoutSingle.setVisibility(View.INVISIBLE);
         seekbarVisibleAllBtnInvisible();
     }
 
-    private void visibleSingleSeekbar(){
+    private void visibleSingleSeekbar() {
         editSeekBarLayoutDouble.setVisibility(View.INVISIBLE);
         editSeekBarLayoutSingle.setVisibility(View.VISIBLE);
         seekbarVisibleAllBtnInvisible();
@@ -341,7 +354,7 @@ public class PreviewEditActivity extends AppCompatActivity {
 
     @OnClick(R.id.buttonSaveEach)
     public void clickButtonSaveEach() {
-        if(POSITION < 0) return;
+        if (POSITION < 0) return;
         mPreviewCanvasView.savePreviewEach(-1, false);
     }
 
@@ -387,7 +400,7 @@ public class PreviewEditActivity extends AppCompatActivity {
         doClickButtonStamp();
     }
 
-    public void doClickButtonStamp(){
+    public void doClickButtonStamp() {
         if (POSITION < 0) return;
 
         if (!mPreviewCanvasView.isStampShown()) {
@@ -423,7 +436,7 @@ public class PreviewEditActivity extends AppCompatActivity {
     }
 
     @OnClick(R.id.buttonFilter)
-    public void clickButtonFilter(){
+    public void clickButtonFilter() {
         if (POSITION < 0) return;
 
         setTitle(getString(R.string.action_filter_title));
@@ -433,7 +446,7 @@ public class PreviewEditActivity extends AppCompatActivity {
     }
 
     @OnClick(R.id.buttonPreviewBrightnessContrast)
-    public void clickButtonPreviewBrightnessContrast(){
+    public void clickButtonPreviewBrightnessContrast() {
         seekBarTextViewLeft1.setText(getString(R.string.action_preview_edit_brightness_title));
         seekBarTextViewLeft2.setText(getString(R.string.action_preview_edit_contrast_title));
 
@@ -454,7 +467,7 @@ public class PreviewEditActivity extends AppCompatActivity {
 
 
     @OnClick(R.id.buttonPreviewSaturationKelvin)
-    public void clickButtonPreviewSaturationKelvin(){
+    public void clickButtonPreviewSaturationKelvin() {
         seekBarTextViewLeft1.setText(getString(R.string.action_preview_edit_saturation_title));
         seekBarTextViewLeft2.setText(getString(R.string.action_preview_edit_kelvin_title));
 
@@ -477,12 +490,12 @@ public class PreviewEditActivity extends AppCompatActivity {
     }
 
     @OnClick(R.id.buttonPreviewBlur)
-    public void clickButtonPreivewBlur(){
+    public void clickButtonPreivewBlur() {
 
     }
 
     @OnClick(R.id.buttonFilterReset)
-    public void clickButtonFilterReset(){
+    public void clickButtonFilterReset() {
         seekbarInvisibleAllBtnVisible();
         previewItems.get(POSITION).resetFilterValue();
         mPreviewCanvasView.callInvalidate();
@@ -490,8 +503,8 @@ public class PreviewEditActivity extends AppCompatActivity {
 
 
     @OnClick(R.id.buttonPreviewEditFinish)
-    public void clickButtonPreviewEditFinish(){
-        if(POSITION < 0) return;
+    public void clickButtonPreviewEditFinish() {
+        if (POSITION < 0) return;
         setTitle(getString(R.string.title_preview_make_activity));
         seekbarInvisibleAllBtnVisible();
         mPreviewCanvasView.finishPreviewEdit();
@@ -536,14 +549,14 @@ public class PreviewEditActivity extends AppCompatActivity {
     }
 
     @OnClick(R.id.buttonPreviewEditOK)
-    public void clickButtonPreviewEditOK(){
+    public void clickButtonPreviewEditOK() {
         seekbarInvisibleAllBtnVisible();
     }
 
 
     public void setStampSeekBarText(int value, SeekBarSelectedEnum selected) {
         int resultProgressValue;
-        switch (selected){
+        switch (selected) {
             case BRIGHTNESS:
                 resultProgressValue = (int) ((value - SeekBarListener.SeekBarStampBrightnessMax / 2f) / (SeekBarListener.SeekBarStampBrightnessMax / 2f) * 100f);
                 seekBarTextViewRightSingle.setText(resultProgressValue + "%");
@@ -611,20 +624,88 @@ public class PreviewEditActivity extends AppCompatActivity {
         }
     }
 
-    public void editButtonInvisibleOrVisible(ClickState CLICK_STATE) {
-        if (CLICK_STATE.getClickStateEnum() == ClickStateEnum.STATE_STAMP_EDIT ||
-                CLICK_STATE.getClickStateEnum() == ClickStateEnum.STATE_STAMP_ZOOM) {
-            layoutEditButtonLayout.setVisibility(View.INVISIBLE);
-            layoutStampEditButtonLayout.setVisibility(View.VISIBLE);
-            layoutFilterButtonLayout.setVisibility(View.INVISIBLE);
-        } else if(CLICK_STATE.getClickStateEnum() == ClickStateEnum.STATE_NONE_CLICK){
-            layoutEditButtonLayout.setVisibility(View.VISIBLE);
-            layoutStampEditButtonLayout.setVisibility(View.INVISIBLE);
-            layoutFilterButtonLayout.setVisibility(View.INVISIBLE);
-        } else if(CLICK_STATE.getClickStateEnum() == ClickStateEnum.STATE_BITMAP_FILTER){
-            layoutEditButtonLayout.setVisibility(View.INVISIBLE);
-            layoutStampEditButtonLayout.setVisibility(View.INVISIBLE);
-            layoutFilterButtonLayout.setVisibility(View.VISIBLE);
+    public void editButtonInvisibleOrVisible(ClickStateInterface PREV_STATE, ClickStateInterface CLICK_STATE) {
+        ClickStateEnum p = PREV_STATE.getClickStateEnum();
+        ClickStateEnum n = CLICK_STATE.getClickStateEnum();
+
+        if (p == n) return;
+        if ((p == ClickStateEnum.STATE_STAMP_ZOOM || p == ClickStateEnum.STATE_STAMP_EDIT)
+                && (n == ClickStateEnum.STATE_STAMP_ZOOM || n == ClickStateEnum.STATE_STAMP_EDIT))
+            return;
+
+
+        LinearLayout invisible = null;
+        LinearLayout fadeOut = null;
+        LinearLayout fadeIn = null;
+
+        switch (p) {
+            case STATE_NONE_CLICK:
+                switch (n) {
+                    case STATE_STAMP_EDIT:
+                    case STATE_STAMP_ZOOM:
+                        //none->stamp
+                        invisible = layoutFilterButtonLayout;
+                        fadeOut = layoutEditButtonLayout;
+                        fadeIn = layoutStampEditButtonLayout;
+                        break;
+                    case STATE_BITMAP_FILTER:
+                        //none->filter
+                        invisible = layoutStampEditButtonLayout;
+                        fadeOut = layoutEditButtonLayout;
+                        fadeIn = layoutFilterButtonLayout;
+                        break;
+                }
+                break;
+            case STATE_STAMP_EDIT:
+            case STATE_STAMP_ZOOM:
+                switch (n) {
+                    case STATE_NONE_CLICK:
+                        //stamp -> none
+                        invisible = layoutFilterButtonLayout;
+                        fadeOut = layoutStampEditButtonLayout;
+                        fadeIn = layoutEditButtonLayout;
+                        break;
+                    case STATE_BITMAP_FILTER:
+                        //stamp -> filter
+                        invisible = layoutEditButtonLayout;
+                        fadeOut = layoutStampEditButtonLayout;
+                        fadeIn = layoutFilterButtonLayout;
+                        break;
+                }
+                break;
+            case STATE_BITMAP_FILTER:
+                switch (n) {
+                    case STATE_NONE_CLICK:
+                        //filter -> none
+                        invisible = layoutStampEditButtonLayout;
+                        fadeOut = layoutFilterButtonLayout;
+                        fadeIn = layoutEditButtonLayout;
+                        break;
+                    case STATE_STAMP_EDIT:
+                    case STATE_STAMP_ZOOM:
+                        //filter -> stamp
+                        invisible = layoutEditButtonLayout;
+                        fadeOut = layoutFilterButtonLayout;
+                        fadeIn = layoutStampEditButtonLayout;
+                        break;
+                }
+                break;
+        }
+
+        Logger.d("HERE_TAG", "1");
+        if (invisible != null) {
+            Logger.d("HERE_TAG", "2");
+            invisible.setVisibility(View.INVISIBLE);
+        }
+        if (fadeOut != null) {
+            Logger.d("HERE_TAG", "3");
+            fadeOut.setVisibility(View.INVISIBLE);
+            fadeOut.startAnimation(aniFadeOut);
+        }
+        if (fadeIn != null) {
+            Logger.d("HERE_TAG", "4");
+            fadeIn.setVisibility(View.VISIBLE);
+            fadeIn.startAnimation(aniFadeIn);
         }
     }
 
@@ -718,7 +799,7 @@ public class PreviewEditActivity extends AppCompatActivity {
                 }
                 Logger.d(TAG, "Thumbnail parsing success : " + thumbnailUri);
                 previewItems.add(new PreviewItem(originalUri, thumbnailUri, param[0]));
-                if(firstAdd) {
+                if (firstAdd) {
                     pbc.setPreviewBitmap(previewItems.get(0));
                     firstAdd = false;
                 }

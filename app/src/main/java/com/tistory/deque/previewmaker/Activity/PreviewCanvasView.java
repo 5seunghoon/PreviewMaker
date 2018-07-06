@@ -24,6 +24,7 @@ import com.tistory.deque.previewmaker.Controler.PreviewBitmapControler;
 import com.tistory.deque.previewmaker.Controler.PreviewPaintControler;
 import com.tistory.deque.previewmaker.Model_Global.ClickState;
 import com.tistory.deque.previewmaker.Model_Global.ClickStateEnum;
+import com.tistory.deque.previewmaker.Model_Global.PrevClickState;
 import com.tistory.deque.previewmaker.Model_Global.SeekBarSelectedEnum;
 import com.tistory.deque.previewmaker.Model_PreviewData.PreviewItem;
 import com.tistory.deque.previewmaker.R;
@@ -199,14 +200,16 @@ public class PreviewCanvasView extends View {
     }
 
     public void clickStamp() {
+        PrevClickState prevstate = new PrevClickState(CLICK_STATE);
         CLICK_STATE.clickStamp();
-        mActivity.editButtonInvisibleOrVisible(CLICK_STATE);
+        mActivity.editButtonInvisibleOrVisible(prevstate, CLICK_STATE);
         invalidate();
     }
 
     public void clickStampToZoom() {
+        PrevClickState prevstate = new PrevClickState(CLICK_STATE);
         CLICK_STATE.clickStampZoomStart();
-        mActivity.editButtonInvisibleOrVisible(CLICK_STATE);
+        mActivity.editButtonInvisibleOrVisible(prevstate, CLICK_STATE);
         invalidate();
     }
 
@@ -457,13 +460,15 @@ public class PreviewCanvasView extends View {
     }
 
     public void clickFilterEditStart() {
+        PrevClickState prevstate = new PrevClickState(CLICK_STATE);
         CLICK_STATE.clickFilterButton();
-        mActivity.editButtonInvisibleOrVisible(CLICK_STATE);
+        mActivity.editButtonInvisibleOrVisible(prevstate, CLICK_STATE);
     }
 
     public void finishPreviewEdit() {
+        PrevClickState prevstate = new PrevClickState(CLICK_STATE);
         //CLICK_STATE.clickFinishFilterEdit();
-        mActivity.editButtonInvisibleOrVisible(CLICK_STATE);
+        mActivity.editButtonInvisibleOrVisible(prevstate, CLICK_STATE);
     }
 
 
@@ -499,8 +504,9 @@ public class PreviewCanvasView extends View {
     }
 
     public void finishStampEdit() {
+        PrevClickState prevstate = new PrevClickState(CLICK_STATE);
         CLICK_STATE.clickFinishStampEdit();
-        mActivity.editButtonInvisibleOrVisible(CLICK_STATE);
+        mActivity.editButtonInvisibleOrVisible(prevstate, CLICK_STATE);
 
         int id = stampItem.getID();
         stampPosWidthPer = (int) (((stampWidth / 2.0f) + stampWidthPos - previewPosWidth) * 100000.0f / (previewWidth));
@@ -528,8 +534,9 @@ public class PreviewCanvasView extends View {
     }
 
     public void deleteStamp() {
+        PrevClickState prevstate = new PrevClickState(CLICK_STATE);
         CLICK_STATE.clickFinishStampEdit();
-        mActivity.editButtonInvisibleOrVisible(CLICK_STATE);
+        mActivity.editButtonInvisibleOrVisible(prevstate, CLICK_STATE);
 
         isStampShown = false;
         invalidate();
@@ -538,9 +545,10 @@ public class PreviewCanvasView extends View {
 
     protected void showStamp() {
         setStampShown(true);
+        PrevClickState prevstate = new PrevClickState(CLICK_STATE);
         CLICK_STATE.clickStampButton();
         previewItems.get(getPosition()).editted();
-        mActivity.editButtonInvisibleOrVisible(CLICK_STATE);
+        mActivity.editButtonInvisibleOrVisible(prevstate, CLICK_STATE);
     }
 
     protected void callInvalidate() {
@@ -692,8 +700,9 @@ public class PreviewCanvasView extends View {
 
         if(!isSaveToSimplePreviewFilter) isStampShown = false;
         setPosition(nextPosition);
+        PrevClickState prevstate = new PrevClickState(CLICK_STATE);
         CLICK_STATE.finish();
-        mActivity.editButtonInvisibleOrVisible(CLICK_STATE);
+        mActivity.editButtonInvisibleOrVisible(prevstate, CLICK_STATE);
 
         //프리뷰 비트맵을 변경
         changeStartPreviewBitmap();
