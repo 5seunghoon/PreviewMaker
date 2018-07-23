@@ -31,6 +31,8 @@
     <string name="action_preview_edit_kelvin_title">색온도</string>
     <string name="action_preview_edit_saturation_kelvin_title">온도/색조</string>
 
+    <string name="action_preview_blur_radius_title">크기</string>
+
     <string name="action_preview_edit_reset_title">초기화</string>
     <string name="action_preview_blur_title">블러</string>
     <string name="action_preview_edit_finish_title">보정 저장</string>

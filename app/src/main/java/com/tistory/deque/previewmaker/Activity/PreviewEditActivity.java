@@ -27,6 +27,7 @@ import android.widget.TextView;
 
 import com.tistory.deque.previewmaker.Controler.AnimationControler;
 import com.tistory.deque.previewmaker.Controler.PreviewBitmapControler;
+import com.tistory.deque.previewmaker.Controler.PreviewPaintControler;
 import com.tistory.deque.previewmaker.Model_Global.ClickState;
 import com.tistory.deque.previewmaker.Model_Global.ClickStateEnum;
 import com.tistory.deque.previewmaker.Model_Global.ClickStateInterface;
@@ -106,6 +107,7 @@ public class PreviewEditActivity extends AppCompatActivity {
     private SeekBarListener mSeekBarPreviewContrastListener;
     private SeekBarListener mSeekBarPreviewSaturationListener;
     private SeekBarListener mSeekBarPreviewKelvinListener;
+    private SeekBarListener mSeekBarPreviewBlurRadius;
 
 
     @BindView(R.id.editSeekBarLayoutDouble)
@@ -170,6 +172,8 @@ public class PreviewEditActivity extends AppCompatActivity {
         previewPaths = intent.getStringArrayListExtra(EXTRA_PREVIEW_LIST);
 
         pbc = PreviewBitmapControler.getPreviewBitmapControler(this);
+
+        PreviewPaintControler.setBlurPaintRadius(50.0f);
 
         getAnimation();
         setRecyclerView();
@@ -305,6 +309,7 @@ public class PreviewEditActivity extends AppCompatActivity {
         mSeekBarPreviewContrastListener = new SeekBarListener(this, SeekBarSelectedEnum.PREVIEW_CONTRAST, mPreviewCanvasView);
         mSeekBarPreviewSaturationListener = new SeekBarListener(this, SeekBarSelectedEnum.PREVIEW_SATURATION, mPreviewCanvasView);
         mSeekBarPreviewKelvinListener = new SeekBarListener(this, SeekBarSelectedEnum.PREVIEW_KELVIN, mPreviewCanvasView);
+        mSeekBarPreviewBlurRadius = new SeekBarListener(this, SeekBarSelectedEnum.BLUR_RADIUS, mPreviewCanvasView);
 
         editSeekbarSingle.setMax(SeekBarListener.SeekBarStampBrightnessMax);
         editSeekbar1.setMax(SeekBarListener.SeekBarPreviewSaturationMax);
@@ -490,8 +495,19 @@ public class PreviewEditActivity extends AppCompatActivity {
     }
 
     @OnClick(R.id.buttonPreviewBlur)
-    public void clickButtonPreivewBlur() {
+    public void clickButtonPreviewBlur() {
+        int nowRadius = (int) PreviewPaintControler.getBlurPaintRadius();
+        seekBarTextViewLeftSingle.setText(getString(R.string.action_preview_blur_radius_title));
 
+        editSeekbarSingle.setOnSeekBarChangeListener(mSeekBarPreviewBlurRadius);
+        editSeekbarSingle.setMax(PreviewPaintControler.blurPaintRadiusMax);
+        editSeekbarSingle.setProgress(nowRadius);
+        setStampSeekBarText(nowRadius, SeekBarSelectedEnum.BLUR_RADIUS);
+
+        //editSeekBarLayoutDouble.setVisibility(View.VISIBLE);
+        visibleSingleSeekbar();
+
+        mPreviewCanvasView.clickBlurButton();
     }
 
     @OnClick(R.id.buttonFilterReset)
@@ -529,12 +545,13 @@ public class PreviewEditActivity extends AppCompatActivity {
         /**
          * 할일 : 시크바의 max변경, 비저빌리티 변경, 프로그레스값 변경, 리스너 변경, 텍스트 변경
          */
+        int brightness = selectedStamp.getBrightness();
         seekBarTextViewLeftSingle.setText(getString(R.string.action_stamp_edit_brightness_title_short));
         editSeekbarSingle.setOnSeekBarChangeListener(mSeekBarStampBrightnessListener);
         editSeekbarSingle.setMax(SeekBarListener.SeekBarStampBrightnessMax);
         //editSeekBarLayoutSingle.setVisibility(View.VISIBLE);
-        editSeekbarSingle.setProgress(selectedStamp.getBrightness());
-        setStampSeekBarText(selectedStamp.getBrightness(), SeekBarSelectedEnum.BRIGHTNESS);
+        editSeekbarSingle.setProgress(brightness);
+        setStampSeekBarText(brightness, SeekBarSelectedEnum.BRIGHTNESS);
 
         visibleSingleSeekbar();
         mPreviewCanvasView.callInvalidate();
@@ -550,6 +567,7 @@ public class PreviewEditActivity extends AppCompatActivity {
 
     @OnClick(R.id.buttonPreviewEditOK)
     public void clickButtonPreviewEditOK() {
+        mPreviewCanvasView.finishBlurEdit();
         seekbarInvisibleAllBtnVisible();
     }
 
@@ -578,6 +596,9 @@ public class PreviewEditActivity extends AppCompatActivity {
             case PREVIEW_KELVIN:
                 resultProgressValue = (int) ((value - SeekBarListener.SeekBarPreviewKelvinMax / 2f) / (SeekBarListener.SeekBarPreviewKelvinMax / 2f) * 100f);
                 seekBarTextViewRight2.setText(resultProgressValue + "%");
+                break;
+            case BLUR_RADIUS:
+                seekBarTextViewRightSingle.setText((int)(PreviewPaintControler.getBlurPaintRadius()) + "px");
                 break;
         }
     }

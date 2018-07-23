@@ -36,6 +36,22 @@ public class ClickState implements ClickStateInterface{
         clickStateEnum = ClickStateEnum.STATE_BITMAP_FILTER;
     }
 
+    public void clickFinishBlur() {
+        switch (clickStateEnum) {
+            case STATE_NONE_CLICK:
+                break;
+            case STATE_STAMP_EDIT:
+                break;
+            case STATE_STAMP_ZOOM:
+                break;
+            case STATE_BITMAP_FILTER:
+                break;
+            case STATE_BITMAP_FILTER_BLUR:
+                clickStateEnum = ClickStateEnum.STATE_BITMAP_FILTER;
+                break;
+        }
+    }
+
     public void start() {
         prevStateEnum = clickStateEnum;
         clickStateEnum = ClickStateEnum.STATE_NONE_CLICK;
@@ -44,6 +60,22 @@ public class ClickState implements ClickStateInterface{
     public void clickStampButton() {
         prevStateEnum = clickStateEnum;
         clickStateEnum = ClickStateEnum.STATE_STAMP_EDIT;
+    }
+
+    public void clickBlurButton(){
+        switch (clickStateEnum){
+            case STATE_NONE_CLICK:
+                break;
+            case STATE_STAMP_EDIT:
+                break;
+            case STATE_STAMP_ZOOM:
+                break;
+            case STATE_BITMAP_FILTER:
+                clickStateEnum = ClickStateEnum.STATE_BITMAP_FILTER_BLUR;
+                break;
+            case STATE_BITMAP_FILTER_BLUR:
+                break;
+        }
     }
 
     public void clickFinishFilterEdit(){
@@ -57,6 +89,8 @@ public class ClickState implements ClickStateInterface{
                 break;
             case STATE_BITMAP_FILTER:
                 clickStateEnum = ClickStateEnum.STATE_NONE_CLICK;
+                break;
+            case STATE_BITMAP_FILTER_BLUR:
                 break;
         }
     }
@@ -74,6 +108,8 @@ public class ClickState implements ClickStateInterface{
                 break;
             case STATE_BITMAP_FILTER:
                 break;
+            case STATE_BITMAP_FILTER_BLUR:
+                break;
         }
     }
 
@@ -88,6 +124,8 @@ public class ClickState implements ClickStateInterface{
             case STATE_STAMP_ZOOM:
                 break;
             case STATE_BITMAP_FILTER:
+                break;
+            case STATE_BITMAP_FILTER_BLUR:
                 break;
         }
     }
@@ -119,6 +157,8 @@ public class ClickState implements ClickStateInterface{
                 break;
             case STATE_BITMAP_FILTER:
                 break;
+            case STATE_BITMAP_FILTER_BLUR:
+                break;
         }
     }
 
@@ -135,6 +175,8 @@ public class ClickState implements ClickStateInterface{
                 break;
             case STATE_BITMAP_FILTER:
                 break;
+            case STATE_BITMAP_FILTER_BLUR:
+                break;
         }
     }
 
@@ -146,6 +188,10 @@ public class ClickState implements ClickStateInterface{
     public boolean isShowGuideLine() {
         return (clickStateEnum == ClickStateEnum.STATE_STAMP_EDIT ||
                 clickStateEnum == ClickStateEnum.STATE_STAMP_ZOOM);
+    }
+
+    public boolean isBlur(){
+        return (clickStateEnum == ClickStateEnum.STATE_BITMAP_FILTER_BLUR);
     }
 
 

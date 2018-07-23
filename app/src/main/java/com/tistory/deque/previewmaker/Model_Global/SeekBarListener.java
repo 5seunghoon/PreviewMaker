@@ -5,6 +5,7 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 
 import com.tistory.deque.previewmaker.Activity.PreviewCanvasView;
 import com.tistory.deque.previewmaker.Activity.PreviewEditActivity;
+import com.tistory.deque.previewmaker.Controler.PreviewPaintControler;
 
 ;
 
@@ -42,6 +43,10 @@ public class SeekBarListener implements OnSeekBarChangeListener {
             case PREVIEW_SATURATION:
             case PREVIEW_KELVIN:
                 mCanvasView.onDrawPreviewColorParam(progress, mSelected);
+                mActivity.setStampSeekBarText(progress, mSelected);
+                break;
+            case BLUR_RADIUS:
+                PreviewPaintControler.setBlurPaintRadius(progress);
                 mActivity.setStampSeekBarText(progress, mSelected);
                 break;
         }

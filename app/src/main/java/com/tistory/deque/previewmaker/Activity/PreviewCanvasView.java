@@ -9,6 +9,8 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -87,6 +89,7 @@ public class PreviewCanvasView extends View {
         this.mActivity = activity;
         this.previewItems = previewItems;
         this.pbc = pbc;
+
         CLICK_STATE = ClickState.getClickState();
         CLICK_STATE.start();
 
@@ -121,6 +124,10 @@ public class PreviewCanvasView extends View {
             } else if (!isLoadRoutine) {
 
                 drawBellowBitmap();
+                if (CLICK_STATE.isBlur()) {
+                    //블러를 그리는 중일경우, 비트맵 먼저 그리고 -> 블러 그리고 -> 낙관 그림
+                    drawBlur(canvas);
+                }
                 if (isStampShown) {
                     drawStamp();
                     if (CLICK_STATE.isShowGuideLine()) {
@@ -182,6 +189,67 @@ public class PreviewCanvasView extends View {
     }
 
     private void touchDown(MotionEvent event) {
+        if (CLICK_STATE.isBlur()) {
+            touchDownForBlur(event);
+        } else {
+            touchDownForStamp(event);
+        }
+    }
+
+    private void touchMove(MotionEvent event) {
+        if (CLICK_STATE.isBlur()) {
+            touchMoveForBlur(event);
+        } else {
+            touchMoveForStamp(event);
+        }
+    }
+
+    private void touchUp(MotionEvent event) {
+        if (CLICK_STATE.isBlur()) {
+            touchUpForBlur(event);
+        } else {
+            touchUpForStamp(event);
+        }
+    }
+
+    private void touchDownForBlur(MotionEvent event) {
+        float x, y;
+        x = event.getX();
+        y = event.getY();
+        PreviewPaintControler.blurPath.reset();
+        PreviewPaintControler.blurPath.moveTo(x,y);
+        PreviewPaintControler.setPrevXY(x, y);
+        invalidate();
+    }
+
+    private void touchMoveForBlur(MotionEvent event) {
+        float x, y, mx, my;
+        x = event.getX();
+        y = event.getY();
+        mx = PreviewPaintControler.getPrevX();
+        my = PreviewPaintControler.getPrevY();
+        float distX = Math.abs(mx - x);
+        float distY = Math.abs(my - y);
+        if(distX >= 4 || distY >= 4){
+            PreviewPaintControler.blurPath.quadTo(mx, my, (x + mx)/2, (y + my)/2);
+            PreviewPaintControler.setPrevXY(x, y);
+        }
+        invalidate();
+    }
+
+    private void touchUpForBlur(MotionEvent event) {
+        float mx, my;
+        mx = PreviewPaintControler.getPrevX();
+        my = PreviewPaintControler.getPrevY();
+
+        PreviewPaintControler.blurPath.lineTo(mx, my);
+        Canvas canvas = new Canvas(pbc.getPreviewBitmap());
+        canvas.drawPath(PreviewPaintControler.blurPath, PreviewPaintControler.getBlurPaint());
+        PreviewPaintControler.blurPath.reset();
+        invalidate();
+    }
+
+    private void touchDownForStamp(MotionEvent event) {
         int x, y;
         x = (int) event.getX();
         y = (int) event.getY();
@@ -195,29 +263,9 @@ public class PreviewCanvasView extends View {
         if (isTouchStampZoom(x, y) && isStampShown) {
             clickStampToZoom();
         }
-
     }
 
-    public void clickStamp() {
-        CLICK_STATE.clickStamp();
-        mActivity.editButtonInvisibleOrVisible(CLICK_STATE);
-        invalidate();
-    }
-
-    public void clickStampToZoom() {
-        CLICK_STATE.clickStampZoomStart();
-        mActivity.editButtonInvisibleOrVisible(CLICK_STATE);
-        invalidate();
-    }
-
-    public void stampReset() {
-        stampWidthPos = (int) (previewWidth / 2.0f - stampWidth / 2.0f) + previewPosWidth;
-        stampHeightPos = (int) (previewHeight / 2.0f - stampHeight / 2.0f) + previewPosHeight;
-        stampItem.resetBrightness();
-        invalidate();
-    }
-
-    private void touchMove(MotionEvent event) {
+    private void touchMoveForStamp(MotionEvent event) {
         int x, y;
         x = (int) event.getX();
         y = (int) event.getY();
@@ -263,8 +311,27 @@ public class PreviewCanvasView extends View {
 
     }
 
-    private void touchUp(MotionEvent event) {
+    private void touchUpForStamp(MotionEvent event) {
         CLICK_STATE.clickStampZoomEnd();
+    }
+
+    public void clickStamp() {
+        CLICK_STATE.clickStamp();
+        mActivity.editButtonInvisibleOrVisible(CLICK_STATE);
+        invalidate();
+    }
+
+    public void clickStampToZoom() {
+        CLICK_STATE.clickStampZoomStart();
+        mActivity.editButtonInvisibleOrVisible(CLICK_STATE);
+        invalidate();
+    }
+
+    public void stampReset() {
+        stampWidthPos = (int) (previewWidth / 2.0f - stampWidth / 2.0f) + previewPosWidth;
+        stampHeightPos = (int) (previewHeight / 2.0f - stampHeight / 2.0f) + previewPosHeight;
+        stampItem.resetBrightness();
+        invalidate();
     }
 
     private boolean isInBoxWithWidth(int x, int y, int x1, int y1, int xWidth, int yWidth) {
@@ -393,11 +460,16 @@ public class PreviewCanvasView extends View {
         );
 
         Logger.d(TAG, previewPosWidth + "," + previewPosHeight + "," + (previewPosWidth + previewWidth) + "," + (previewPosHeight + previewHeight));
-        try{
+        try {
             mCanvas.drawBitmap(previewBitmap, null, dst, paintPreviewContrastBrightness);
-        } catch (NullPointerException e){
+        } catch (NullPointerException e) {
             Toast.makeText(mActivity.getApplicationContext(), "NullPointerException: canvas.drawBitmap", Toast.LENGTH_LONG).show();
         }
+    }
+
+    private void drawBlur(Canvas canvas) {
+        //블러를 그리기
+        //canvas.drawPoint(PreviewPaintControler.getNowX(), PreviewPaintControler.getNowY(), PreviewPaintControler.getBlurPaint());
     }
 
     private void drawStamp() {
@@ -501,7 +573,7 @@ public class PreviewCanvasView extends View {
 
     public void finishStampEdit() {
         CLICK_STATE.clickFinishStampEdit();
-        mActivity.editButtonInvisibleOrVisible( CLICK_STATE);
+        mActivity.editButtonInvisibleOrVisible(CLICK_STATE);
 
         int id = stampItem.getID();
         stampPosWidthPer = (int) (((stampWidth / 2.0f) + stampWidthPos - previewPosWidth) * 100000.0f / (previewWidth));
@@ -691,7 +763,7 @@ public class PreviewCanvasView extends View {
         previewItems.get(nextPosition).resetFilterValue();
         previewValueInit();
 
-        if(!isSaveToSimplePreviewFilter) isStampShown = false;
+        if (!isSaveToSimplePreviewFilter) isStampShown = false;
         setPosition(nextPosition);
         CLICK_STATE.finish();
         mActivity.editButtonInvisibleOrVisible(CLICK_STATE);
@@ -738,6 +810,14 @@ public class PreviewCanvasView extends View {
         //mActivity.doClickButtonStamp();
     }
 
+    public void finishBlurEdit() {
+        CLICK_STATE.clickFinishBlur();
+    }
+
+    public void clickBlurButton() {
+        CLICK_STATE.clickBlurButton();
+    }
+
     protected class LoadPreviewAsyncTask extends AsyncTask<Integer, Integer, Integer> {
         @Override
         protected Integer doInBackground(Integer... integers) {
@@ -760,7 +840,7 @@ public class PreviewCanvasView extends View {
         final String ERROR_INVALID_POSITION = "ERROR_INVALID_POSITION";
         final String ERROR_IO_EXCEPTION = "ERROR_IO_EXCEPTION";
 
-        SaveAllAsyncTask(boolean isSaveToSimplePreviewFilter){
+        SaveAllAsyncTask(boolean isSaveToSimplePreviewFilter) {
             /**
              * 프리뷰 간단 보정 후 저장을 눌렀을 때 : isSaveToSimplePreviewFilter는 ture
              * 그냥 저장을 눌렀을 때 : isSaveToSimplePreviewFilter는 false
@@ -815,7 +895,7 @@ public class PreviewCanvasView extends View {
             PreviewItem previewItem = previewItems.get(previewPosition);
             previewItem.setOriginalImageURI(resultUri);
             //스탬프가 보여지고 있는데, 간단보정후 저장하는건 진짜 저장하는게 아님
-            if(!(isSaveToSimplePreviewFilter && isStampShown)) previewItem.saved();
+            if (!(isSaveToSimplePreviewFilter && isStampShown)) previewItem.saved();
 
             return resultFilePath;
         }
@@ -837,7 +917,7 @@ public class PreviewCanvasView extends View {
                     saveInformationSnackbar = Snackbar.make(mActivity.getCurrentFocus(), "저장 실패!", Snackbar.LENGTH_LONG);
                     saveInformationSnackbar.show();
                 } else {
-                    if(!isSaveToSimplePreviewFilter){
+                    if (!isSaveToSimplePreviewFilter) {
                         File resultFile = new File(str);
                         saveInformationSnackbar = Snackbar.make(mActivity.getCurrentFocus(),
                                 "저장 폴더 : " + MainActivity.PREVIEW_SAVED_DIRECTORY + "\n파일 이름 : " + resultFile.getName(),
