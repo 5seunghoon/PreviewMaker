@@ -21,6 +21,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.tistory.deque.previewmaker.Model_Global.DBOpenHelper;
 import com.tistory.deque.previewmaker.R;
@@ -122,6 +123,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (!mPermission.checkPermissions()) return;
+
                 getStampFromAlbum();
             }
         });
@@ -360,6 +362,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void callFromListItem(int stampPosition) {
+        Toast.makeText(getApplicationContext(), getString(R.string.guide_select_previews), Toast.LENGTH_LONG).show();
         getPreviewsFromAlbum();
         this.stampPosition = stampPosition;
     }

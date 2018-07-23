@@ -54,6 +54,8 @@
     <string name="snackbar_preview_edit_acti_back_to_exit_btn">EXIT</string>
     <string name="snackbar_preview_edit_acti_clk_new_preview">편집 중인 프리뷰를 저장하시겠습니까?</string>
 
+    <string name="guide_select_previews">프리뷰로 편집할 사진을 선택해주세요</string>
+
 
     <string name="canvasview_hint">편집할 프리뷰를 상단에서 선택해 주세요</string>
 
