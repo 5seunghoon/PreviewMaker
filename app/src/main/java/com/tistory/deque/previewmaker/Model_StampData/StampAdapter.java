@@ -1,5 +1,6 @@
 package com.tistory.deque.previewmaker.Model_StampData;
 
+import android.Manifest;
 import android.content.DialogInterface;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
@@ -12,6 +13,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.gun0912.tedpermission.PermissionListener;
+import com.gun0912.tedpermission.TedPermission;
 import com.tistory.deque.previewmaker.Activity.MainActivity;
 import com.tistory.deque.previewmaker.R;
 
@@ -79,8 +82,24 @@ public class StampAdapter extends RecyclerView.Adapter<StampAdapter.ViewHolder> 
         holder.StampImageTextView.setImageURI(mStampItems.get(position).getImageURI());
     }
 
-    private void clickItem(View v, int position) {
-        mActivity.callFromListItem(position);
+    private void clickItem(View v, final int position) {
+        TedPermission.with(mActivity.getApplicationContext())
+                .setPermissionListener(new PermissionListener() {
+                    @Override
+                    public void onPermissionGranted() {
+                        mActivity.callFromListItem(position);
+                    }
+
+                    @Override
+                    public void onPermissionDenied(ArrayList<String> deniedPermissions) {
+                    }
+                })
+                .setRationaleMessage(mActivity.getString(R.string.tedpermission_select_stamp_rational))
+                .setDeniedMessage(mActivity.getString(R.string.tedpermission_select_stamp_deny_rational))
+                .setPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                .setPermissions(Manifest.permission.READ_EXTERNAL_STORAGE)
+                .setGotoSettingButton(true)
+                .check();
     }
 
     private void clickDel(final View v, final int position) {
@@ -99,8 +118,25 @@ public class StampAdapter extends RecyclerView.Adapter<StampAdapter.ViewHolder> 
                                 return;
                             }
                         });
-        AlertDialog alert = stampDeleteAlert.create();
-        alert.show();
+        final AlertDialog delAlert = stampDeleteAlert.create();
+
+        TedPermission.with(mActivity.getApplicationContext())
+                .setPermissionListener(new PermissionListener() {
+                    @Override
+                    public void onPermissionGranted() {
+                        delAlert.show();
+                    }
+
+                    @Override
+                    public void onPermissionDenied(ArrayList<String> deniedPermissions) {
+                    }
+                })
+                .setRationaleMessage(mActivity.getString(R.string.tedpermission_del_stamp_rational))
+                .setDeniedMessage(mActivity.getString(R.string.tedpermission_del_stamp_deny_rational))
+                .setPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                .setPermissions(Manifest.permission.READ_EXTERNAL_STORAGE)
+                .setGotoSettingButton(true)
+                .check();
     }
 
     private void deleteStampAndScan(View v, int position) {

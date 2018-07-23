@@ -1,5 +1,6 @@
 package com.tistory.deque.previewmaker.Activity;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
@@ -7,28 +8,26 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.gun0912.tedpermission.PermissionListener;
+import com.gun0912.tedpermission.TedPermission;
 import com.tistory.deque.previewmaker.Model_Global.DBOpenHelper;
 import com.tistory.deque.previewmaker.R;
 import com.tistory.deque.previewmaker.Model_StampData.StampAdapter;
 import com.tistory.deque.previewmaker.Model_StampData.StampItem;
 import com.tistory.deque.previewmaker.Util.Logger;
-import com.tistory.deque.previewmaker.Util.Permission;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -78,8 +77,6 @@ public class MainActivity extends AppCompatActivity {
 
     private DBOpenHelper dbOpenHelper;
 
-    private Permission mPermission;
-
     private String mCurrentPhotoPath;
     private Uri mCropSourceURI, mCropEndURI; //  mCropSourceURI = 자를 uri, mCropEndURI = 자르고 난뒤 uri
 
@@ -108,12 +105,9 @@ public class MainActivity extends AppCompatActivity {
         dbOpen();
 
 
-
         //setting toolbar
 
         //permission
-        mPermission = new Permission(getApplicationContext(), this);
-        mPermission.permissionSnackbarInit(mainActivityMainLayout);
 
         //setting recycler view
         setRecyclerView();
@@ -122,9 +116,23 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!mPermission.checkPermissions()) return;
+                TedPermission.with(getApplicationContext())
+                        .setPermissionListener(new PermissionListener() {
+                            @Override
+                            public void onPermissionGranted() {
+                                getStampFromAlbum();
+                            }
 
-                getStampFromAlbum();
+                            @Override
+                            public void onPermissionDenied(ArrayList<String> deniedPermissions) {
+                            }
+                        })
+                        .setRationaleMessage(getString(R.string.tedpermission_add_stamp_rational))
+                        .setDeniedMessage(getString(R.string.tedpermission_add_stamp_deny_rational))
+                        .setPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        .setPermissions(Manifest.permission.READ_EXTERNAL_STORAGE)
+                        .setGotoSettingButton(true)
+                        .check();
             }
         });
 
@@ -132,8 +140,6 @@ public class MainActivity extends AppCompatActivity {
         //setting navigation view
         //navigationView.setNavigationItemSelectedListener(this);
 
-
-        mPermission.checkPermissions();
 
         stampsFromDBToList();
     }
@@ -214,11 +220,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        mPermission.requestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     private void dbOpen() {
@@ -363,8 +364,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void callFromListItem(int stampPosition) {
         Toast.makeText(getApplicationContext(), getString(R.string.guide_select_previews), Toast.LENGTH_LONG).show();
-        getPreviewsFromAlbum();
-        this.stampPosition = stampPosition;
+        getPreviewsFromAlbum(stampPosition);
     }
 
     public void callFromListItemToDelete(View v, int position) {
@@ -404,7 +404,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void getPreviewsFromAlbum() {
+    private void getPreviewsFromAlbum(int stampPosition) {
+        this.stampPosition = stampPosition;
         mSeletedPreviews = new ArrayList<>();
 
         Intent intent = new Intent(getApplicationContext(), MultiImageSelectorActivity.class);

@@ -281,7 +281,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:background="@android:color/white"
-                                android:drawableTop="@drawable/btn_all_use_save_30dp"
+                                android:drawableTop="@drawable/btn_all_use_finish_30dp"
                                 android:paddingTop="4dp"
                                 android:text="@string/action_preview_edit_finish_title"
                                 android:textSize="12sp" />

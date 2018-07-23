@@ -155,7 +155,7 @@ public class PreviewItem {
 
     public float getKelvinForFilter(){
         //0.875~1.125를 리턴
-        return ((float)kelvin / 2048.0f) + 1.0f;
+        return ((float)kelvin / 1024.0f) + 1.0f;
     }
 
     public void setKelvin(int kelvin){

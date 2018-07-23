@@ -29,7 +29,7 @@
     <string name="action_preview_edit_brightness_contrast_title">밝기/대비</string>
     <string name="action_preview_edit_saturation_title">색조</string>
     <string name="action_preview_edit_kelvin_title">색온도</string>
-    <string name="action_preview_edit_saturation_kelvin_title">색조/온도</string>
+    <string name="action_preview_edit_saturation_kelvin_title">온도/색조</string>
 
     <string name="action_preview_edit_reset_title">초기화</string>
     <string name="action_preview_blur_title">블러</string>
@@ -47,8 +47,14 @@
     <string name="snackbar_make_stamp_acti_no_name_warn">이름을 입력해 주세요.</string>
     <string name="snackbar_make_stamp_acti_name_len_warn">낙관의 이름을 10자 이내로 줄여주세요.</string>
 
-    <string name="snackbar_permission_deny">사진을 불러오고 저장하기 위해서는 권한이 필요합니다. 오른쪽 [GO!] 클릭!</string>
-    <string name="snackbar_permission_deny_rational">사진을 불러오고 저장하려면 권한이 꼭 필요합니다.\n[설정]-[애플리케이션]에서 권한을 허용해주세요.</string>
+    <string name="tedpermission_add_stamp_rational">사진을 불러오고 저장하기 위해서는 파일 접근 권한이 필요합니다.</string>
+    <string name="tedpermission_add_stamp_deny_rational">사진을 불러오고 저장하려면 권한이 꼭 필요합니다.\n[설정]-[애플리케이션]에서 권한을 허용해주세요.</string>
+
+    <string name="tedpermission_select_stamp_rational">낙관을 선택하기 위해서는 파일 접근 권한이 필요합니다.</string>
+    <string name="tedpermission_select_stamp_deny_rational">낙관을 선택하려면 권한이 꼭 필요합니다.\n[설정]-[애플리케이션]에서 권한을 허용해주세요.</string>
+
+    <string name="tedpermission_del_stamp_rational">낙관을 삭제하기 위해서는 파일 접근 권한이 필요합니다.</string>
+    <string name="tedpermission_del_stamp_deny_rational">낙관을 삭제하려면 권한이 꼭 필요합니다.\n[설정]-[애플리케이션]에서 권한을 허용해주세요.</string>
 
     <string name="snackbar_preview_edit_acti_back_to_exit">뒤로 버튼을 한 번 더 누르시면 편집이 취소됩니다.\n저장되지 않을 수 있습니다.</string>
     <string name="snackbar_preview_edit_acti_back_to_exit_btn">EXIT</string>
