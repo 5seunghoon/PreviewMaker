@@ -12,9 +12,9 @@ public class PreviewPaintControler {
         float sg = (1 - saturation) * 0.7154f;
         float sb = (1 - saturation) * 0.0721f;
 
-        float kr = (1 - kelvin) * 0.2f;
-        float kg = (1 - kelvin) * 0.3f;
-        float kb = (1 - kelvin) * 0.8f;
+        float kr = (1 - kelvin) * 0.07f;
+        float kg = (1 - kelvin) * 0.33f;
+        float kb = (1 - kelvin) * 0.6f;
 
         float t = (1.0f - contrast) * 128.0f;
         float bt = brightness + t;
