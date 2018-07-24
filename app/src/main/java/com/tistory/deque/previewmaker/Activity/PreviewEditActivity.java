@@ -26,6 +26,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.tistory.deque.previewmaker.Controler.AnimationControler;
+import com.tistory.deque.previewmaker.Controler.BlurControler;
 import com.tistory.deque.previewmaker.Controler.PreviewBitmapControler;
 import com.tistory.deque.previewmaker.Controler.PreviewPaintControler;
 import com.tistory.deque.previewmaker.Model_Global.ClickState;
@@ -173,7 +174,7 @@ public class PreviewEditActivity extends AppCompatActivity {
 
         pbc = PreviewBitmapControler.getPreviewBitmapControler(this);
 
-        PreviewPaintControler.setBlurPaintRadius(50.0f);
+        BlurControler.setBlurPaintRadius(50.0f);
 
         getAnimation();
         setRecyclerView();
@@ -496,11 +497,11 @@ public class PreviewEditActivity extends AppCompatActivity {
 
     @OnClick(R.id.buttonPreviewBlur)
     public void clickButtonPreviewBlur() {
-        int nowRadius = (int) PreviewPaintControler.getBlurPaintRadius();
+        int nowRadius = (int) BlurControler.getBlurPaintRadius();
         seekBarTextViewLeftSingle.setText(getString(R.string.action_preview_blur_radius_title));
 
         editSeekbarSingle.setOnSeekBarChangeListener(mSeekBarPreviewBlurRadius);
-        editSeekbarSingle.setMax(PreviewPaintControler.blurPaintRadiusMax);
+        editSeekbarSingle.setMax(BlurControler.blurPaintRadiusMax);
         editSeekbarSingle.setProgress(nowRadius);
         setStampSeekBarText(nowRadius, SeekBarSelectedEnum.BLUR_RADIUS);
 
@@ -524,7 +525,7 @@ public class PreviewEditActivity extends AppCompatActivity {
         setTitle(getString(R.string.title_preview_make_activity));
         seekbarInvisibleAllBtnVisible();
         mPreviewCanvasView.finishPreviewEdit();
-        mPreviewCanvasView.savePreviewEach(-1, true);
+        //mPreviewCanvasView.savePreviewEach(-1, true);
     }
 
     @OnClick(R.id.buttonStampFinish)
@@ -598,7 +599,7 @@ public class PreviewEditActivity extends AppCompatActivity {
                 seekBarTextViewRight2.setText(resultProgressValue + "%");
                 break;
             case BLUR_RADIUS:
-                seekBarTextViewRightSingle.setText((int)(PreviewPaintControler.getBlurPaintRadius()) + "px");
+                seekBarTextViewRightSingle.setText((int)(BlurControler.getBlurPaintRadius()) + "px");
                 break;
         }
     }
@@ -807,7 +808,8 @@ public class PreviewEditActivity extends AppCompatActivity {
         }
 
         @Override
-        protected Boolean doInBackground(PreviewEditActivity... param) { // 스래드 실행 중
+        protected Boolean doInBackground(PreviewEditActivity... param) {
+            //섬네일 로딩
             Uri thumbnailUri, originalUri;
             boolean firstAdd = true;
 
@@ -821,7 +823,8 @@ public class PreviewEditActivity extends AppCompatActivity {
                 Logger.d(TAG, "Thumbnail parsing success : " + thumbnailUri);
                 previewItems.add(new PreviewItem(originalUri, thumbnailUri, param[0]));
                 if (firstAdd) {
-                    pbc.setPreviewBitmap(previewItems.get(0));
+                    //처음 섬네일 로딩할때 pbc에 비트맵을 미리 넣어둠
+                    //pbc.setPreviewBitmap(previewItems.get(0));
                     firstAdd = false;
                 }
                 Logger.d(TAG, "previewItem success : " + originalUri);

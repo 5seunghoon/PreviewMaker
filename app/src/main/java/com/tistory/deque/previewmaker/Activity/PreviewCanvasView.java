@@ -18,10 +18,12 @@ import android.provider.MediaStore;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
 
+import com.tistory.deque.previewmaker.Controler.BlurControler;
 import com.tistory.deque.previewmaker.Controler.PreviewBitmapControler;
 import com.tistory.deque.previewmaker.Controler.PreviewPaintControler;
 import com.tistory.deque.previewmaker.Model_Global.ClickState;
@@ -124,10 +126,6 @@ public class PreviewCanvasView extends View {
             } else if (!isLoadRoutine) {
 
                 drawBellowBitmap();
-                if (CLICK_STATE.isBlur()) {
-                    //블러를 그리는 중일경우, 비트맵 먼저 그리고 -> 블러 그리고 -> 낙관 그림
-                    drawBlur(canvas);
-                }
                 if (isStampShown) {
                     drawStamp();
                     if (CLICK_STATE.isShowGuideLine()) {
@@ -135,6 +133,10 @@ public class PreviewCanvasView extends View {
                     }
                 }
 
+                if (CLICK_STATE.isBlur()) {
+                    //블러를 그리는 중일경우, 비트맵 먼저 그리고 -> 블러 그리고 -> 낙관 그림
+                    drawBlur(canvas);
+                }
             }
         }
 
@@ -216,9 +218,9 @@ public class PreviewCanvasView extends View {
         float x, y;
         x = event.getX();
         y = event.getY();
-        PreviewPaintControler.blurPath.reset();
-        PreviewPaintControler.blurPath.moveTo(x,y);
-        PreviewPaintControler.setPrevXY(x, y);
+        BlurControler.blurPath.reset();
+        BlurControler.blurPath.moveTo(x,y);
+        BlurControler.setPrevXY(x, y);
         invalidate();
     }
 
@@ -226,26 +228,27 @@ public class PreviewCanvasView extends View {
         float x, y, mx, my;
         x = event.getX();
         y = event.getY();
-        mx = PreviewPaintControler.getPrevX();
-        my = PreviewPaintControler.getPrevY();
+        mx = BlurControler.getPrevX();
+        my = BlurControler.getPrevY();
         float distX = Math.abs(mx - x);
         float distY = Math.abs(my - y);
         if(distX >= 4 || distY >= 4){
-            PreviewPaintControler.blurPath.quadTo(mx, my, (x + mx)/2, (y + my)/2);
-            PreviewPaintControler.setPrevXY(x, y);
+            BlurControler.blurPath.quadTo(mx, my, x, y);
+            BlurControler.setPrevXY(x, y);
+            Logger.d("MYTAG", "PREV X, Y : " + mx + ", " + my + " NOW X Y : " + x + ", " + y);
         }
         invalidate();
     }
 
     private void touchUpForBlur(MotionEvent event) {
         float mx, my;
-        mx = PreviewPaintControler.getPrevX();
-        my = PreviewPaintControler.getPrevY();
+        mx = BlurControler.getPrevX();
+        my = BlurControler.getPrevY();
 
-        PreviewPaintControler.blurPath.lineTo(mx, my);
-        Canvas canvas = new Canvas(pbc.getPreviewBitmap());
-        canvas.drawPath(PreviewPaintControler.blurPath, PreviewPaintControler.getBlurPaint());
-        PreviewPaintControler.blurPath.reset();
+        //BlurControler.blurPath.lineTo(mx, my);
+        //Canvas canvas = new Canvas(pbc.getPreviewBitmap());
+        //canvas.drawPath(PreviewPaintControler.blurPath, PreviewPaintControler.getBlurPaint());
+        //PreviewPaintControler.blurPath.reset();
         invalidate();
     }
 
@@ -468,8 +471,17 @@ public class PreviewCanvasView extends View {
     }
 
     private void drawBlur(Canvas canvas) {
+        Logger.d("MYTAG", "drawBlur()");
+        /**
+         * 1. 타원을 사용자가 설정하면
+         * 2. 그 타원을 포함하는 사각형을 구하고
+         * 3. 그 사각형만큼 비트맵을 블러 적용
+         * 4. 그 후 그 블러된 비트맵을 pbc.blurBitmap에 저장
+         * 5. OK를 눌리면 바로 저장?
+         */
         //블러를 그리기
         //canvas.drawPoint(PreviewPaintControler.getNowX(), PreviewPaintControler.getNowY(), PreviewPaintControler.getBlurPaint());
+        canvas.drawPath(BlurControler.blurPath, BlurControler.getBlurPaint());
     }
 
     private void drawStamp() {
@@ -788,6 +800,7 @@ public class PreviewCanvasView extends View {
     }
 
     public void changeStartPreviewBitmap() {
+        //프리뷰 비트맵을 변경하기 위해 비동기 호출
         isLoadRoutine = true;
         previewLoadProgressDialog.show();
         LoadPreviewAsyncTask loadPreviewAsyncTask = new LoadPreviewAsyncTask();
