@@ -7,20 +7,20 @@ import android.util.Log;
 import com.tistory.deque.previewmaker.Model_PreviewData.PreviewItem;
 import com.tistory.deque.previewmaker.Util.Logger;
 
-public class PreviewBitmapControler {
-    private static PreviewBitmapControler pbc;
+public class PreviewBitmapController {
+    private static PreviewBitmapController pbc;
     private Bitmap previewBitmap;
     private int bitmapWidth, bitmapHeight;
     private Activity mActivity;
 
-    private PreviewBitmapControler(Activity mActivity){
+    private PreviewBitmapController(Activity mActivity){
         this.mActivity = mActivity;
     }
 
-    public static PreviewBitmapControler getPreviewBitmapControler(Activity mActivity){
+    public static PreviewBitmapController getPreviewBitmapControler(Activity mActivity){
         //싱글턴 패턴
         if(pbc == null){
-            pbc = new PreviewBitmapControler(mActivity);
+            pbc = new PreviewBitmapController(mActivity);
         }
         return pbc;
     }

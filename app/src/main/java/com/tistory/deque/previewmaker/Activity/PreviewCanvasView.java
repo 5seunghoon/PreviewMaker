@@ -9,8 +9,6 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -18,14 +16,13 @@ import android.provider.MediaStore;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
 
-import com.tistory.deque.previewmaker.Controler.BlurControler;
-import com.tistory.deque.previewmaker.Controler.PreviewBitmapControler;
-import com.tistory.deque.previewmaker.Controler.PreviewPaintControler;
+import com.tistory.deque.previewmaker.Controler.BlurController;
+import com.tistory.deque.previewmaker.Controler.PreviewBitmapController;
+import com.tistory.deque.previewmaker.Controler.RetouchingPaintController;
 import com.tistory.deque.previewmaker.Model_Global.ClickState;
 import com.tistory.deque.previewmaker.Model_Global.ClickStateEnum;
 import com.tistory.deque.previewmaker.Model_Global.SeekBarSelectedEnum;
@@ -81,12 +78,12 @@ public class PreviewCanvasView extends View {
     //스탬프와 함께 저장해야 하는지에 대한 boolean. 만약 프리뷰'만' 저장하는 경우(간단보정같이) 이걸 false로 해야함
     private Snackbar saveInformationSnackbar;
 
-    private PreviewBitmapControler pbc;
+    private PreviewBitmapController pbc;
 
     private boolean isSaveReady = false;
 
 
-    public PreviewCanvasView(Context context, PreviewEditActivity activity, ArrayList<PreviewItem> previewItems, PreviewBitmapControler pbc) {
+    public PreviewCanvasView(Context context, PreviewEditActivity activity, ArrayList<PreviewItem> previewItems, PreviewBitmapController pbc) {
         super(context);
         this.mActivity = activity;
         this.previewItems = previewItems;
@@ -218,9 +215,9 @@ public class PreviewCanvasView extends View {
         float x, y;
         x = event.getX();
         y = event.getY();
-        BlurControler.blurPath.reset();
-        BlurControler.blurPath.moveTo(x,y);
-        BlurControler.setPrevXY(x, y);
+        BlurController.blurPath.reset();
+        BlurController.blurPath.moveTo(x,y);
+        BlurController.setPrevXY(x, y);
         invalidate();
     }
 
@@ -228,13 +225,13 @@ public class PreviewCanvasView extends View {
         float x, y, mx, my;
         x = event.getX();
         y = event.getY();
-        mx = BlurControler.getPrevX();
-        my = BlurControler.getPrevY();
+        mx = BlurController.getPrevX();
+        my = BlurController.getPrevY();
         float distX = Math.abs(mx - x);
         float distY = Math.abs(my - y);
         if(distX >= 4 || distY >= 4){
-            BlurControler.blurPath.quadTo(mx, my, x, y);
-            BlurControler.setPrevXY(x, y);
+            BlurController.blurPath.quadTo(mx, my, x, y);
+            BlurController.setPrevXY(x, y);
             Logger.d("MYTAG", "PREV X, Y : " + mx + ", " + my + " NOW X Y : " + x + ", " + y);
         }
         invalidate();
@@ -242,13 +239,13 @@ public class PreviewCanvasView extends View {
 
     private void touchUpForBlur(MotionEvent event) {
         float mx, my;
-        mx = BlurControler.getPrevX();
-        my = BlurControler.getPrevY();
+        mx = BlurController.getPrevX();
+        my = BlurController.getPrevY();
 
-        //BlurControler.blurPath.lineTo(mx, my);
+        //BlurController.blurPath.lineTo(mx, my);
         //Canvas canvas = new Canvas(pbc.getPreviewBitmap());
-        //canvas.drawPath(PreviewPaintControler.blurPath, PreviewPaintControler.getBlurPaint());
-        //PreviewPaintControler.blurPath.reset();
+        //canvas.drawPath(RetouchingPaintController.blurPath, RetouchingPaintController.getBlurPaint());
+        //RetouchingPaintController.blurPath.reset();
         invalidate();
     }
 
@@ -378,7 +375,7 @@ public class PreviewCanvasView extends View {
         Rect previewDst = new Rect(0, 0, previewOrigBitmapWidth, previewOrigBitmapHeight);
 
         PreviewItem nowPreview = previewItems.get(previewPosition);
-        Paint paintPreviewContrastBrightness = PreviewPaintControler.getPaint(
+        Paint paintPreviewContrastBrightness = RetouchingPaintController.getPaint(
                 nowPreview.getContrastForFilter()
                 , nowPreview.getBrightnessForFilter()
                 , nowPreview.getSaturationForFilter()
@@ -402,7 +399,7 @@ public class PreviewCanvasView extends View {
             changedStampCenterX = (int) ((double) stampItem.getPos_width_per() * (double) previewOrigBitmapWidth / 100000d);
             changedStampCenterY = (int) ((double) stampItem.getPos_height_per() * (double) previewOrigBitmapHeight / 100000d);
 
-            Paint paintContrastBrightness = PreviewPaintControler.getPaint(1, stampItem.getAbsoluteBrightness(), 1, 1);
+            Paint paintContrastBrightness = RetouchingPaintController.getPaint(1, stampItem.getAbsoluteBrightness(), 1, 1);
 
             Rect stampDst = new Rect(
                     (int) (changedStampCenterX - changedStampWidth * widthAnchor / 2f),
@@ -455,7 +452,7 @@ public class PreviewCanvasView extends View {
         dst = new Rect(previewPosWidth, previewPosHeight, previewPosWidth + previewWidth, previewPosHeight + previewHeight);
 
         PreviewItem nowPreview = previewItems.get(getPosition());
-        Paint paintPreviewContrastBrightness = PreviewPaintControler.getPaint(
+        Paint paintPreviewContrastBrightness = RetouchingPaintController.getPaint(
                 nowPreview.getContrastForFilter()
                 , nowPreview.getBrightnessForFilter()
                 , nowPreview.getSaturationForFilter()
@@ -480,8 +477,8 @@ public class PreviewCanvasView extends View {
          * 5. OK를 눌리면 바로 저장?
          */
         //블러를 그리기
-        //canvas.drawPoint(PreviewPaintControler.getNowX(), PreviewPaintControler.getNowY(), PreviewPaintControler.getBlurPaint());
-        canvas.drawPath(BlurControler.blurPath, BlurControler.getBlurPaint());
+        //canvas.drawPoint(RetouchingPaintController.getNowX(), RetouchingPaintController.getNowY(), RetouchingPaintController.getBlurPaint());
+        canvas.drawPath(BlurController.blurPath, BlurController.getBlurPaint());
     }
 
     private void drawStamp() {
@@ -493,7 +490,7 @@ public class PreviewCanvasView extends View {
                 stampWidth + ", " + stampHeight + ", " +
                 stampPosWidthPer + ", " + stampPosHeightPer + ", " + stampURI);
 
-        Paint paintContrastBrightness = PreviewPaintControler.getPaint(1, stampItem.getAbsoluteBrightness(), 1, 1);
+        Paint paintContrastBrightness = RetouchingPaintController.getPaint(1, stampItem.getAbsoluteBrightness(), 1, 1);
 
         Rect dst = new Rect(stampWidthPos, stampHeightPos, stampWidthPos + stampWidth, stampHeightPos + stampHeight);
         mCanvas.drawBitmap(stampOriginalBitmap, null, dst, paintContrastBrightness);

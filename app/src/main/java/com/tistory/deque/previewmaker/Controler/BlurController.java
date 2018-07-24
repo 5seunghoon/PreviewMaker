@@ -10,7 +10,7 @@ import android.util.Log;
 
 import com.tistory.deque.previewmaker.Util.Logger;
 
-public class BlurControler {
+public class BlurController {
     public static Path blurPath = new Path();
     private static Paint blurPaint;
     private static float blurPaintRadius = 50.0f;

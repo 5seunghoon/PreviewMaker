@@ -11,7 +11,7 @@ import android.util.Log;
 
 import com.tistory.deque.previewmaker.Util.Logger;
 
-public class PreviewPaintControler {
+public class RetouchingPaintController {
 
     public static Paint getPaint(float contrast, float brightness, float saturation, float kelvin){
         //contrast : 1, brightness : 0, saturation : 1 is init value

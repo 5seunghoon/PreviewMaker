@@ -15,7 +15,6 @@ import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Layout;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -25,11 +24,9 @@ import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import com.tistory.deque.previewmaker.Controler.AnimationControler;
-import com.tistory.deque.previewmaker.Controler.BlurControler;
-import com.tistory.deque.previewmaker.Controler.PreviewBitmapControler;
-import com.tistory.deque.previewmaker.Controler.PreviewPaintControler;
-import com.tistory.deque.previewmaker.Model_Global.ClickState;
+import com.tistory.deque.previewmaker.Controler.AnimationController;
+import com.tistory.deque.previewmaker.Controler.BlurController;
+import com.tistory.deque.previewmaker.Controler.PreviewBitmapController;
 import com.tistory.deque.previewmaker.Model_Global.ClickStateEnum;
 import com.tistory.deque.previewmaker.Model_Global.ClickStateInterface;
 import com.tistory.deque.previewmaker.Model_Global.DBOpenHelper;
@@ -65,7 +62,7 @@ public class PreviewEditActivity extends AppCompatActivity {
     private boolean isClickPreviewFirst = false;
     private long mBackPressedTime;
 
-    public PreviewBitmapControler pbc;
+    public PreviewBitmapController pbc;
 
     private int stampID;
     private Uri stampImageURI;
@@ -172,9 +169,9 @@ public class PreviewEditActivity extends AppCompatActivity {
         previewItems = new ArrayList<>();
         previewPaths = intent.getStringArrayListExtra(EXTRA_PREVIEW_LIST);
 
-        pbc = PreviewBitmapControler.getPreviewBitmapControler(this);
+        pbc = PreviewBitmapController.getPreviewBitmapControler(this);
 
-        BlurControler.setBlurPaintRadius(50.0f);
+        BlurController.setBlurPaintRadius(50.0f);
 
         getAnimation();
         setRecyclerView();
@@ -300,8 +297,8 @@ public class PreviewEditActivity extends AppCompatActivity {
     }
 
     private void getAnimation() {
-        aniFadeIn = AnimationControler.getFadeInAnimation(this);
-        aniFadeOut = AnimationControler.getFadeOutAnimation(this);
+        aniFadeIn = AnimationController.getFadeInAnimation(this);
+        aniFadeOut = AnimationController.getFadeOutAnimation(this);
     }
 
     private void setSeekBar() {
@@ -497,11 +494,11 @@ public class PreviewEditActivity extends AppCompatActivity {
 
     @OnClick(R.id.buttonPreviewBlur)
     public void clickButtonPreviewBlur() {
-        int nowRadius = (int) BlurControler.getBlurPaintRadius();
+        int nowRadius = (int) BlurController.getBlurPaintRadius();
         seekBarTextViewLeftSingle.setText(getString(R.string.action_preview_blur_radius_title));
 
         editSeekbarSingle.setOnSeekBarChangeListener(mSeekBarPreviewBlurRadius);
-        editSeekbarSingle.setMax(BlurControler.blurPaintRadiusMax);
+        editSeekbarSingle.setMax(BlurController.blurPaintRadiusMax);
         editSeekbarSingle.setProgress(nowRadius);
         setStampSeekBarText(nowRadius, SeekBarSelectedEnum.BLUR_RADIUS);
 
@@ -599,7 +596,7 @@ public class PreviewEditActivity extends AppCompatActivity {
                 seekBarTextViewRight2.setText(resultProgressValue + "%");
                 break;
             case BLUR_RADIUS:
-                seekBarTextViewRightSingle.setText((int)(BlurControler.getBlurPaintRadius()) + "px");
+                seekBarTextViewRightSingle.setText((int)(BlurController.getBlurPaintRadius()) + "px");
                 break;
         }
     }

@@ -6,7 +6,7 @@ import android.view.animation.AnimationUtils;
 
 import com.tistory.deque.previewmaker.R;
 
-public class AnimationControler {
+public class AnimationController {
     private static Animation aniFadeIn = null;
     private static Animation aniFadeOut = null;
     public static Animation getFadeInAnimation(Context context){
