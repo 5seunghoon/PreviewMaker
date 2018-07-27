@@ -10,10 +10,10 @@ import com.tistory.deque.previewmaker.Util.Logger;
 public class PreviewBitmapController {
     private static PreviewBitmapController pbc;
     private Bitmap previewBitmap;
+    private Bitmap blurredBitmap;
     private int bitmapWidth, bitmapHeight;
     private Activity mActivity;
 
-    public static boolean isBitmapBlurring;
 
     private PreviewBitmapController(Activity mActivity){
         this.mActivity = mActivity;
@@ -44,6 +44,14 @@ public class PreviewBitmapController {
 
     public int getBitmapHeight() {
         return bitmapHeight;
+    }
+
+    public void blurBitmapPart(int left, int top, int right, int bottom){
+        this.blurredBitmap = fastblur(Bitmap.createBitmap(this.previewBitmap, left, top, (right - left) , (bottom - top)), 1, 50);
+    }
+
+    public Bitmap getBlurredBitmap(){
+        return blurredBitmap;
     }
 
     private Bitmap fastblur(Bitmap sentBitmap, float scale, int radius) {

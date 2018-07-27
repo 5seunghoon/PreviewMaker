@@ -69,9 +69,27 @@ public class ClickState implements ClickStateInterface{
             case STATE_BITMAP_FILTER:
                 break;
             case STATE_BITMAP_FILTER_BLUR_GUIDE:
-                clickStateEnum = ClickStateEnum.STATE_BITMAP_FILTER;
+                clickStateEnum = ClickStateEnum.STATE_BITMAP_FILTER_BLUR;
                 break;
             case STATE_BITMAP_FILTER_BLUR:
+                break;
+        }
+    }
+
+    public void restartBlurGuide(){
+        switch (clickStateEnum) {
+            case STATE_NONE_CLICK:
+                break;
+            case STATE_STAMP_EDIT:
+                break;
+            case STATE_STAMP_ZOOM:
+                break;
+            case STATE_BITMAP_FILTER:
+                break;
+            case STATE_BITMAP_FILTER_BLUR_GUIDE:
+                break;
+            case STATE_BITMAP_FILTER_BLUR:
+                clickStateEnum = ClickStateEnum.STATE_BITMAP_FILTER_BLUR_GUIDE;
                 break;
         }
     }
@@ -104,23 +122,6 @@ public class ClickState implements ClickStateInterface{
         }
     }
 
-    public void restartBlurGuide(){
-        switch (clickStateEnum) {
-            case STATE_NONE_CLICK:
-                break;
-            case STATE_STAMP_EDIT:
-                break;
-            case STATE_STAMP_ZOOM:
-                break;
-            case STATE_BITMAP_FILTER:
-                break;
-            case STATE_BITMAP_FILTER_BLUR_GUIDE:
-                break;
-            case STATE_BITMAP_FILTER_BLUR:
-                clickStateEnum = ClickStateEnum.STATE_BITMAP_FILTER_BLUR_GUIDE;
-                break;
-        }
-    }
 
     public void clickFinishFilterEdit(){
         prevStateEnum = clickStateEnum;
@@ -235,7 +236,7 @@ public class ClickState implements ClickStateInterface{
     }
 
     public boolean isBlur(){
-        return (clickStateEnum == ClickStateEnum.STATE_BITMAP_FILTER_BLUR_GUIDE);
+        return (clickStateEnum == ClickStateEnum.STATE_BITMAP_FILTER_BLUR);
     }
 
     public boolean isBlurGuide(){

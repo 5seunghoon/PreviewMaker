@@ -57,6 +57,7 @@ public class PreviewEditActivity extends AppCompatActivity {
 
     public static int canvasGrandParentViewWidth, canvasGrandParentViewHeight;
 
+
     protected static int POSITION = -1;
     private boolean isClickPreviewFirst = false;
     private long mBackPressedTime;
@@ -597,6 +598,7 @@ public class PreviewEditActivity extends AppCompatActivity {
     public void clickButtonPreviewEditCancel(){
         mPreviewCanvasView.cancelBlurEdit();
         editCancelBtnInvisible();
+        seekbarInvisibleAllBtnVisible();
     }
 
 
