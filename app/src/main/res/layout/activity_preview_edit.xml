@@ -57,12 +57,31 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="horizontal"
-                    android:visibility="invisible">
+                    android:visibility="visible">
 
                     <FrameLayout
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="4">
+
+                        <LinearLayout
+                            android:id="@+id/buttonPreviewEditCancelLayout"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="right"
+                            android:orientation="vertical">
+
+                            <Button
+                                android:id="@+id/buttonPreviewEditCancel"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:background="@android:color/white"
+                                android:drawableTop="@drawable/btn_all_use_cancle_30dp"
+                                android:paddingTop="4dp"
+                                android:text="@string/action_preview_edit_cancle_title"
+                                android:textSize="12sp" />
+                        </LinearLayout>
 
                         <LinearLayout
                             android:id="@+id/editSeekBarLayoutSingle"
@@ -111,7 +130,8 @@
                             android:id="@+id/editSeekBarLayoutDouble"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:orientation="vertical">
+                            android:orientation="vertical"
+                            android:visibility="invisible">
 
                             <LinearLayout
                                 android:id="@+id/editSeekBarLayout1"
@@ -218,7 +238,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical"
-                    android:visibility="visible">
+                    android:visibility="invisible">
 
                     <FrameLayout
                         android:layout_width="match_parent"

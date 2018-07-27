@@ -4,71 +4,70 @@ import android.graphics.BlurMaskFilter;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
-import android.util.Log;
+import android.graphics.RectF;
+import android.util.Pair;
 
 import com.tistory.deque.previewmaker.Util.Logger;
 
 public class BlurController {
-    public static Path blurPath = new Path();
-    private static Paint blurPaint;
-    private static float blurPaintRadius = 50.0f;
-    public static int blurPaintRadiusMax = 200;
+    private static Paint blurGuidePaint;
 
-    private static float prevX, prevY;
+    private static RectF guideOvalRectF;
 
-    public static void setPrevXY(float x, float y) {
-        prevX = x;
-        prevY = y;
+    private static float guideOvalRectFLeft, guideOvalRectFTop, guideOvalRectFRight, guideOvalRectFBottom;
+
+    public static void resetGuideOvalRectF(float left, float top){
+        guideOvalRectF = new RectF();
+        setGuideOvalRectFLeftTop(left, top);
+        setGuideOvalRectFRightBottom(left, top);
     }
 
-    public static float getBlurPaintRadius(){
-        return blurPaintRadius;
-    }
-    public static float getBlurPaintRadiusSquare() {
-        return blurPaintRadius * blurPaintRadius;
-    }
-    public static void setBlurPaintRadius(float radius){
-        blurPaintRadius = radius;
-        Logger.d("MYTAG", radius + " : RADIUS");
-        if(blurPaint != null){
-            blurPaint.setStrokeWidth(blurPaintRadius);
-        }
+    private static void setGuideOvalRectFLeftTop(float left, float top){
+        guideOvalRectFLeft = left;
+        guideOvalRectFTop = top;
     }
 
-    public static float getPrevX(){
-        return prevX;
+    public static Pair<Float, Float> getGuideOvalRectFLeftTop(){
+        return new Pair<>(guideOvalRectFLeft, guideOvalRectFTop);
+    }
+    public static Pair<Float, Float> getGuideOvalRectFRightBottom(){
+        return new Pair<>(guideOvalRectFRight, guideOvalRectFBottom);
     }
 
-    public static float getPrevY(){
-        return prevY;
+    public static void setGuideOvalRectFRightBottom(float right, float bottom){
+        guideOvalRectF.set(guideOvalRectFLeft, guideOvalRectFTop, right, bottom);
+        guideOvalRectFRight = right;
+        guideOvalRectFBottom = bottom;
     }
 
-    public static Paint getBlurPaint(){
-        blurPaint = new Paint();
+    public static RectF getGuideOvalRectF(){
+        return guideOvalRectF;
+    }
+
+
+    public static Paint getBlurGuidePaint(){
+        blurGuidePaint = new Paint();
         /*
-        blurPaint.setStyle(Paint.Style.STROKE);
-        blurPaint.setStrokeJoin(Paint.Join.ROUND);
-        blurPaint.setStrokeCap(Paint.Cap.ROUND);
-        blurPaint.setStrokeWidth(blurPaintRadius);
-        blurPaint.setAntiAlias(true);
-        blurPaint.setFilterBitmap(false);
+        blurGuidePaint.setStyle(Paint.Style.STROKE);
+        blurGuidePaint.setStrokeJoin(Paint.Join.ROUND);
+        blurGuidePaint.setStrokeCap(Paint.Cap.ROUND);
+        blurGuidePaint.setStrokeWidth(blurPaintRadius);
+        blurGuidePaint.setAntiAlias(true);
+        blurGuidePaint.setFilterBitmap(false);
         */
 
-        blurPaint.setColor(Color.MAGENTA);
-        blurPaint.setAlpha(100);
-        blurPaint.setStrokeWidth(blurPaintRadius);
-        blurPaint.setDither(true);
-        blurPaint.setStrokeJoin(Paint.Join.ROUND);
-        blurPaint.setStyle(Paint.Style.STROKE);
-        blurPaint.setStrokeCap(Paint.Cap.ROUND);
+        blurGuidePaint.setColor(Color.MAGENTA);
+        blurGuidePaint.setAlpha(80);
+        blurGuidePaint.setDither(true);
+        blurGuidePaint.setStrokeJoin(Paint.Join.ROUND);
+        blurGuidePaint.setStrokeCap(Paint.Cap.ROUND);
+        blurGuidePaint.setStyle(Paint.Style.FILL);
 
-        //blurPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
+        //blurGuidePaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
 
-        BlurMaskFilter blur = new BlurMaskFilter(100, BlurMaskFilter.Blur.NORMAL);
-        blurPaint.setMaskFilter(blur);
+        //BlurMaskFilter blur = new BlurMaskFilter(100, BlurMaskFilter.Blur.NORMAL);
+        //blurGuidePaint.setMaskFilter(blur);
 
-        return blurPaint;
+        return blurGuidePaint;
     }
 }

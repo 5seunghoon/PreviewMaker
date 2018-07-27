@@ -46,8 +46,32 @@ public class ClickState implements ClickStateInterface{
                 break;
             case STATE_BITMAP_FILTER:
                 break;
+            case STATE_BITMAP_FILTER_BLUR_GUIDE:
+                clickStateEnum = ClickStateEnum.STATE_BITMAP_FILTER;
+                break;
             case STATE_BITMAP_FILTER_BLUR:
                 clickStateEnum = ClickStateEnum.STATE_BITMAP_FILTER;
+                break;
+        }
+    }
+
+    public void endBlurGuide(){
+        /**
+         * BLUR_GUIDE -> BLUR
+         */
+        switch (clickStateEnum) {
+            case STATE_NONE_CLICK:
+                break;
+            case STATE_STAMP_EDIT:
+                break;
+            case STATE_STAMP_ZOOM:
+                break;
+            case STATE_BITMAP_FILTER:
+                break;
+            case STATE_BITMAP_FILTER_BLUR_GUIDE:
+                clickStateEnum = ClickStateEnum.STATE_BITMAP_FILTER;
+                break;
+            case STATE_BITMAP_FILTER_BLUR:
                 break;
         }
     }
@@ -71,9 +95,29 @@ public class ClickState implements ClickStateInterface{
             case STATE_STAMP_ZOOM:
                 break;
             case STATE_BITMAP_FILTER:
-                clickStateEnum = ClickStateEnum.STATE_BITMAP_FILTER_BLUR;
+                clickStateEnum = ClickStateEnum.STATE_BITMAP_FILTER_BLUR_GUIDE;
+                break;
+            case STATE_BITMAP_FILTER_BLUR_GUIDE:
                 break;
             case STATE_BITMAP_FILTER_BLUR:
+                break;
+        }
+    }
+
+    public void restartBlurGuide(){
+        switch (clickStateEnum) {
+            case STATE_NONE_CLICK:
+                break;
+            case STATE_STAMP_EDIT:
+                break;
+            case STATE_STAMP_ZOOM:
+                break;
+            case STATE_BITMAP_FILTER:
+                break;
+            case STATE_BITMAP_FILTER_BLUR_GUIDE:
+                break;
+            case STATE_BITMAP_FILTER_BLUR:
+                clickStateEnum = ClickStateEnum.STATE_BITMAP_FILTER_BLUR_GUIDE;
                 break;
         }
     }
@@ -90,7 +134,7 @@ public class ClickState implements ClickStateInterface{
             case STATE_BITMAP_FILTER:
                 clickStateEnum = ClickStateEnum.STATE_NONE_CLICK;
                 break;
-            case STATE_BITMAP_FILTER_BLUR:
+            case STATE_BITMAP_FILTER_BLUR_GUIDE:
                 break;
         }
     }
@@ -108,7 +152,7 @@ public class ClickState implements ClickStateInterface{
                 break;
             case STATE_BITMAP_FILTER:
                 break;
-            case STATE_BITMAP_FILTER_BLUR:
+            case STATE_BITMAP_FILTER_BLUR_GUIDE:
                 break;
         }
     }
@@ -125,7 +169,7 @@ public class ClickState implements ClickStateInterface{
                 break;
             case STATE_BITMAP_FILTER:
                 break;
-            case STATE_BITMAP_FILTER_BLUR:
+            case STATE_BITMAP_FILTER_BLUR_GUIDE:
                 break;
         }
     }
@@ -157,7 +201,7 @@ public class ClickState implements ClickStateInterface{
                 break;
             case STATE_BITMAP_FILTER:
                 break;
-            case STATE_BITMAP_FILTER_BLUR:
+            case STATE_BITMAP_FILTER_BLUR_GUIDE:
                 break;
         }
     }
@@ -175,7 +219,7 @@ public class ClickState implements ClickStateInterface{
                 break;
             case STATE_BITMAP_FILTER:
                 break;
-            case STATE_BITMAP_FILTER_BLUR:
+            case STATE_BITMAP_FILTER_BLUR_GUIDE:
                 break;
         }
     }
@@ -191,7 +235,11 @@ public class ClickState implements ClickStateInterface{
     }
 
     public boolean isBlur(){
-        return (clickStateEnum == ClickStateEnum.STATE_BITMAP_FILTER_BLUR);
+        return (clickStateEnum == ClickStateEnum.STATE_BITMAP_FILTER_BLUR_GUIDE);
+    }
+
+    public boolean isBlurGuide(){
+        return (clickStateEnum == ClickStateEnum.STATE_BITMAP_FILTER_BLUR_GUIDE);
     }
 
 

@@ -25,7 +25,6 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.tistory.deque.previewmaker.Controler.AnimationController;
-import com.tistory.deque.previewmaker.Controler.BlurController;
 import com.tistory.deque.previewmaker.Controler.PreviewBitmapController;
 import com.tistory.deque.previewmaker.Model_Global.ClickStateEnum;
 import com.tistory.deque.previewmaker.Model_Global.ClickStateInterface;
@@ -100,12 +99,14 @@ public class PreviewEditActivity extends AppCompatActivity {
     @BindView(R.id.previewEditAllBtnParentLinearLayout)
     LinearLayout previewEditAllBtnParentLinearLayout;
 
+    @BindView(R.id.buttonPreviewEditCancelLayout)
+    LinearLayout buttonPreviewEditCancelLayout;
+
     private SeekBarListener mSeekBarStampBrightnessListener;
     private SeekBarListener mSeekBarPreviewBrightnessListener;
     private SeekBarListener mSeekBarPreviewContrastListener;
     private SeekBarListener mSeekBarPreviewSaturationListener;
     private SeekBarListener mSeekBarPreviewKelvinListener;
-    private SeekBarListener mSeekBarPreviewBlurRadius;
 
 
     @BindView(R.id.editSeekBarLayoutDouble)
@@ -171,7 +172,6 @@ public class PreviewEditActivity extends AppCompatActivity {
 
         pbc = PreviewBitmapController.getPreviewBitmapControler(this);
 
-        BlurController.setBlurPaintRadius(50.0f);
 
         getAnimation();
         setRecyclerView();
@@ -307,7 +307,6 @@ public class PreviewEditActivity extends AppCompatActivity {
         mSeekBarPreviewContrastListener = new SeekBarListener(this, SeekBarSelectedEnum.PREVIEW_CONTRAST, mPreviewCanvasView);
         mSeekBarPreviewSaturationListener = new SeekBarListener(this, SeekBarSelectedEnum.PREVIEW_SATURATION, mPreviewCanvasView);
         mSeekBarPreviewKelvinListener = new SeekBarListener(this, SeekBarSelectedEnum.PREVIEW_KELVIN, mPreviewCanvasView);
-        mSeekBarPreviewBlurRadius = new SeekBarListener(this, SeekBarSelectedEnum.BLUR_RADIUS, mPreviewCanvasView);
 
         editSeekbarSingle.setMax(SeekBarListener.SeekBarStampBrightnessMax);
         editSeekbar1.setMax(SeekBarListener.SeekBarPreviewSaturationMax);
@@ -331,9 +330,12 @@ public class PreviewEditActivity extends AppCompatActivity {
         //시크바 레이아웃
         //allSeekbarInvisible();
 
+        //캔슬 버튼
+        editCancelBtnInvisible();
     }
 
     private void seekbarVisibleAllBtnInvisible() {
+        editCancelBtnInvisible();
         seekbarParentLinearLayout.setVisibility(View.VISIBLE);
         previewEditAllBtnParentLinearLayout.setVisibility(View.INVISIBLE);
     }
@@ -341,6 +343,19 @@ public class PreviewEditActivity extends AppCompatActivity {
     private void seekbarInvisibleAllBtnVisible() {
         seekbarParentLinearLayout.setVisibility(View.INVISIBLE);
         previewEditAllBtnParentLinearLayout.setVisibility(View.VISIBLE);
+    }
+
+    private void seekbarBtnVisibleAllBtnInvisible(){
+        seekbarParentLinearLayout.setVisibility(View.VISIBLE);
+        previewEditAllBtnParentLinearLayout.setVisibility(View.INVISIBLE);
+    }
+
+    private void editCancelBtnVisible() {
+        buttonPreviewEditCancelLayout.setVisibility(View.VISIBLE);
+    }
+
+    private void editCancelBtnInvisible(){
+        buttonPreviewEditCancelLayout.setVisibility(View.INVISIBLE);
     }
 
     private void visibleDoubleSeekbar() {
@@ -355,10 +370,16 @@ public class PreviewEditActivity extends AppCompatActivity {
         seekbarVisibleAllBtnInvisible();
     }
 
+    private void visibleOnlySeekbarBtn(){
+        editSeekBarLayoutDouble.setVisibility(View.INVISIBLE);
+        editSeekBarLayoutSingle.setVisibility(View.INVISIBLE);
+        seekbarBtnVisibleAllBtnInvisible();
+    }
+
     @OnClick(R.id.buttonSaveEach)
     public void clickButtonSaveEach() {
         if (POSITION < 0) return;
-        mPreviewCanvasView.savePreviewEach(-1, false);
+        mPreviewCanvasView.savePreviewEach(-1);
     }
 
     @OnClick(R.id.buttonCrop)
@@ -435,7 +456,7 @@ public class PreviewEditActivity extends AppCompatActivity {
         previewItems.remove(removePos);
         previewPaths.remove(removePos);
 
-        mPreviewCanvasView.changeAndInitPreviewInCanvas(POSITION, false);
+        mPreviewCanvasView.changeAndInitPreviewInCanvas(POSITION);
     }
 
     @OnClick(R.id.buttonFilter)
@@ -494,16 +515,18 @@ public class PreviewEditActivity extends AppCompatActivity {
 
     @OnClick(R.id.buttonPreviewBlur)
     public void clickButtonPreviewBlur() {
-        int nowRadius = (int) BlurController.getBlurPaintRadius();
-        seekBarTextViewLeftSingle.setText(getString(R.string.action_preview_blur_radius_title));
+        //int nowRadius = (int) BlurController.getBlurPaintRadius();
+        //seekBarTextViewLeftSingle.setText(getString(R.string.action_preview_blur_radius_title));
 
-        editSeekbarSingle.setOnSeekBarChangeListener(mSeekBarPreviewBlurRadius);
-        editSeekbarSingle.setMax(BlurController.blurPaintRadiusMax);
-        editSeekbarSingle.setProgress(nowRadius);
-        setStampSeekBarText(nowRadius, SeekBarSelectedEnum.BLUR_RADIUS);
+        //editSeekbarSingle.setOnSeekBarChangeListener(mSeekBarPreviewBlurRadius);
+        //editSeekbarSingle.setMax(BlurController.blurPaintRadiusMax);
+        //editSeekbarSingle.setProgress(nowRadius);
+        //setStampSeekBarText(nowRadius, SeekBarSelectedEnum.BLUR_RADIUS);
 
-        //editSeekBarLayoutDouble.setVisibility(View.VISIBLE);
-        visibleSingleSeekbar();
+        //visibleSingleSeekbar();
+
+        visibleOnlySeekbarBtn();
+        editCancelBtnVisible();
 
         mPreviewCanvasView.clickBlurButton();
     }
@@ -565,8 +588,15 @@ public class PreviewEditActivity extends AppCompatActivity {
 
     @OnClick(R.id.buttonPreviewEditOK)
     public void clickButtonPreviewEditOK() {
-        mPreviewCanvasView.finishBlurEdit();
+        mPreviewCanvasView.okBlurEdit();
+        editCancelBtnInvisible();
         seekbarInvisibleAllBtnVisible();
+    }
+
+    @OnClick(R.id.buttonPreviewEditCancel)
+    public void clickButtonPreviewEditCancel(){
+        mPreviewCanvasView.cancelBlurEdit();
+        editCancelBtnInvisible();
     }
 
 
@@ -594,9 +624,6 @@ public class PreviewEditActivity extends AppCompatActivity {
             case PREVIEW_KELVIN:
                 resultProgressValue = (int) ((value - SeekBarListener.SeekBarPreviewKelvinMax / 2f) / (SeekBarListener.SeekBarPreviewKelvinMax / 2f) * 100f);
                 seekBarTextViewRight2.setText(resultProgressValue + "%");
-                break;
-            case BLUR_RADIUS:
-                seekBarTextViewRightSingle.setText((int)(BlurController.getBlurPaintRadius()) + "px");
                 break;
         }
     }
@@ -639,7 +666,7 @@ public class PreviewEditActivity extends AppCompatActivity {
             isClickPreviewFirst = true;
             canvasviewHintTextView.setVisibility(View.INVISIBLE);
             mCanvasPerantLayout.setVisibility(View.VISIBLE);
-            mPreviewCanvasView.changeAndInitPreviewInCanvas(position, false);
+            mPreviewCanvasView.changeAndInitPreviewInCanvas(position);
         }
     }
 

@@ -123,16 +123,24 @@ public class PreviewCanvasView extends View {
             } else if (!isLoadRoutine) {
 
                 drawBellowBitmap();
+
+                if (CLICK_STATE.isBlurGuide()) {
+                    //블러 가이드 그리기
+                    //블러를 그리는 중일경우, 비트맵 먼저 그리고 -> 블러 그리고 -> 낙관 그림
+                    drawBlurGuide(canvas);
+                }
+
+                if(CLICK_STATE.isBlur()){
+                    // 블러 그리기
+                    drawBlur(canvas);
+                }
+
                 if (isStampShown) {
+                    //낙관 그리기
                     drawStamp();
                     if (CLICK_STATE.isShowGuideLine()) {
                         drawStampEditGuide();
                     }
-                }
-
-                if (CLICK_STATE.isBlur()) {
-                    //블러를 그리는 중일경우, 비트맵 먼저 그리고 -> 블러 그리고 -> 낙관 그림
-                    drawBlur(canvas);
                 }
             }
         }
@@ -188,64 +196,56 @@ public class PreviewCanvasView extends View {
     }
 
     private void touchDown(MotionEvent event) {
-        if (CLICK_STATE.isBlur()) {
+        if(CLICK_STATE.isBlur()) {
             touchDownForBlur(event);
+        }
+        if (CLICK_STATE.isBlurGuide()) {
+            touchDownForBlurGuide(event);
         } else {
             touchDownForStamp(event);
         }
     }
 
     private void touchMove(MotionEvent event) {
-        if (CLICK_STATE.isBlur()) {
-            touchMoveForBlur(event);
+        if (CLICK_STATE.isBlurGuide()) {
+            touchMoveForBlurGuide(event);
         } else {
             touchMoveForStamp(event);
         }
     }
 
     private void touchUp(MotionEvent event) {
-        if (CLICK_STATE.isBlur()) {
-            touchUpForBlur(event);
+        if (CLICK_STATE.isBlurGuide()) {
+            touchUpForBlurGuide(event);
         } else {
             touchUpForStamp(event);
         }
     }
 
     private void touchDownForBlur(MotionEvent event) {
+        CLICK_STATE.restartBlurGuide();
+    }
+
+    private void touchDownForBlurGuide(MotionEvent event) {
         float x, y;
         x = event.getX();
         y = event.getY();
-        BlurController.blurPath.reset();
-        BlurController.blurPath.moveTo(x,y);
-        BlurController.setPrevXY(x, y);
+        BlurController.resetGuideOvalRectF(x, y);
         invalidate();
     }
 
-    private void touchMoveForBlur(MotionEvent event) {
-        float x, y, mx, my;
+    private void touchMoveForBlurGuide(MotionEvent event) {
+        float x, y;
         x = event.getX();
         y = event.getY();
-        mx = BlurController.getPrevX();
-        my = BlurController.getPrevY();
-        float distX = Math.abs(mx - x);
-        float distY = Math.abs(my - y);
-        if(distX >= 4 || distY >= 4){
-            BlurController.blurPath.quadTo(mx, my, x, y);
-            BlurController.setPrevXY(x, y);
-            Logger.d("MYTAG", "PREV X, Y : " + mx + ", " + my + " NOW X Y : " + x + ", " + y);
-        }
+        BlurController.setGuideOvalRectFRightBottom(x, y);
         invalidate();
     }
 
-    private void touchUpForBlur(MotionEvent event) {
-        float mx, my;
-        mx = BlurController.getPrevX();
-        my = BlurController.getPrevY();
-
-        //BlurController.blurPath.lineTo(mx, my);
-        //Canvas canvas = new Canvas(pbc.getPreviewBitmap());
-        //canvas.drawPath(RetouchingPaintController.blurPath, RetouchingPaintController.getBlurPaint());
-        //RetouchingPaintController.blurPath.reset();
+    private void touchUpForBlurGuide(MotionEvent event) {
+        //여기에 타원 영역 블러해서 비트맵 위에 그리기
+        CLICK_STATE.endBlurGuide(); //Blur guide -> blur
+        makeOvalBlur();
         invalidate();
     }
 
@@ -467,18 +467,38 @@ public class PreviewCanvasView extends View {
         }
     }
 
-    private void drawBlur(Canvas canvas) {
-        Logger.d("MYTAG", "drawBlur()");
+    private void drawBlurGuide(Canvas canvas) {
+        Logger.d("MYTAG", "drawBlurGuide()");
         /**
+         * 블러의 가이드를 그림
+         *
          * 1. 타원을 사용자가 설정하면
+         * 5. OK를 눌리면 바로 블러링 연산
          * 2. 그 타원을 포함하는 사각형을 구하고
          * 3. 그 사각형만큼 비트맵을 블러 적용
          * 4. 그 후 그 블러된 비트맵을 pbc.blurBitmap에 저장
-         * 5. OK를 눌리면 바로 저장?
          */
-        //블러를 그리기
-        //canvas.drawPoint(RetouchingPaintController.getNowX(), RetouchingPaintController.getNowY(), RetouchingPaintController.getBlurPaint());
-        canvas.drawPath(BlurController.blurPath, BlurController.getBlurPaint());
+        canvas.drawOval(BlurController.getGuideOvalRectF(), BlurController.getBlurGuidePaint());
+    }
+
+    private void drawBlur(Canvas canvas){
+        /**
+         * pbc의 블러 비트맵(타원형)을 캔버스에 그림
+         */
+        Paint tmp = new Paint();
+        tmp.setColor(Color.GREEN);
+        tmp.setAlpha(80);
+        tmp.setDither(true);
+        tmp.setStrokeJoin(Paint.Join.ROUND);
+        tmp.setStrokeCap(Paint.Cap.ROUND);
+        tmp.setStyle(Paint.Style.FILL);
+        canvas.drawOval(BlurController.getGuideOvalRectF(), tmp);
+    }
+
+    private void makeOvalBlur() {
+        /**
+         * 타원영역만큼 비트맵을 블러하여 pbc에 저장해둠
+         */
     }
 
     private void drawStamp() {
@@ -697,7 +717,7 @@ public class PreviewCanvasView extends View {
         callInvalidate();
     }
 
-    public void savePreviewEach(int nextPosition, boolean isSaveToSimplePreviewFilter) {
+    public void savePreviewEach(int nextPosition) {
         /**
          * if nextPosition == -1 , there is only click 'save',
          * or not, there is only click 'YES' in save question dialog.
@@ -710,11 +730,10 @@ public class PreviewCanvasView extends View {
 
         //isSaveToSimplePreviewFilter가 true라는 말은 간단 보정이라는 말임
         //그말은 스탬프랑 같이 저장하는게 아니라는 말(false)임
-        isSaveRoutineWithStamp = !isSaveToSimplePreviewFilter;
 
         saveProgressDialog.show();
         changeCanvasToSave();
-        SaveAllAsyncTask saveAllAsyncTask = new SaveAllAsyncTask(isSaveToSimplePreviewFilter);
+        SaveAllAsyncTask saveAllAsyncTask = new SaveAllAsyncTask();
         saveAllAsyncTask.execute(nextPosition);
     }
 
@@ -731,7 +750,7 @@ public class PreviewCanvasView extends View {
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                savePreviewEach(nextPosition, false);
+                                savePreviewEach(nextPosition);
                                 //changeAndInitPreviewInCanvas(nextPosition);
                                 return;
                             }
@@ -740,7 +759,7 @@ public class PreviewCanvasView extends View {
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                changeAndInitPreviewInCanvas(nextPosition, false);
+                                changeAndInitPreviewInCanvas(nextPosition);
                                 return;
                             }
                         })
@@ -759,12 +778,12 @@ public class PreviewCanvasView extends View {
                 alert.setCanceledOnTouchOutside(false);
                 alert.show();
             } else {
-                changeAndInitPreviewInCanvas(nextPosition, false);
+                changeAndInitPreviewInCanvas(nextPosition);
             }
         }
     }
 
-    public void changeAndInitPreviewInCanvas(int nextPosition, boolean isSaveToSimplePreviewFilter) {
+    public void changeAndInitPreviewInCanvas(int nextPosition) {
         //프리뷰를 다른걸 눌렀을때 캔버스의 프리뷰를 완전히 새로 바꿔주는 함수
         //isSaveToSimplePreviewFilter가 true면 isStampShown을 가만히 둔다
         if (isSaveRoutine) return;
@@ -772,7 +791,7 @@ public class PreviewCanvasView extends View {
         previewItems.get(nextPosition).resetFilterValue();
         previewValueInit();
 
-        if (!isSaveToSimplePreviewFilter) isStampShown = false;
+        isStampShown = false;
         setPosition(nextPosition);
         CLICK_STATE.finish();
         mActivity.editButtonInvisibleOrVisible(CLICK_STATE);
@@ -820,8 +839,14 @@ public class PreviewCanvasView extends View {
         //mActivity.doClickButtonStamp();
     }
 
-    public void finishBlurEdit() {
+    public void okBlurEdit() {
         CLICK_STATE.clickFinishBlur();
+        //블러링 되어있는 비트맵을 포함하는 캔버스를 저장함
+    }
+
+    public void cancelBlurEdit(){
+        CLICK_STATE.clickFinishBlur();
+        //캔버스에서 블러링되어있는 비트맵을 빼고 다시 그림
     }
 
     public void clickBlurButton() {
@@ -846,16 +871,10 @@ public class PreviewCanvasView extends View {
     protected class SaveAllAsyncTask extends AsyncTask<Integer, Integer, String> {
 
         int nextPosition;
-        boolean isSaveToSimplePreviewFilter;
         final String ERROR_INVALID_POSITION = "ERROR_INVALID_POSITION";
         final String ERROR_IO_EXCEPTION = "ERROR_IO_EXCEPTION";
 
-        SaveAllAsyncTask(boolean isSaveToSimplePreviewFilter) {
-            /**
-             * 프리뷰 간단 보정 후 저장을 눌렀을 때 : isSaveToSimplePreviewFilter는 ture
-             * 그냥 저장을 눌렀을 때 : isSaveToSimplePreviewFilter는 false
-             */
-            this.isSaveToSimplePreviewFilter = isSaveToSimplePreviewFilter;
+        SaveAllAsyncTask() {
         }
 
         @Override
@@ -904,8 +923,7 @@ public class PreviewCanvasView extends View {
 
             PreviewItem previewItem = previewItems.get(previewPosition);
             previewItem.setOriginalImageURI(resultUri);
-            //스탬프가 보여지고 있는데, 간단보정후 저장하는건 진짜 저장하는게 아님
-            if (!(isSaveToSimplePreviewFilter && isStampShown)) previewItem.saved();
+            previewItem.saved();
 
             return resultFilePath;
         }
@@ -916,10 +934,10 @@ public class PreviewCanvasView extends View {
                 isSaveRoutine = false;
 
                 if (nextPosition != -1) {
-                    changeAndInitPreviewInCanvas(nextPosition, isSaveToSimplePreviewFilter);
+                    changeAndInitPreviewInCanvas(nextPosition);
                     previewItems.get(nextPosition).saved();
                 } else {
-                    changeAndInitPreviewInCanvas(getPosition(), isSaveToSimplePreviewFilter);
+                    changeAndInitPreviewInCanvas(getPosition());
                 }
 
 
@@ -927,25 +945,24 @@ public class PreviewCanvasView extends View {
                     saveInformationSnackbar = Snackbar.make(mActivity.getCurrentFocus(), "저장 실패!", Snackbar.LENGTH_LONG);
                     saveInformationSnackbar.show();
                 } else {
-                    if (!isSaveToSimplePreviewFilter) {
-                        File resultFile = new File(str);
-                        saveInformationSnackbar = Snackbar.make(mActivity.getCurrentFocus(),
-                                "저장 폴더 : " + MainActivity.PREVIEW_SAVED_DIRECTORY + "\n파일 이름 : " + resultFile.getName(),
-                                Snackbar.LENGTH_LONG);
-                        if (nextPosition == -1) {
-                            saveInformationSnackbar.setAction("NEXT", new OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    if (getPosition() + 1 < previewItems.size()) {
-                                        nextPosition = getPosition() + 1;
-                                        changeAndInitPreviewInCanvas(nextPosition, isSaveToSimplePreviewFilter);
-                                    }
+                    File resultFile = new File(str);
+                    saveInformationSnackbar = Snackbar.make(mActivity.getCurrentFocus(),
+                            "저장 폴더 : " + MainActivity.PREVIEW_SAVED_DIRECTORY + "\n파일 이름 : " + resultFile.getName(),
+                            Snackbar.LENGTH_LONG);
+                    if (nextPosition == -1) {
+                        saveInformationSnackbar.setAction("NEXT", new OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                if (getPosition() + 1 < previewItems.size()) {
+                                    nextPosition = getPosition() + 1;
+                                    changeAndInitPreviewInCanvas(nextPosition);
                                 }
-                            });
-                        }
-                        //저장 위치 등을 알려주는 스낵바
-                        saveInformationSnackbar.show();
+                            }
+                        });
                     }
+                    //저장 위치 등을 알려주는 스낵바
+                    saveInformationSnackbar.show();
+
                 }
             }
             saveEnd();

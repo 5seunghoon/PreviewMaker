@@ -13,6 +13,8 @@ public class PreviewBitmapController {
     private int bitmapWidth, bitmapHeight;
     private Activity mActivity;
 
+    public static boolean isBitmapBlurring;
+
     private PreviewBitmapController(Activity mActivity){
         this.mActivity = mActivity;
     }

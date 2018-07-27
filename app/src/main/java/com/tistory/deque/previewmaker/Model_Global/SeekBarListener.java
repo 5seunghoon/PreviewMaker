@@ -45,10 +45,6 @@ public class SeekBarListener implements OnSeekBarChangeListener {
                 mCanvasView.onDrawPreviewColorParam(progress, mSelected);
                 mActivity.setStampSeekBarText(progress, mSelected);
                 break;
-            case BLUR_RADIUS:
-                BlurController.setBlurPaintRadius(progress);
-                mActivity.setStampSeekBarText(progress, mSelected);
-                break;
         }
     }
 
