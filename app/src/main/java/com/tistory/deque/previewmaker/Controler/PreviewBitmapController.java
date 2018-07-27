@@ -7,6 +7,9 @@ import android.util.Log;
 import com.tistory.deque.previewmaker.Model_PreviewData.PreviewItem;
 import com.tistory.deque.previewmaker.Util.Logger;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+
 public class PreviewBitmapController {
     private static PreviewBitmapController pbc;
     private Bitmap previewBitmap;
@@ -15,13 +18,13 @@ public class PreviewBitmapController {
     private Activity mActivity;
 
 
-    private PreviewBitmapController(Activity mActivity){
+    private PreviewBitmapController(Activity mActivity) {
         this.mActivity = mActivity;
     }
 
-    public static PreviewBitmapController getPreviewBitmapControler(Activity mActivity){
+    public static PreviewBitmapController getPreviewBitmapControler(Activity mActivity) {
         //싱글턴 패턴
-        if(pbc == null){
+        if (pbc == null) {
             pbc = new PreviewBitmapController(mActivity);
         }
         return pbc;
@@ -31,7 +34,7 @@ public class PreviewBitmapController {
         return previewBitmap;
     }
 
-    public void setPreviewBitmap(PreviewItem previewItem){
+    public void setPreviewBitmap(PreviewItem previewItem) {
         this.previewBitmap = null;
         this.previewBitmap = previewItem.getBitmap();
         this.bitmapHeight = this.previewBitmap.getHeight();
@@ -46,15 +49,24 @@ public class PreviewBitmapController {
         return bitmapHeight;
     }
 
-    public void blurBitmapPart(int left, int top, int right, int bottom){
-        this.blurredBitmap = fastblur(Bitmap.createBitmap(this.previewBitmap, left, top, (right - left) , (bottom - top)), 1, 50);
+    /**
+     * 비트맵의 부분을 블러링, 원본 비트맵을 기준으로 블러링함
+     * left < right, top < bottom 이 여야함
+     *
+     * @param left   이하는 원본 비트맵을 기준으로 한 Oval의 값들. originalBlurOvalToResizedBlurOval()를 통해 구해옴
+     * @param top
+     * @param right
+     * @param bottom
+     */
+    public void blurBitmapPart(int left, int top, int right, int bottom) {
+        this.blurredBitmap = doFastBlur(Bitmap.createBitmap(this.previewBitmap, left, top, (right - left), (bottom - top)), 1, 50);
     }
 
-    public Bitmap getBlurredBitmap(){
+    public Bitmap getBlurredBitmap() {
         return blurredBitmap;
     }
 
-    private Bitmap fastblur(Bitmap sentBitmap, float scale, int radius) {
+    private Bitmap doFastBlur(Bitmap sentBitmap, float scale, int radius) {
 
         int width = Math.round(sentBitmap.getWidth() * scale);
         int height = Math.round(sentBitmap.getHeight() * scale);
@@ -211,7 +223,7 @@ public class PreviewBitmapController {
             stackpointer = radius;
             for (y = 0; y < h; y++) {
                 // Preserve alpha channel: ( 0xff000000 & pix[yi] )
-                pix[yi] = ( 0xff000000 & pix[yi] ) | ( dv[rsum] << 16 ) | ( dv[gsum] << 8 ) | dv[bsum];
+                pix[yi] = (0xff000000 & pix[yi]) | (dv[rsum] << 16) | (dv[gsum] << 8) | dv[bsum];
 
                 rsum -= routsum;
                 gsum -= goutsum;

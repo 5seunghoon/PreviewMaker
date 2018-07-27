@@ -37,6 +37,7 @@ public class ClickState implements ClickStateInterface{
     }
 
     public void clickFinishBlur() {
+        prevStateEnum = clickStateEnum;
         switch (clickStateEnum) {
             case STATE_NONE_CLICK:
                 break;
@@ -59,6 +60,7 @@ public class ClickState implements ClickStateInterface{
         /**
          * BLUR_GUIDE -> BLUR
          */
+        prevStateEnum = clickStateEnum;
         switch (clickStateEnum) {
             case STATE_NONE_CLICK:
                 break;
@@ -77,6 +79,7 @@ public class ClickState implements ClickStateInterface{
     }
 
     public void restartBlurGuide(){
+        prevStateEnum = clickStateEnum;
         switch (clickStateEnum) {
             case STATE_NONE_CLICK:
                 break;
@@ -105,6 +108,7 @@ public class ClickState implements ClickStateInterface{
     }
 
     public void clickBlurButton(){
+        prevStateEnum = clickStateEnum;
         switch (clickStateEnum){
             case STATE_NONE_CLICK:
                 break;

@@ -341,21 +341,21 @@ public class PreviewEditActivity extends AppCompatActivity {
         previewEditAllBtnParentLinearLayout.setVisibility(View.INVISIBLE);
     }
 
-    private void seekbarInvisibleAllBtnVisible() {
+    protected void seekbarInvisibleAllBtnVisible() {
         seekbarParentLinearLayout.setVisibility(View.INVISIBLE);
         previewEditAllBtnParentLinearLayout.setVisibility(View.VISIBLE);
     }
 
-    private void seekbarBtnVisibleAllBtnInvisible(){
+    protected void seekbarBtnVisibleAllBtnInvisible(){
         seekbarParentLinearLayout.setVisibility(View.VISIBLE);
         previewEditAllBtnParentLinearLayout.setVisibility(View.INVISIBLE);
     }
 
-    private void editCancelBtnVisible() {
+    protected void editCancelBtnVisible() {
         buttonPreviewEditCancelLayout.setVisibility(View.VISIBLE);
     }
 
-    private void editCancelBtnInvisible(){
+    protected void editCancelBtnInvisible(){
         buttonPreviewEditCancelLayout.setVisibility(View.INVISIBLE);
     }
 
@@ -682,9 +682,9 @@ public class PreviewEditActivity extends AppCompatActivity {
             return;
 
 
-        LinearLayout invisible = null;
-        LinearLayout fadeOut = null;
-        LinearLayout fadeIn = null;
+        LinearLayout invisible = null; //안보일거
+        LinearLayout fadeOut = null; //사라질거
+        LinearLayout fadeIn = null; //나타날거
 
         switch (p) {
             case STATE_NONE_CLICK:
@@ -740,18 +740,14 @@ public class PreviewEditActivity extends AppCompatActivity {
                 break;
         }
 
-        Logger.d("HERE_TAG", "1");
         if (invisible != null) {
-            Logger.d("HERE_TAG", "2");
             invisible.setVisibility(View.INVISIBLE);
         }
         if (fadeOut != null) {
-            Logger.d("HERE_TAG", "3");
             fadeOut.setVisibility(View.INVISIBLE);
             fadeOut.startAnimation(aniFadeOut);
         }
         if (fadeIn != null) {
-            Logger.d("HERE_TAG", "4");
             fadeIn.setVisibility(View.VISIBLE);
             fadeIn.startAnimation(aniFadeIn);
         }
