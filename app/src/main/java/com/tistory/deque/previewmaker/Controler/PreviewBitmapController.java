@@ -2,6 +2,14 @@ package com.tistory.deque.previewmaker.Controler;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Path;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.util.Log;
 
 import com.tistory.deque.previewmaker.Model_PreviewData.PreviewItem;
@@ -39,6 +47,11 @@ public class PreviewBitmapController {
         this.previewBitmap = previewItem.getBitmap();
         this.bitmapHeight = this.previewBitmap.getHeight();
         this.bitmapWidth = this.previewBitmap.getWidth();
+        pbc.resetBlurBitmap();
+    }
+
+    private void resetBlurBitmap() {
+        blurredBitmap = null;
     }
 
     public int getBitmapWidth() {
@@ -47,6 +60,23 @@ public class PreviewBitmapController {
 
     public int getBitmapHeight() {
         return bitmapHeight;
+    }
+
+    private Bitmap roundedBitmapOval(Bitmap sourceBitmap, int left, int top, int right, int bottom, int ovalLeft, int ovalTop, int ovalRight, int ovalBottom) {
+        final int width = sourceBitmap.getWidth();
+        final int height = sourceBitmap.getHeight();
+        final Bitmap outputBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        final RectF ovalRect = new RectF(ovalLeft - left, ovalTop - top, ovalRight - left, ovalBottom - top);
+        Logger.d("MYTAG" , "rounded param : " + left + " , " + top  + " , " + right + " , " + bottom + " , " + ovalLeft  + " , " + ovalTop + " , " + ovalRight + " , " + ovalBottom);
+
+        final Path path = new Path();
+        path.addOval(ovalRect, Path.Direction.CCW);
+
+        final Canvas canvas = new Canvas(outputBitmap);
+        canvas.clipPath(path);
+        canvas.drawBitmap(sourceBitmap, 0, 0, null);
+
+        return outputBitmap;
     }
 
     /**
@@ -58,8 +88,11 @@ public class PreviewBitmapController {
      * @param right
      * @param bottom
      */
-    public void blurBitmapPart(int left, int top, int right, int bottom) {
+    public void blurBitmapPart(int left, int top, int right, int bottom, int ovalLeft, int ovalTop, int ovalRight, int ovalBottom) {
         this.blurredBitmap = doFastBlur(Bitmap.createBitmap(this.previewBitmap, left, top, (right - left), (bottom - top)), 1, 50);
+        if(this.blurredBitmap != null){
+            this.blurredBitmap = roundedBitmapOval(this.blurredBitmap, left, top, right, bottom, ovalLeft, ovalTop, ovalRight, ovalBottom);
+        }
     }
 
     public Bitmap getBlurredBitmap() {
@@ -273,4 +306,5 @@ public class PreviewBitmapController {
 
         return (bitmap);
     }
+
 }

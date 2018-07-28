@@ -35,7 +35,6 @@ import com.tistory.deque.previewmaker.Util.Logger;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class PreviewCanvasView extends View {
@@ -210,7 +209,7 @@ public class PreviewCanvasView extends View {
     private void touchDown(MotionEvent event) {
         if (CLICK_STATE.isBlur()) {
             touchDownForBlur(event);
-        }
+        } // 이하를 if else로 고치지 말것
         if (CLICK_STATE.isBlurGuide()) {
             touchDownForBlurGuide(event);
         } else {
@@ -257,14 +256,12 @@ public class PreviewCanvasView extends View {
     private void touchUpForBlurGuide(MotionEvent event) {
         //여기에 타원 영역 블러해서 비트맵 위에 그리기
         CLICK_STATE.endBlurGuide(); //Blur guide -> blur
+        Logger.d("MYTAG" ,"PREVIEW : " + previewWidth + ", " + previewHeight + ", " + previewPosWidth + ", " + previewPosHeight);
         boolean isValidOval = BlurController.cutOval(previewWidth, previewHeight, previewPosWidth, previewPosHeight);
-        if(!isValidOval){
-            CLICK_STATE.clickFinishBlur(); // blur or guide -> filter
-            invalidate();
-        } else {
+        if(isValidOval){ // 타원을 만드는게 가능 할 경우(ex 비트맵 바깥을 설정하는 경우는 타원을 못만듬)
             makeOvalBlur();
-            invalidate();
         }
+        invalidate();
     }
 
     private void touchDownForStamp(MotionEvent event) {
@@ -385,13 +382,20 @@ public class PreviewCanvasView extends View {
     }
 
     /**
-     * @return partLeft, partTop, partRight, partBottom
+     * 리사이징된 비트맵의 타원에서 원래 비트맵의 타원을 계산해냄
+     * @return partLeft, partTop, partRight, partBottom, ovalOrigLeft, ovalOrigTop, ovalOrigRight, ovalOrigBottom
+     * 잘린 사각형의 좌상 좌표, 우하 좌표, 잘리기 전 타원의 원본 사이즈의 좌상 좌표, 우하 좌표
      */
-    private ArrayList<Double> originalBlurOvalToResizedBlurOval() {
+    private ArrayList<Double> resizedBlurOvalToOriginalBlurOval() {
         float left = Math.min(BlurController.getGuideOvalRectFLeftTop().first, BlurController.getGuideOvalRectFRightBottom().first);
         float top = Math.min(BlurController.getGuideOvalRectFLeftTop().second, BlurController.getGuideOvalRectFRightBottom().second);
         float right = Math.max(BlurController.getGuideOvalRectFLeftTop().first, BlurController.getGuideOvalRectFRightBottom().first);
         float bottom = Math.max(BlurController.getGuideOvalRectFLeftTop().second, BlurController.getGuideOvalRectFRightBottom().second);
+
+        float ovalLeft = Math.min(BlurController.getGuideOvalRectFOrig().get(0), BlurController.getGuideOvalRectFOrig().get(2));
+        float ovalTop = Math.min(BlurController.getGuideOvalRectFOrig().get(1), BlurController.getGuideOvalRectFOrig().get(3));
+        float ovalRight = Math.max(BlurController.getGuideOvalRectFOrig().get(0), BlurController.getGuideOvalRectFOrig().get(2));
+        float ovalBottom = Math.max(BlurController.getGuideOvalRectFOrig().get(1), BlurController.getGuideOvalRectFOrig().get(3));
 
         int pbw = pbc.getBitmapWidth();
         int pbh = pbc.getBitmapHeight();
@@ -411,10 +415,20 @@ public class PreviewCanvasView extends View {
         double partRight = widthRate * (right - pwPos);
         double partBottom = heightRate * (bottom - phPos);
 
+        double partOvalLeft = widthRate * (ovalLeft - pwPos);
+        double partOvalTop = heightRate * (ovalTop - phPos);
+        double partOvalRight = widthRate * (ovalRight - pwPos);
+        double partOvalBottom = heightRate * (ovalBottom - phPos);
+
         results.add(partLeft);
         results.add(partTop);
         results.add(partRight);
         results.add(partBottom);
+
+        results.add(partOvalLeft);
+        results.add(partOvalTop);
+        results.add(partOvalRight);
+        results.add(partOvalBottom);
 
         return results;
     }
@@ -437,10 +451,12 @@ public class PreviewCanvasView extends View {
         mCanvas.drawBitmap(previewBitmap, null, previewDst, paintPreviewContrastBrightness);
 
         if (isSaveRoutineWithBlur) {
-            ArrayList<Double> partOvalElements = originalBlurOvalToResizedBlurOval();
+            ArrayList<Double> partOvalElements = resizedBlurOvalToOriginalBlurOval();
 
             Rect blurRect = new Rect(partOvalElements.get(0).intValue(), partOvalElements.get(1).intValue(), partOvalElements.get(2).intValue(), partOvalElements.get(3).intValue());
-            mCanvas.drawBitmap(pbc.getBlurredBitmap(), null, blurRect, paintPreviewContrastBrightness);
+            if(pbc.getBlurredBitmap() != null){
+                mCanvas.drawBitmap(pbc.getBlurredBitmap(), null, blurRect, paintPreviewContrastBrightness);
+            }
         } else if (isStampShown) {
             int widthAnchor, heightAnchor, anchorInt;
             anchorInt = StampItem.stampAnchorToInt(stampPosAnchor);
@@ -551,7 +567,6 @@ public class PreviewCanvasView extends View {
     }
 
     private void drawBlurGuide() {
-        Logger.d("MYTAG", "drawBlurGuide()");
         /**
          * 블러의 가이드를 그림
          *
@@ -974,8 +989,11 @@ public class PreviewCanvasView extends View {
     protected class BlurringBitmapAsyncTask extends AsyncTask<Integer, Integer, Integer> {
         @Override
         protected Integer doInBackground(Integer... integers) {
-            ArrayList<Double> partOvalElements = originalBlurOvalToResizedBlurOval();
-            pbc.blurBitmapPart(partOvalElements.get(0).intValue(), partOvalElements.get(1).intValue(), partOvalElements.get(2).intValue(), partOvalElements.get(3).intValue());
+            ArrayList<Double> partOvalElements = resizedBlurOvalToOriginalBlurOval();
+            pbc.blurBitmapPart(
+                    partOvalElements.get(0).intValue(), partOvalElements.get(1).intValue(), partOvalElements.get(2).intValue(), partOvalElements.get(3).intValue(),
+                    partOvalElements.get(4).intValue(), partOvalElements.get(5).intValue(), partOvalElements.get(6).intValue(), partOvalElements.get(7).intValue()
+            );
             return null;
         }
 

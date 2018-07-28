@@ -90,6 +90,7 @@ public class ClickState implements ClickStateInterface{
             case STATE_BITMAP_FILTER:
                 break;
             case STATE_BITMAP_FILTER_BLUR_GUIDE:
+                clickStateEnum = ClickStateEnum.STATE_BITMAP_FILTER_BLUR_GUIDE;
                 break;
             case STATE_BITMAP_FILTER_BLUR:
                 clickStateEnum = ClickStateEnum.STATE_BITMAP_FILTER_BLUR_GUIDE;
