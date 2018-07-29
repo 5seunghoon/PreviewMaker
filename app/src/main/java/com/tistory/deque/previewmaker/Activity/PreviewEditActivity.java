@@ -58,6 +58,7 @@ public class PreviewEditActivity extends AppCompatActivity {
 
     public static int canvasGrandParentViewWidth, canvasGrandParentViewHeight;
 
+    private final int REQUEST_HELP_PREVIEW_EDIT_ACTIVITY = 152;
 
     protected static int POSITION = -1;
     private boolean isClickPreviewFirst = false;
@@ -204,6 +205,8 @@ public class PreviewEditActivity extends AppCompatActivity {
                 finish();
                 return true;
             case R.id.action_help_preview_edit:
+                Intent intent = new Intent(getApplicationContext(), HelpPreviewEditActivity.class);
+                startActivity(intent);
                 return true;
         }
         return super.onOptionsItemSelected(item);

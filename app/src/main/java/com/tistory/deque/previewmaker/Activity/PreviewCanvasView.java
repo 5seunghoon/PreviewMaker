@@ -1105,12 +1105,6 @@ public class PreviewCanvasView extends View {
                     saveInformationSnackbar = Snackbar.make(mActivity.getCurrentFocus(),
                             "저장 폴더 : " + MainActivity.PREVIEW_SAVED_DIRECTORY + "\n파일 이름 : " + resultFile.getName(),
                             Snackbar.LENGTH_LONG);
-                    saveInformationSnackbar.setAction("OK", new OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            saveInformationSnackbar.dismiss();
-                        }
-                    });
                     if (nextPosition == -1) {
                         saveInformationSnackbar.setAction("NEXT", new OnClickListener() {
                             @Override
@@ -1119,6 +1113,13 @@ public class PreviewCanvasView extends View {
                                     nextPosition = getPosition() + 1;
                                     changeAndInitPreviewInCanvas(nextPosition);
                                 }
+                            }
+                        });
+                    } else {
+                        saveInformationSnackbar.setAction("OK", new OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                saveInformationSnackbar.dismiss();
                             }
                         });
                     }

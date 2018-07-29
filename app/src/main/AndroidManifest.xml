@@ -1,50 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-  package="com.tistory.deque.previewmaker">
+    package="com.tistory.deque.previewmaker">
 
-  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-  <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
-  <application
-    android:largeHeap="true"
-    android:allowBackup="true"
-    android:icon="@mipmap/ic_launcher"
-    android:label="@string/app_name"
-    android:roundIcon="@mipmap/ic_launcher_round"
-    android:supportsRtl="true"
-    android:theme="@style/AppTheme">
-    <provider
-      android:name="android.support.v4.content.FileProvider"
-      android:authorities="com.tistory.deque.previewmaker"
-      android:exported="false"
-      android:grantUriPermissions="true">
-      <meta-data
-        android:name="android.support.FILE_PROVIDER_PATHS"
-        android:resource="@xml/file_paths" />
-    </provider>
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:largeHeap="true"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="com.tistory.deque.previewmaker"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
 
-    <activity
-      android:name=".Activity.MainActivity"
-      android:label="@string/app_name"
-      android:screenOrientation="portrait">
-      <intent-filter>
-        <action android:name="android.intent.action.MAIN" />
+        <activity
+            android:name=".Activity.MainActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
-        <category android:name="android.intent.category.LAUNCHER" />
-      </intent-filter>
-    </activity>
-    <activity android:name=".Activity.MakeStampActivity"
-      android:screenOrientation="portrait"/>
-    <activity android:name=".Activity.PreviewEditActivity"
-      android:screenOrientation="portrait"/>
-    <activity
-      android:name="me.nereo.multi_image_selector.MultiImageSelectorActivity"
-      android:configChanges="orientation|screenSize"
-      android:screenOrientation="portrait"/>
-    <activity
-      android:name="com.yalantis.ucrop.UCropActivity"
-      android:screenOrientation="portrait"
-      android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
-  </application>
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".Activity.MakeStampActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Activity.PreviewEditActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="me.nereo.multi_image_selector.MultiImageSelectorActivity"
+            android:configChanges="orientation|screenSize"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.yalantis.ucrop.UCropActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+        <activity android:name=".Activity.HelpMainActivity" />
+        <activity android:name=".Activity.HelpPreviewEditActivity"></activity>
+    </application>
 
 </manifest>
