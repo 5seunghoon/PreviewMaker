@@ -20,7 +20,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:text="MultiImageSelector\nhttps://github.com/lovetuzitong/MultiImageSelector\n The MIT License (MIT)" />
+        android:text="MultiImageSelector\nhttps://github.com/lovetuzitong/MultiImageSelector\nMIT License (MIT)" />
 
     <TextView
         android:id="@+id/opensourceText3"

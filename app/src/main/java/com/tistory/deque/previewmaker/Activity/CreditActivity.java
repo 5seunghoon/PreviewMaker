@@ -1,5 +1,6 @@
 package com.tistory.deque.previewmaker.Activity;
 
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -60,6 +61,7 @@ public class CreditActivity extends AppCompatActivity {
 
     @OnClick(R.id.creditActivityOpenSourceTextView)
     public void opensource(){
-
+        Intent intent = new Intent(getApplicationContext(), OpensourceActivity.class);
+        startActivity(intent);
     }
 }

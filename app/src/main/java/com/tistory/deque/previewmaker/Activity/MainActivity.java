@@ -217,10 +217,12 @@ public class MainActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         switch (id) {
             case R.id.action_help:
-                Intent intent = new Intent(getApplicationContext(), HelpMainActivity.class);
-                startActivity(intent);
+                Intent intent1 = new Intent(getApplicationContext(), HelpMainActivity.class);
+                startActivity(intent1);
                 return true;
             case R.id.action_credit:
+                Intent intent2 = new Intent(getApplicationContext(), CreditActivity.class);
+                startActivity(intent2);
                 return true;
         }
 
