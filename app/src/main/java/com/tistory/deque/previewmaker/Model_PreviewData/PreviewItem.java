@@ -3,6 +3,7 @@ package com.tistory.deque.previewmaker.Model_PreviewData;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
 
@@ -90,18 +91,42 @@ public class PreviewItem {
         String timeStamp = new SimpleDateFormat(MainActivity.FILE_NAME_FORMAT, Locale.KOREA).format(new Date());
         String imageFileName = MainActivity.FILE_NAME_HEADER_PREVIEW + timeStamp + MainActivity.FILE_NAME_IMAGE_FORMAT;
         File imageFile;
-        File storageDir = new File(Environment.getExternalStorageDirectory() + "/Pictures", MainActivity.PREVIEW_SAVED_DIRECTORY);
-        if (!storageDir.exists()) {
-            storageDir.mkdir();
-        }
-        imageFile = new File(storageDir, imageFileName);
-        Uri resultUri = Uri.fromFile(imageFile);
 
-        Logger.d(TAG, "storageDir : " + storageDir);
-        Logger.d(TAG, "image file name : " + imageFileName);
-        Logger.d(TAG, "image file uri : " + resultUri);
 
-        return resultUri;
+        //if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) { //API LEVEL이 26보다 클때 (8.0이상)
+        //if (true) {
+            File root = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+            File storageDir = new File(root, MainActivity.PREVIEW_SAVED_DIRECTORY);
+            if (!storageDir.exists()) {
+                storageDir.mkdirs();
+            }
+            imageFile = new File(storageDir, imageFileName);
+            Uri resultUri = Uri.fromFile(imageFile);
+
+            Logger.d(TAG, "storageDir : " + storageDir);
+            Logger.d(TAG, "image file name : " + imageFileName);
+            Logger.d(TAG, "image file uri : " + resultUri);
+
+            return resultUri;
+       /*
+            File mainDir = new File(Environment.getExternalStorageDirectory(), "Pictures");
+            if (!mainDir.exists()) {
+                mainDir.mkdirs();
+            }
+            File storageDir = new File(Environment.getExternalStorageDirectory() + "/Pictures", MainActivity.PREVIEW_SAVED_DIRECTORY);
+            if (!storageDir.exists()) {
+                storageDir.mkdirs();
+            }
+            imageFile = new File(storageDir, imageFileName);
+            Uri resultUri = Uri.fromFile(imageFile);
+
+            Logger.d(TAG, "storageDir : " + storageDir);
+            Logger.d(TAG, "image file name : " + imageFileName);
+            Logger.d(TAG, "image file uri : " + resultUri);
+
+            return resultUri;
+        */
+
     }
 
     public int getBrightness() {
@@ -120,7 +145,7 @@ public class PreviewItem {
         this.brightness = brightness - SeekBarListener.SeekBarPreviewBrightnessMax / 2;
     }
 
-    public int getContrast(){
+    public int getContrast() {
         //시크바에 들어갈 값이 리턴됨 (0~512)
         //실제 brightness 는 -255~+255
         return contrast + SeekBarListener.SeekBarPreviewContrastMax / 2;
@@ -128,7 +153,7 @@ public class PreviewItem {
 
     public float getContrastForFilter() {
         //실제 필터를 적용할 때 이용. 0.5~1.5를 리턴
-        return ((float)contrast / 512.0f) + 1.0f;
+        return ((float) contrast / 512.0f) + 1.0f;
     }
 
     public void setContrast(int contrast) {
@@ -136,33 +161,33 @@ public class PreviewItem {
         this.contrast = contrast - SeekBarListener.SeekBarPreviewContrastMax / 2;
     }
 
-    public int getSaturation(){
+    public int getSaturation() {
         return saturation + SeekBarListener.SeekBarPreviewSaturationMax / 2;
     }
 
-    public float getSaturationForFilter(){
+    public float getSaturationForFilter() {
         //0.875~1.125를 리턴
-        return ((float)saturation / 2048.0f) + 1.0f;
+        return ((float) saturation / 2048.0f) + 1.0f;
     }
 
-    public void setSaturation(int saturation){
+    public void setSaturation(int saturation) {
         this.saturation = saturation - SeekBarListener.SeekBarPreviewSaturationMax / 2;
     }
 
-    public int getKelvin(){
+    public int getKelvin() {
         return kelvin + SeekBarListener.SeekBarPreviewKelvinMax / 2;
     }
 
-    public float getKelvinForFilter(){
+    public float getKelvinForFilter() {
         //0.875~1.125를 리턴
-        return ((float)kelvin / 1024.0f) + 1.0f;
+        return ((float) kelvin / 1024.0f) + 1.0f;
     }
 
-    public void setKelvin(int kelvin){
+    public void setKelvin(int kelvin) {
         this.kelvin = kelvin - SeekBarListener.SeekBarPreviewKelvinMax / 2;
     }
 
-    public void resetFilterValue(){
+    public void resetFilterValue() {
         this.brightness = 0;
         this.contrast = 0;
         this.kelvin = 0;

@@ -12,10 +12,13 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
@@ -253,9 +256,9 @@ public class PreviewCanvasView extends View {
     private void touchUpForBlurGuide(MotionEvent event) {
         //여기에 타원 영역 블러해서 비트맵 위에 그리기
         CLICK_STATE.endBlurGuide(); //Blur guide -> blur
-        Logger.d("MYTAG" ,"PREVIEW : " + previewWidth + ", " + previewHeight + ", " + previewPosWidth + ", " + previewPosHeight);
+        Logger.d("MYTAG", "PREVIEW : " + previewWidth + ", " + previewHeight + ", " + previewPosWidth + ", " + previewPosHeight);
         boolean isValidOval = BlurController.cutOval(previewWidth, previewHeight, previewPosWidth, previewPosHeight);
-        if(isValidOval){ // 타원을 만드는게 가능 할 경우(ex 비트맵 바깥을 설정하는 경우는 타원을 못만듬)
+        if (isValidOval) { // 타원을 만드는게 가능 할 경우(ex 비트맵 바깥을 설정하는 경우는 타원을 못만듬)
             makeOvalBlur();
         }
         invalidate();
@@ -380,6 +383,7 @@ public class PreviewCanvasView extends View {
 
     /**
      * 리사이징된 비트맵의 타원에서 원래 비트맵의 타원을 계산해냄
+     *
      * @return partLeft, partTop, partRight, partBottom, ovalOrigLeft, ovalOrigTop, ovalOrigRight, ovalOrigBottom
      * 잘린 사각형의 좌상 좌표, 우하 좌표, 잘리기 전 타원의 원본 사이즈의 좌상 좌표, 우하 좌표
      */
@@ -451,7 +455,7 @@ public class PreviewCanvasView extends View {
             ArrayList<Double> partOvalElements = resizedBlurOvalToOriginalBlurOval();
 
             Rect blurRect = new Rect(partOvalElements.get(0).intValue(), partOvalElements.get(1).intValue(), partOvalElements.get(2).intValue(), partOvalElements.get(3).intValue());
-            if(pbc.getBlurredBitmap() != null){
+            if (pbc.getBlurredBitmap() != null) {
                 mCanvas.drawBitmap(pbc.getBlurredBitmap(), null, blurRect, paintPreviewContrastBrightness);
             }
         } else if (isStampShown) {
@@ -989,7 +993,7 @@ public class PreviewCanvasView extends View {
         callInvalidate();
     }
 
-    public void testLog(String msg){
+    public void testLog(String msg) {
         Logger.d("TESTTAG", msg);
     }
 
@@ -1047,7 +1051,7 @@ public class PreviewCanvasView extends View {
                 //spin ready to save
                 //캔버스에 오리지널 크기로 비트맵을 다 그리고 나면 save ready가 true가 됨
                 //10초 동안 돌면 그냥 break
-                if(savetime + 10000 < System.currentTimeMillis()) {
+                if (savetime + 10000 < System.currentTimeMillis()) {
                     return ERROR_TIME_OUT;
                 }
             }
@@ -1072,7 +1076,8 @@ public class PreviewCanvasView extends View {
                 fos = new FileOutputStream(resultFile);
                 screenshot.compress(Bitmap.CompressFormat.JPEG, 100, fos);
                 fos.close();
-
+                Logger.d("[MYTAG]", "Media scan uri : " + resultUri);
+                Logger.d("[MYTAG]", "Media scan path : " + resultFilePath);
                 Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
                 mediaScanIntent.setData(resultUri);
                 mActivity.sendBroadcast(mediaScanIntent);
@@ -1116,8 +1121,9 @@ public class PreviewCanvasView extends View {
                     } else {
                         File resultFile = new File(str);
                         saveInformationSnackbar = Snackbar.make(mActivity.getCurrentFocus(),
-                                "저장 폴더 : " + MainActivity.PREVIEW_SAVED_DIRECTORY + "\n파일 이름 : " + resultFile.getName(),
+                                "저장 폴더 : " + MainActivity.MAIN_DIRECTORY + "/" + MainActivity.PREVIEW_SAVED_DIRECTORY + "\n파일 이름 : " + resultFile.getName(),
                                 Snackbar.LENGTH_LONG);
+                        Logger.d("[MYTAG]", "PATH : " + mActivity.getExternalFilesDir(Environment.DIRECTORY_PICTURES) + "/" + MainActivity.PREVIEW_SAVED_DIRECTORY);
                         if (nextPosition == -1) {
                             saveInformationSnackbar.setAction("NEXT", new OnClickListener() {
                                 @Override
@@ -1140,7 +1146,7 @@ public class PreviewCanvasView extends View {
                         saveInformationSnackbar.show();
 
                     }
-                } catch (NullPointerException e){
+                } catch (NullPointerException e) {
                     e.printStackTrace();
                 }
             }

@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -49,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
     public final static String FILE_NAME_HEADER_PREVIEW = "PREVIEW_";
     public final static String FILE_NAME_IMAGE_FORMAT = ".png";
 
+    public final static String MAIN_DIRECTORY = "Pictures";
     public final static String PREVIEW_SAVED_DIRECTORY = "Preview Maker";
     public final static String STAMP_SAVED_DIRECTORY = "Stamp";
 
@@ -267,22 +269,50 @@ public class MainActivity extends AppCompatActivity {
         Logger.d(TAG, "image file name : " + imageFileName
         );
         File imageFile = null;
-        File storageParentDir = new File(Environment.getExternalStorageDirectory() + "/Pictures", PREVIEW_SAVED_DIRECTORY);
-        File storageDir = new File(Environment.getExternalStorageDirectory() + "/Pictures/" + PREVIEW_SAVED_DIRECTORY, STAMP_SAVED_DIRECTORY);
-        Logger.d(TAG, "storageParentDir : " + storageParentDir);
-        Logger.d(TAG, "storageDir : " + storageDir);
-        if (!storageParentDir.exists()) {
-            storageParentDir.mkdir();
-            storageDir.mkdir();
-        }
-        if (!storageDir.exists()) {
-            storageDir.mkdir();
-        }
-        imageFile = new File(storageDir, imageFileName);
-        mCurrentPhotoPath = imageFile.getAbsolutePath();
-        Logger.d(TAG, "mCurrentPhotoPath : " + mCurrentPhotoPath);
+        File root;
+        //if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){ //API LEVEL이 26보다 클때 (8.0이상)
 
-        return imageFile;
+            root = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+            File storageParentDir = new File(root , PREVIEW_SAVED_DIRECTORY);
+            File storageDir = new File(root + "/" + PREVIEW_SAVED_DIRECTORY, STAMP_SAVED_DIRECTORY);
+            Logger.d(TAG, "storageParentDir : " + storageParentDir);
+            Logger.d(TAG, "storageDir : " + storageDir);
+            if (!storageParentDir.exists()) {
+                storageParentDir.mkdirs();
+                storageDir.mkdirs();
+            }
+            if (!storageDir.exists()) {
+                storageDir.mkdirs();
+            }
+            imageFile = new File(storageDir, imageFileName);
+            mCurrentPhotoPath = imageFile.getAbsolutePath();
+            Logger.d(TAG, "mCurrentPhotoPath : " + mCurrentPhotoPath);
+
+            return imageFile;
+        /*
+            root = Environment.getExternalStorageDirectory().getAbsoluteFile();
+            File mainDir = new File(root  + MAIN_DIRECTORY);
+            if(!mainDir.exists()){
+                mainDir.mkdirs();
+            }
+            File storageParentDir = new File(root  + "/" + MAIN_DIRECTORY, PREVIEW_SAVED_DIRECTORY);
+            File storageDir = new File(root  + "/" + MAIN_DIRECTORY + "/" + PREVIEW_SAVED_DIRECTORY, STAMP_SAVED_DIRECTORY);
+            Logger.d(TAG, "storageParentDir : " + storageParentDir);
+            Logger.d(TAG, "storageDir : " + storageDir);
+            if (!storageParentDir.exists()) {
+                storageParentDir.mkdirs();
+                storageDir.mkdirs();
+            }
+            if (!storageDir.exists()) {
+                storageDir.mkdirs();
+            }
+            imageFile = new File(storageDir, imageFileName);
+            mCurrentPhotoPath = imageFile.getAbsolutePath();
+            Logger.d(TAG, "mCurrentPhotoPath : " + mCurrentPhotoPath);
+
+            return imageFile;*/
+
+
     }
 
     public void nonCropImage() {
