@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -189,15 +190,23 @@ public class PreviewEditActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.toolbar_preview_edit_menu, menu);
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
                 //뒤로가기 버튼
                 finish();
                 return true;
-            default:
-                return super.onOptionsItemSelected(item);
+            case R.id.action_help_preview_edit:
+                return true;
         }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

@@ -2,17 +2,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/action_help"
+        android:id="@+id/action_help_preview_edit"
         android:orderInCategory="100"
         android:icon="@drawable/action_help_black_24dp"
         android:title="@string/action_help"
-        app:showAsAction="always" />
-
-    <item
-        android:id="@+id/action_credit"
-        android:orderInCategory="100"
-        android:icon="@drawable/action_info_black_24dp"
-        android:title="@string/action_credit"
         app:showAsAction="always" />
 
 </menu>

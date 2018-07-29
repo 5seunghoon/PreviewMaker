@@ -30,6 +30,7 @@ import com.tistory.deque.previewmaker.Model_PreviewData.PreviewItem;
 import com.tistory.deque.previewmaker.R;
 import com.tistory.deque.previewmaker.Model_StampData.StampAnchorEnum;
 import com.tistory.deque.previewmaker.Model_StampData.StampItem;
+import com.tistory.deque.previewmaker.Util.CalcUtil;
 import com.tistory.deque.previewmaker.Util.Logger;
 
 import java.io.File;
@@ -43,7 +44,7 @@ public class PreviewCanvasView extends View {
     public static final int CANVAS_WIDTH_MAX_SIZE = 3000;
     public static final int CANVAS_HEIGHT_MAX_SIZE = 3000;
 
-    public static int grandParentLayoutMargin = 16;
+    public static int grandParentLayoutMarginDp = 8;
 
     private static ClickState CLICK_STATE;
 
@@ -399,7 +400,7 @@ public class PreviewCanvasView extends View {
 
         int pbw = pbc.getBitmapWidth();
         int pbh = pbc.getBitmapHeight();
-        ArrayList<Integer> elements = getResizedBitmapElements(pbw, pbh, grandParentWidth, grandParentHeight, grandParentLayoutMargin);
+        ArrayList<Integer> elements = getResizedBitmapElements(pbw, pbh, grandParentWidth, grandParentHeight, grandParentLayoutMarginDp);
         ArrayList<Double> results = new ArrayList<>();
 
         double pwPos = elements.get(0);
@@ -490,48 +491,54 @@ public class PreviewCanvasView extends View {
     /**
      * @return previewPosWidth, previewPosHeight, previewWidth, previewHeight
      */
-    private ArrayList<Integer> getResizedBitmapElements(int previewBitmapWidth, int previewBitmapHeight, int grandParentWidth, int grandParentHeight, int grandParentLayoutMargin) {
-        canvasWidth = grandParentWidth - grandParentLayoutMargin;
-        canvasHeight = grandParentHeight - grandParentLayoutMargin; // layout margin
+    private ArrayList<Integer> getResizedBitmapElements(int previewBitmapWidth, int previewBitmapHeight, int grandParentWidth, int grandParentHeight, int grandParentLayoutMarginDp) {
+        int marginPx = CalcUtil.convertDpToPx(getContext(), grandParentLayoutMarginDp) * 2;
+        canvasWidth = grandParentWidth - marginPx;
+        canvasHeight = grandParentHeight - marginPx; // layout margin
         Logger.d(TAG, "CANVAS : W : " + canvasWidth + " , H : " + canvasHeight);
 
         double rate = (double) previewBitmapWidth / (double) previewBitmapHeight;
         double canvasRate = (double) canvasWidth / (double) canvasHeight;
 
-        int previewPosWidth;
-        int previewPosHeight;
-        int previewWidth;
-        int previewHeight;
+        int local_previewPosWidth;
+        int local_previewPosHeight;
+        int local_previewWidth;
+        int local_previewHeight;
 
         ArrayList<Integer> elements = new ArrayList<>();
 
-        if (rate >= canvasRate && previewBitmapWidth >= canvasWidth) { // w > h
+        Logger.d("MYTAG", "getResizedBitmapElements canvas w, h : " + canvasWidth + ", " + canvasHeight);
 
-            previewPosWidth = 0;
-            previewPosHeight = (canvasHeight - (int) (canvasWidth * (1 / rate))) / 2;
-            previewWidth = canvasWidth;
-            previewHeight = (int) (canvasWidth * (1 / rate));
+        if (rate >= canvasRate && previewBitmapWidth >= canvasWidth) { // w > h
+            Logger.d("MYTAG", "getResizedBitmapElements case 1");
+
+            local_previewPosWidth = 0;
+            local_previewPosHeight = (canvasHeight - (int) (canvasWidth * (1 / rate))) / 2;
+            local_previewWidth = canvasWidth;
+            local_previewHeight = (int) (canvasWidth * (1 / rate));
 
         } else if (rate < canvasRate && previewBitmapHeight >= canvasHeight) { // w < h
+            Logger.d("MYTAG", "getResizedBitmapElements case 2");
 
-            previewPosWidth = (canvasWidth - (int) (canvasHeight * (rate))) / 2;
-            previewPosHeight = 0;
-            previewWidth = (int) (canvasHeight * (rate));
-            previewHeight = canvasHeight;
+            local_previewPosWidth = (canvasWidth - (int) (canvasHeight * (rate))) / 2;
+            local_previewPosHeight = 0;
+            local_previewWidth = (int) (canvasHeight * (rate));
+            local_previewHeight = canvasHeight;
 
         } else {
+            Logger.d("MYTAG", "getResizedBitmapElements case 3");
 
-            previewPosWidth = (canvasWidth - previewBitmapWidth) / 2;
-            previewPosHeight = (canvasHeight - previewBitmapHeight) / 2;
-            previewWidth = previewBitmapWidth;
-            previewHeight = previewBitmapHeight;
+            local_previewPosWidth = (canvasWidth - previewBitmapWidth) / 2;
+            local_previewPosHeight = (canvasHeight - previewBitmapHeight) / 2;
+            local_previewWidth = previewBitmapWidth;
+            local_previewHeight = previewBitmapHeight;
 
         }
 
-        elements.add(previewPosWidth);
-        elements.add(previewPosHeight);
-        elements.add(previewWidth);
-        elements.add(previewHeight);
+        elements.add(local_previewPosWidth);
+        elements.add(local_previewPosHeight);
+        elements.add(local_previewWidth);
+        elements.add(local_previewHeight);
 
         return elements;
     }
@@ -541,14 +548,12 @@ public class PreviewCanvasView extends View {
         Bitmap previewBitmap = pbc.getPreviewBitmap();
         int previewBitmapWidth = pbc.getBitmapWidth();
         int previewBitmapHeight = pbc.getBitmapHeight();
-        Rect dst;
-        ArrayList<Integer> elements = getResizedBitmapElements(previewBitmapWidth, previewBitmapHeight, grandParentWidth, grandParentHeight, grandParentLayoutMargin);
+        ArrayList<Integer> elements = getResizedBitmapElements(previewBitmapWidth, previewBitmapHeight, grandParentWidth, grandParentHeight, grandParentLayoutMarginDp);
 
         previewPosWidth = elements.get(0);
         previewPosHeight = elements.get(1);
         previewWidth = elements.get(2);
         previewHeight = elements.get(3);
-        dst = new Rect(previewPosWidth, previewPosHeight, previewPosWidth + previewWidth, previewPosHeight + previewHeight);
 
         PreviewItem nowPreview = previewItems.get(getPosition());
         Paint paintPreviewContrastBrightness = RetouchingPaintController.getPaint(
@@ -558,9 +563,10 @@ public class PreviewCanvasView extends View {
                 , nowPreview.getKelvinForFilter()
         );
 
-        Logger.d(TAG, previewPosWidth + "," + previewPosHeight + "," + (previewPosWidth + previewWidth) + "," + (previewPosHeight + previewHeight));
         try {
-            mCanvas.drawBitmap(previewBitmap, null, dst, paintPreviewContrastBrightness);
+            mCanvas.drawBitmap(previewBitmap, null, new Rect(previewPosWidth, previewPosHeight, (previewPosWidth + previewWidth), (previewPosHeight + previewHeight)), paintPreviewContrastBrightness);
+            //mCanvas.drawBitmap(previewBitmap, null, new Rect(500,500,previewWidth + 500,previewHeight+500), paintPreviewContrastBrightness);
+            Logger.d(TAG, previewPosWidth + "," + previewPosHeight + "," + (previewPosWidth + previewWidth) + "," + (previewPosHeight + previewHeight));
         } catch (NullPointerException e) {
             Toast.makeText(mActivity.getApplicationContext(), "NullPointerException: canvas.drawBitmap", Toast.LENGTH_LONG).show();
         }
@@ -1099,6 +1105,12 @@ public class PreviewCanvasView extends View {
                     saveInformationSnackbar = Snackbar.make(mActivity.getCurrentFocus(),
                             "저장 폴더 : " + MainActivity.PREVIEW_SAVED_DIRECTORY + "\n파일 이름 : " + resultFile.getName(),
                             Snackbar.LENGTH_LONG);
+                    saveInformationSnackbar.setAction("OK", new OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            saveInformationSnackbar.dismiss();
+                        }
+                    });
                     if (nextPosition == -1) {
                         saveInformationSnackbar.setAction("NEXT", new OnClickListener() {
                             @Override

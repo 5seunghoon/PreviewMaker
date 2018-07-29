@@ -218,8 +218,6 @@ public class MainActivity extends AppCompatActivity {
         switch (id) {
             case R.id.action_help:
                 return true;
-            case R.id.action_donate:
-                return true;
             case R.id.action_credit:
                 return true;
         }
