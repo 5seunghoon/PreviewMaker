@@ -48,7 +48,9 @@
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         <activity android:name=".Activity.HelpMainActivity" />
-        <activity android:name=".Activity.HelpPreviewEditActivity"></activity>
+        <activity android:name=".Activity.HelpPreviewEditActivity" />
+        <activity android:name=".Activity.CreditActivity" />
+        <activity android:name=".Activity.OpensourceActivity"></activity>
     </application>
 
 </manifest>

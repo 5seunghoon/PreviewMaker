@@ -11,6 +11,7 @@
     <string name="title_preview_make_activity">심플 프리뷰 메이커</string>
 
     <string name="title_help_activity">도움말</string>
+    <string name="title_credit_activity">도움말</string>
 
     <string name="tutorial_main_activity_text">낙관을 먼저 추가해 주세요</string>
 
@@ -77,6 +78,8 @@
     <string name="message_preview_load_dialog">프리뷰를 불러오는 중입니다.</string>
 
     <string name="message_blurring_bitmap_dialog">블러를 적용 중입니다.</string>
+
+
 
 
 </resources>
