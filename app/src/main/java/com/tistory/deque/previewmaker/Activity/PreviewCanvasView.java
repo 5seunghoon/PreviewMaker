@@ -187,10 +187,6 @@ public class PreviewCanvasView extends View {
         PreviewEditActivity.POSITION = nextPosition;
     }
 
-    public void setIsSaveReady(boolean value) {
-        isSaveReady = true;
-    }
-
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()) {
@@ -485,7 +481,9 @@ public class PreviewCanvasView extends View {
             mCanvas.drawBitmap(stampOriginalBitmap, null, stampDst, paintContrastBrightness);
         }
 
+        testLog("5 , isSaveReady : " + isSaveReady);
         isSaveReady = true;
+        testLog("6 , isSaveReady : " + isSaveReady);
     }
 
     /**
@@ -991,6 +989,9 @@ public class PreviewCanvasView extends View {
         callInvalidate();
     }
 
+    public void testLog(String msg){
+        Logger.d("TESTTAG", msg);
+    }
 
     protected class BlurringBitmapAsyncTask extends AsyncTask<Integer, Integer, Integer> {
         @Override
@@ -1029,6 +1030,7 @@ public class PreviewCanvasView extends View {
         int nextPosition;
         final String ERROR_INVALID_POSITION = "ERROR_INVALID_POSITION";
         final String ERROR_IO_EXCEPTION = "ERROR_IO_EXCEPTION";
+        final String ERROR_TIME_OUT = "ERROR_TIME_OUT";
 
         SaveAllAsyncTask() {
         }
@@ -1040,9 +1042,14 @@ public class PreviewCanvasView extends View {
 
         @Override
         protected String doInBackground(Integer... param) {
+            long savetime = System.currentTimeMillis();
             while (!isSaveReady) {
                 //spin ready to save
                 //캔버스에 오리지널 크기로 비트맵을 다 그리고 나면 save ready가 true가 됨
+                //10초 동안 돌면 그냥 break
+                if(savetime + 10000 < System.currentTimeMillis()) {
+                    return ERROR_TIME_OUT;
+                }
             }
             nextPosition = param[0];
 
@@ -1097,35 +1104,44 @@ public class PreviewCanvasView extends View {
                 }
 
 
-                if (str == ERROR_IO_EXCEPTION) {
-                    saveInformationSnackbar = Snackbar.make(mActivity.getCurrentFocus(), "저장 실패!", Snackbar.LENGTH_LONG);
-                    saveInformationSnackbar.show();
-                } else {
-                    File resultFile = new File(str);
-                    saveInformationSnackbar = Snackbar.make(mActivity.getCurrentFocus(),
-                            "저장 폴더 : " + MainActivity.PREVIEW_SAVED_DIRECTORY + "\n파일 이름 : " + resultFile.getName(),
-                            Snackbar.LENGTH_LONG);
-                    if (nextPosition == -1) {
-                        saveInformationSnackbar.setAction("NEXT", new OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                if (getPosition() + 1 < previewItems.size()) {
-                                    nextPosition = getPosition() + 1;
-                                    changeAndInitPreviewInCanvas(nextPosition);
-                                }
-                            }
-                        });
-                    } else {
-                        saveInformationSnackbar.setAction("OK", new OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                saveInformationSnackbar.dismiss();
-                            }
-                        });
-                    }
-                    //저장 위치 등을 알려주는 스낵바
-                    saveInformationSnackbar.show();
+                try {
 
+
+                    if (str == ERROR_IO_EXCEPTION) {
+                        saveInformationSnackbar = Snackbar.make(mActivity.getCurrentFocus(), "저장 실패!", Snackbar.LENGTH_LONG);
+                        saveInformationSnackbar.show();
+                    } else if (str == ERROR_TIME_OUT) {
+                        saveInformationSnackbar = Snackbar.make(mActivity.getCurrentFocus(), "저장 시간 초과", Snackbar.LENGTH_LONG);
+                        saveInformationSnackbar.show();
+                    } else {
+                        File resultFile = new File(str);
+                        saveInformationSnackbar = Snackbar.make(mActivity.getCurrentFocus(),
+                                "저장 폴더 : " + MainActivity.PREVIEW_SAVED_DIRECTORY + "\n파일 이름 : " + resultFile.getName(),
+                                Snackbar.LENGTH_LONG);
+                        if (nextPosition == -1) {
+                            saveInformationSnackbar.setAction("NEXT", new OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    if (getPosition() + 1 < previewItems.size()) {
+                                        nextPosition = getPosition() + 1;
+                                        changeAndInitPreviewInCanvas(nextPosition);
+                                    }
+                                }
+                            });
+                        } else {
+                            saveInformationSnackbar.setAction("OK", new OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    saveInformationSnackbar.dismiss();
+                                }
+                            });
+                        }
+                        //저장 위치 등을 알려주는 스낵바
+                        saveInformationSnackbar.show();
+
+                    }
+                } catch (NullPointerException e){
+                    e.printStackTrace();
                 }
             }
             saveEnd();

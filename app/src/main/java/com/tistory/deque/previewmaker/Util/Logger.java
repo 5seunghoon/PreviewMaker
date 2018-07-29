@@ -6,7 +6,7 @@ import android.util.Log;
 
 public class Logger {
     private static final String LOGGER_TAG = " [LOGGER TAG]";
-    private static boolean printlog = true;
+    private static boolean printlog = false;
 
     public static final void w(String TAG, String message) {
         if (printlog) {
