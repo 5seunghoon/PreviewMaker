@@ -454,6 +454,7 @@ public class PreviewEditActivity extends AppCompatActivity {
     @OnClick(R.id.buttonDelete)
     public void clickButtonDelete() {
         //allSeekbarInvisible();
+        if(POSITION < 0) return;
         seekbarInvisibleAllBtnVisible();
 
         if (previewItems.size() == 1) return;
