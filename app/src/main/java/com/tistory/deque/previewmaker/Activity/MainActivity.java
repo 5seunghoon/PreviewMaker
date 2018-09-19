@@ -4,8 +4,8 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -154,11 +154,12 @@ public class MainActivity extends AppCompatActivity {
                 if (resultCode == Activity.RESULT_OK) {
                     File albumFile = createImageFile();
                     mCropSourceURI = data.getData();
-                    mCropEndURI = Uri.fromFile(albumFile);
-                    nonCropImage();
-
                     Logger.d(TAG, "mCropSourceURI : " + mCropSourceURI);
-                    Logger.d(TAG, "TAKE STAMP FROM ALBUM SUCCESS");
+                    if (checkStampSizeValid(mCropSourceURI)) {
+                        mCropEndURI = Uri.fromFile(albumFile);
+                        nonCropImage();
+                        Logger.d(TAG, "TAKE STAMP FROM ALBUM SUCCESS");
+                    }
                 } else {
                     Logger.d(TAG, "TAKE STAMP FROM ALBUM FAIL");
                 }
@@ -182,6 +183,20 @@ public class MainActivity extends AppCompatActivity {
                 }
                 break;
         }
+    }
+
+    private boolean checkStampSizeValid(Uri stampBaseUri) {
+        try {
+            Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), stampBaseUri);
+            if (bitmap.getHeight() >= 2000 || bitmap.getWidth() >= 2000) {
+                Logger.d(TAG, "SIZE OVER");
+                Snackbar.make(mainActivityMainLayout, getString(R.string.snackbar_main_acti_stamp_size_over_err), Snackbar.LENGTH_LONG).show();
+                return false;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return true;
     }
 
     @Override
@@ -272,23 +287,23 @@ public class MainActivity extends AppCompatActivity {
         File root;
         //if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){ //API LEVEL이 26보다 클때 (8.0이상)
 
-            root = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-            File storageParentDir = new File(root , PREVIEW_SAVED_DIRECTORY);
-            File storageDir = new File(root + "/" + PREVIEW_SAVED_DIRECTORY, STAMP_SAVED_DIRECTORY);
-            Logger.d(TAG, "storageParentDir : " + storageParentDir);
-            Logger.d(TAG, "storageDir : " + storageDir);
-            if (!storageParentDir.exists()) {
-                storageParentDir.mkdirs();
-                storageDir.mkdirs();
-            }
-            if (!storageDir.exists()) {
-                storageDir.mkdirs();
-            }
-            imageFile = new File(storageDir, imageFileName);
-            mCurrentPhotoPath = imageFile.getAbsolutePath();
-            Logger.d(TAG, "mCurrentPhotoPath : " + mCurrentPhotoPath);
+        root = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+        File storageParentDir = new File(root, PREVIEW_SAVED_DIRECTORY);
+        File storageDir = new File(root + "/" + PREVIEW_SAVED_DIRECTORY, STAMP_SAVED_DIRECTORY);
+        Logger.d(TAG, "storageParentDir : " + storageParentDir);
+        Logger.d(TAG, "storageDir : " + storageDir);
+        if (!storageParentDir.exists()) {
+            storageParentDir.mkdirs();
+            storageDir.mkdirs();
+        }
+        if (!storageDir.exists()) {
+            storageDir.mkdirs();
+        }
+        imageFile = new File(storageDir, imageFileName);
+        mCurrentPhotoPath = imageFile.getAbsolutePath();
+        Logger.d(TAG, "mCurrentPhotoPath : " + mCurrentPhotoPath);
 
-            return imageFile;
+        return imageFile;
         /*
             root = Environment.getExternalStorageDirectory().getAbsoluteFile();
             File mainDir = new File(root  + MAIN_DIRECTORY);
@@ -321,6 +336,7 @@ public class MainActivity extends AppCompatActivity {
          */
         String pathCropSourceURI = getRealPathFromURI(mCropSourceURI);
         File file = new File(pathCropSourceURI);
+        Logger.d(TAG, "crop source file size : " + file.length());
         File outFile = new File(mCropEndURI.getPath());
         Logger.d(TAG, "inFile , outFile " + file + " , " + outFile);
 

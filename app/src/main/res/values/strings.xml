@@ -50,6 +50,7 @@
     <string name="snackbar_main_acti_back_to_exit">뒤로 버튼을 한번 더 누르시면 종료합니다.</string>
     <string name="snackbar_main_acti_back_to_exit_btn">EXIT</string>
     <string name="snackbar_main_acti_stamp_copy_err">파일 복사 에러. 다시 시도해 주세요.</string>
+    <string name="snackbar_main_acti_stamp_size_over_err">낙관의 사이즈가 너무 큽니다. 장축을 2천px 미만으로 줄여주세요.</string>
 
     <string name="snackbar_make_stamp_acti_back_to_exit">뒤로 버튼을 한번 더 누르시면 낙관 설정을 취소합니다.</string>
     <string name="snackbar_make_stamp_acti_no_name_warn">이름을 입력해 주세요.</string>

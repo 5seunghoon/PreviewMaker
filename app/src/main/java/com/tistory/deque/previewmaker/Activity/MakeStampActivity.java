@@ -2,7 +2,9 @@ package com.tistory.deque.previewmaker.Activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
+import android.provider.MediaStore;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -16,6 +18,7 @@ import com.tistory.deque.previewmaker.R;
 import com.tistory.deque.previewmaker.Util.Logger;
 
 import java.io.File;
+import java.io.IOException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -45,8 +48,10 @@ public class MakeStampActivity extends AppCompatActivity {
         Intent intent = getIntent();
         imageURI = intent.getData();
 
+
         setTitle(R.string.title_make_stamp_activity);
         stampImageView.setImageURI(imageURI);
+        Logger.d(TAG, "setImageUri suc");
 
         ActionBar actionBar = getSupportActionBar();
         //뒤로가기 버튼
@@ -79,7 +84,7 @@ public class MakeStampActivity extends AppCompatActivity {
         }
     }
 
-    public void cancleAndFinish(){
+    public void cancleAndFinish() {
         deleteFile(imageURI);
         Intent resultIntent = new Intent();
         setResult(RESULT_CANCELED, resultIntent);
