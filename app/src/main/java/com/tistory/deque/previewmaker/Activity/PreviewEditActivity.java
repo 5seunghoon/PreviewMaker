@@ -418,6 +418,7 @@ public class PreviewEditActivity extends AppCompatActivity {
         options.setActiveWidgetColor(ContextCompat.getColor(this, R.color.colorAccent));
         options.setToolbarWidgetColor(ContextCompat.getColor(this, R.color.black));
         options.setStatusBarColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
+        options.setFreeStyleCropEnabled(true);
 
         options.setAspectRatioOptions(1,
                 new AspectRatio("16:9", 16, 9),
