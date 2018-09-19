@@ -52,7 +52,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="32dp"
-        android:text="Special Thanks\n\ngu9udan Hana\n\n\nVisit\n\ngithub.com/stdSalmon\n@hanagif"
+        android:text="Special Thanks\n\ngu9udan Hana\n\n\nVisit\n\ngithub.com/5seunghoon\n@hanagif\n@preview_maker"
         android:textAlignment="center"
         android:textColor="@android:color/black"
         android:textSize="14sp"
