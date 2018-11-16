@@ -34,6 +34,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:text="uCorp\nhttps://github.com/Yalantis/uCrop\nApache License, Version 2.0" />
+        android:text="uCrop\nhttps://github.com/Yalantis/uCrop\nApache License, Version 2.0" />
 
 </LinearLayout>

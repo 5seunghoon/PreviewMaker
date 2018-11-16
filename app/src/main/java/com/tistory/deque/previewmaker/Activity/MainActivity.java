@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
     public final static String FILE_NAME_IMAGE_FORMAT = ".png";
 
     public final static String MAIN_DIRECTORY = "Pictures";
-    public final static String PREVIEW_SAVED_DIRECTORY = "Preview"+" "+"Maker";
+    public final static String PREVIEW_SAVED_DIRECTORY = "Preview" + " " + "Maker";
     public final static String STAMP_SAVED_DIRECTORY = "Stamp";
 
     private static int MAX_SELECT_IMAGE_ACCOUNT = 99;
@@ -273,6 +273,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getStampFromAlbum() {
+        int permissionCheck = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+        }
         Logger.d(TAG, "getAlbum()");
         Intent intent = new Intent(Intent.ACTION_PICK);
         intent.setType("image/*");
@@ -342,44 +346,36 @@ public class MainActivity extends AppCompatActivity {
         File outFile = new File(mCropEndURI.getPath());
         Logger.d(TAG, "inFile , outFile " + file + " , " + outFile);
 
-        if(Build.VERSION.SDK_INT >= 23){
-            int permissionCheck = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
-            if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
-            }
-            else {
-                if (file.exists()) {
+        if (file.exists()) {
 
-                    try {
+            try {
 
-                        FileInputStream fis = new FileInputStream(file);
-                        FileOutputStream newfos = new FileOutputStream(outFile);
-                        int readcount;
-                        byte[] buffer = new byte[1024];
+                FileInputStream fis = new FileInputStream(file);
+                FileOutputStream newfos = new FileOutputStream(outFile);
+                int readcount;
+                byte[] buffer = new byte[1024];
 
-                        while ((readcount = fis.read(buffer, 0, 1024)) != -1) {
-                            newfos.write(buffer, 0, readcount);
-                        }
-                        newfos.close();
-                        fis.close();
-                    } catch (IOException e) {
-                        Logger.d(TAG, "FILE COPY FAIL");
-                        Snackbar.make(mainActivityMainLayout, getString(R.string.snackbar_main_acti_stamp_copy_err), Snackbar.LENGTH_LONG);
-                        e.printStackTrace();
-                    }
-                } else {
-                    Logger.d(TAG, "IN FILE NOT EXIST");
+                while ((readcount = fis.read(buffer, 0, 1024)) != -1) {
+                    newfos.write(buffer, 0, readcount);
                 }
-
-                galleryAddPic(this, mCropEndURI.getPath());
-
-                Intent intent = new Intent(getApplicationContext(), MakeStampActivity.class);
-                intent.setData(mCropEndURI);
-                startActivityForResult(intent, REQUEST_MAKE_STAMP_ACTIVITY);
-
+                newfos.close();
+                fis.close();
+            } catch (IOException e) {
+                Logger.d(TAG, "FILE COPY FAIL");
+                Snackbar.make(mainActivityMainLayout, getString(R.string.snackbar_main_acti_stamp_copy_err), Snackbar.LENGTH_LONG);
+                e.printStackTrace();
             }
+        } else {
+            Logger.d(TAG, "IN FILE NOT EXIST");
         }
+
+        galleryAddPic(this, mCropEndURI.getPath());
+
+        Intent intent = new Intent(getApplicationContext(), MakeStampActivity.class);
+        intent.setData(mCropEndURI);
+        startActivityForResult(intent, REQUEST_MAKE_STAMP_ACTIVITY);
     }
+
 
     public String getRealPathFromURI(Uri contentUri) {
 
