@@ -1,12 +1,11 @@
 package com.tistory.deque.previewmaker.Util;
 
-import android.arch.core.BuildConfig;
 import android.util.Log;
 
 
 public class Logger {
     private static final String LOGGER_TAG = " [LOGGER TAG]";
-    private static boolean printlog = false;
+    private static boolean printlog = true;
 
     public static final void w(String TAG, String message) {
         if (printlog) {

@@ -17,6 +17,7 @@ import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
 import com.tistory.deque.previewmaker.Activity.MainActivity;
 import com.tistory.deque.previewmaker.R;
+import com.tistory.deque.previewmaker.Util.Logger;
 
 import java.util.ArrayList;
 

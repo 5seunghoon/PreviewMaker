@@ -3,15 +3,19 @@ package com.tistory.deque.previewmaker.Activity;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -51,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
     public final static String FILE_NAME_IMAGE_FORMAT = ".png";
 
     public final static String MAIN_DIRECTORY = "Pictures";
-    public final static String PREVIEW_SAVED_DIRECTORY = "Preview Maker";
+    public final static String PREVIEW_SAVED_DIRECTORY = "Preview"+" "+"Maker";
     public final static String STAMP_SAVED_DIRECTORY = "Stamp";
 
     private static int MAX_SELECT_IMAGE_ACCOUNT = 99;
@@ -285,8 +289,6 @@ public class MainActivity extends AppCompatActivity {
         );
         File imageFile = null;
         File root;
-        //if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){ //API LEVEL이 26보다 클때 (8.0이상)
-
         root = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
         File storageParentDir = new File(root, PREVIEW_SAVED_DIRECTORY);
         File storageDir = new File(root + "/" + PREVIEW_SAVED_DIRECTORY, STAMP_SAVED_DIRECTORY);
@@ -340,35 +342,43 @@ public class MainActivity extends AppCompatActivity {
         File outFile = new File(mCropEndURI.getPath());
         Logger.d(TAG, "inFile , outFile " + file + " , " + outFile);
 
-        if (file.exists()) {
-
-            try {
-
-                FileInputStream fis = new FileInputStream(file);
-                FileOutputStream newfos = new FileOutputStream(outFile);
-                int readcount;
-                byte[] buffer = new byte[1024];
-
-                while ((readcount = fis.read(buffer, 0, 1024)) != -1) {
-                    newfos.write(buffer, 0, readcount);
-                }
-                newfos.close();
-                fis.close();
-            } catch (IOException e) {
-                Logger.d(TAG, "FILE COPY FAIL");
-                Snackbar.make(mainActivityMainLayout, getString(R.string.snackbar_main_acti_stamp_copy_err), Snackbar.LENGTH_LONG);
-                e.printStackTrace();
+        if(Build.VERSION.SDK_INT >= 23){
+            int permissionCheck = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
             }
-        } else {
-            Logger.d(TAG, "IN FILE NOT EXIST");
+            else {
+                if (file.exists()) {
+
+                    try {
+
+                        FileInputStream fis = new FileInputStream(file);
+                        FileOutputStream newfos = new FileOutputStream(outFile);
+                        int readcount;
+                        byte[] buffer = new byte[1024];
+
+                        while ((readcount = fis.read(buffer, 0, 1024)) != -1) {
+                            newfos.write(buffer, 0, readcount);
+                        }
+                        newfos.close();
+                        fis.close();
+                    } catch (IOException e) {
+                        Logger.d(TAG, "FILE COPY FAIL");
+                        Snackbar.make(mainActivityMainLayout, getString(R.string.snackbar_main_acti_stamp_copy_err), Snackbar.LENGTH_LONG);
+                        e.printStackTrace();
+                    }
+                } else {
+                    Logger.d(TAG, "IN FILE NOT EXIST");
+                }
+
+                galleryAddPic(this, mCropEndURI.getPath());
+
+                Intent intent = new Intent(getApplicationContext(), MakeStampActivity.class);
+                intent.setData(mCropEndURI);
+                startActivityForResult(intent, REQUEST_MAKE_STAMP_ACTIVITY);
+
+            }
         }
-
-        galleryAddPic(this, mCropEndURI.getPath());
-
-        Intent intent = new Intent(getApplicationContext(), MakeStampActivity.class);
-        intent.setData(mCropEndURI);
-        startActivityForResult(intent, REQUEST_MAKE_STAMP_ACTIVITY);
-
     }
 
     public String getRealPathFromURI(Uri contentUri) {
