@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
+        android:name=".kotlin.PreviewMakerApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -22,23 +23,31 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
+        <!--
+                <activity
+                    android:name=".Activity.MainActivity"
+                    android:label="@string/app_name"
+                    android:screenOrientation="portrait">
+                    <intent-filter>
+                        <action android:name="android.intent.action.MAIN" />
+                        <action android:name="android.intent.action.VIEW" />
 
-        <activity
-            android:name=".Activity.MainActivity"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity
-            android:name=".Activity.MakeStampActivity"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".Activity.PreviewEditActivity"
-            android:screenOrientation="portrait" />
+                        <category android:name="android.intent.category.LAUNCHER" />
+                    </intent-filter>
+                </activity>
+                <activity
+                    android:name=".Activity.MakeStampActivity"
+                    android:screenOrientation="portrait" />
+                <activity
+                    android:name=".Activity.PreviewEditActivity"
+                    android:screenOrientation="portrait" />
+                    -->
+        <!--
+        <activity android:name=".Activity.HelpMainActivity" />
+        <activity android:name=".Activity.HelpPreviewEditActivity" />
+        <activity android:name=".Activity.CreditActivity" />
+        <activity android:name=".Activity.OpensourceActivity" />
+        -->
         <activity
             android:name="me.nereo.multi_image_selector.MultiImageSelectorActivity"
             android:configChanges="orientation|screenSize"
@@ -47,11 +56,18 @@
             android:name="com.yalantis.ucrop.UCropActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
-        <activity android:name=".Activity.HelpMainActivity" />
-        <activity android:name=".Activity.HelpPreviewEditActivity" />
-        <activity android:name=".Activity.CreditActivity" />
-        <activity android:name=".Activity.OpensourceActivity" />
-        <activity android:name=".kotlin.main.KtMainActivity"></activity>
+        <activity
+            android:name=".kotlin.main.KtMainActivity"
+            android:screenOrientation="portrait">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
     </application>
 
 </manifest>
