@@ -50,7 +50,8 @@
         <activity android:name=".Activity.HelpMainActivity" />
         <activity android:name=".Activity.HelpPreviewEditActivity" />
         <activity android:name=".Activity.CreditActivity" />
-        <activity android:name=".Activity.OpensourceActivity"></activity>
+        <activity android:name=".Activity.OpensourceActivity" />
+        <activity android:name=".kotlin.main.KtMainActivity"></activity>
     </application>
 
 </manifest>
