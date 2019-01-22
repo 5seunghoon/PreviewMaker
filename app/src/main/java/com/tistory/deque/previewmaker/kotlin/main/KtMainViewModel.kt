@@ -9,10 +9,10 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Environment
 import android.provider.MediaStore
-import com.tistory.deque.previewmaker.Activity.MakeStampActivity
 import com.tistory.deque.previewmaker.R
 import com.tistory.deque.previewmaker.kotlin.KtDbOpenHelper
 import com.tistory.deque.previewmaker.kotlin.base.BaseKotlinViewModel
+import com.tistory.deque.previewmaker.kotlin.makestamp.KtMakeStampActivity
 import com.tistory.deque.previewmaker.kotlin.model.Stamp
 import com.tistory.deque.previewmaker.kotlin.util.EzLogger
 import com.tistory.deque.previewmaker.kotlin.util.RequestCode
@@ -104,22 +104,18 @@ class KtMainViewModel : BaseKotlinViewModel() {
             RequestCode.REQUEST_TAKE_STAMP_FROM_ALBUM -> {
                 if (resultCode == Activity.RESULT_OK) {
                     data?.data?.let { uri ->
+                        _makeStampActivityStartEvent.value = uri
+
+                        /*
                         EzLogger.d("stamp original uri : $uri")
                         if (checkStampSizeValid(context.contentResolver, uri)) {
                             val outFile = createImageFile()
-                            EzLogger.d("outFile uri : uri.fromFile(file) -> ${Uri.fromFile(outFile)}")
                             EzLogger.d("outFile path : file.absolutePath -> ${outFile.absolutePath}")
-                            EzLogger.d("outFile uri : file.absolutePath.getUri -> ${outFile.absolutePath.getUri(context.contentResolver)}")
-                            EzLogger.d("outFile path : uri.fromFile(file).getRealPath -> ${Uri.fromFile(outFile).getRealPath(context.contentResolver)}")
-
-                            val sourceFile = File(uri.getRealPath(context.contentResolver)
-                                    ?: return)
-                            EzLogger.d("sourceFile uri : $uri")
+                            val sourceFile = File(uri.getRealPath(context.contentResolver) ?: return)
                             EzLogger.d("sourceFile uri.getRealPath() : ${uri.getRealPath(context.contentResolver)}")
-
                             copyAndPasteImage(sourceFile, outFile)
-                            _makeStampActivityStartEvent.value = outFile.absolutePath.getUri(context.contentResolver)
-                        }
+                            _makeStampActivityStartEvent.value = Uri.fromFile(outFile)
+                        }*/
                     }
                 }
             }
@@ -135,14 +131,14 @@ class KtMainViewModel : BaseKotlinViewModel() {
 
     private fun addStampToListAndDB(intent: Intent) {
         dbOpenHelper?.let {
-            it.dbInsertStamp(intent.getStringExtra(MakeStampActivity.STAMP_NAME), intent.data
+            it.dbInsertStamp(intent.getStringExtra(KtMakeStampActivity.STAMP_NAME_INTENT_KEY), intent.data
                     ?: return)
 
-            it.db?.rawQuery("SELECT MAX(_id) FROM ${KtDbOpenHelper.TABLE_NAME_STAMPS}", null)?.let { cursor ->
+            it.db?.rawQuery("SELECT MAX(_id) FROM ${KtDbOpenHelper.TABLE_NAME_STAMPS}", null)?.use { cursor ->
                 cursor.moveToFirst()
                 val maxId = cursor.getInt(0)
 
-                val newStamp = Stamp(maxId, intent.data, intent.getStringExtra(MakeStampActivity.STAMP_NAME))
+                val newStamp = Stamp(maxId, intent.data ?: return, intent.getStringExtra(KtMakeStampActivity.STAMP_NAME_INTENT_KEY))
                 EzLogger.d("new stamp : $newStamp")
                 _addStampLiveData.value = newStamp
             }

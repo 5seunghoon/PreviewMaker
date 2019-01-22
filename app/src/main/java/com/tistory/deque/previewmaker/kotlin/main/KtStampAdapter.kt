@@ -1,6 +1,7 @@
 package com.tistory.deque.previewmaker.kotlin.main
 
 import android.support.v7.widget.RecyclerView
+import android.view.MenuItem
 import android.view.ViewGroup
 import com.tistory.deque.previewmaker.kotlin.model.Stamp
 import com.tistory.deque.previewmaker.kotlin.model.StampAdapterModel
@@ -28,4 +29,5 @@ class KtStampAdapter(private val stampAdapterModel: StampAdapterModel): Recycler
         stampAdapterModel.addStamp(stamp)
         notifyItemInserted(stampAdapterModel.size)
     }
+
 }

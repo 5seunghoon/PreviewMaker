@@ -130,12 +130,9 @@ class KtDbOpenHelper(context: Context?, name: String?, factory: SQLiteDatabase.C
          */
         val stampList = ArrayList<Stamp>()
         dbHelper?.let {
-
             val sql = "SELECT * FROM $TABLE_NAME_STAMPS;"
-            val resultCursor = it.db?.rawQuery(sql, null)
             EzLogger.d("Cursor open, sql : $sql")
-
-            resultCursor?.let { cursor ->
+            it.db?.rawQuery(sql, null)?.use { cursor ->
                 cursor.moveToFirst()
                 while (!cursor.isAfterLast) {
                     val stampId = cursor.getInt(0)

@@ -41,7 +41,7 @@
                 <activity
                     android:name=".Activity.PreviewEditActivity"
                     android:screenOrientation="portrait" />
-                    -->
+        -->
         <!--
         <activity android:name=".Activity.HelpMainActivity" />
         <activity android:name=".Activity.HelpPreviewEditActivity" />
@@ -59,7 +59,6 @@
         <activity
             android:name=".kotlin.main.KtMainActivity"
             android:screenOrientation="portrait">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.VIEW" />
@@ -67,7 +66,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
+        <activity android:name=".kotlin.makestamp.KtMakeStampActivity"
+            android:screenOrientation="portrait"/>
     </application>
 
 </manifest>

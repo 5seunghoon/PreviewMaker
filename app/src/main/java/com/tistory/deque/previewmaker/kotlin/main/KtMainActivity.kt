@@ -8,6 +8,7 @@ import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
+import android.support.design.widget.Snackbar
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.LinearLayoutManager
@@ -18,13 +19,14 @@ import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.TedPermission
 import com.tistory.deque.previewmaker.Activity.CreditActivity
 import com.tistory.deque.previewmaker.Activity.HelpMainActivity
-import com.tistory.deque.previewmaker.Activity.MakeStampActivity
 import com.tistory.deque.previewmaker.R
 import com.tistory.deque.previewmaker.Util.Logger
 import com.tistory.deque.previewmaker.kotlin.KtDbOpenHelper
 import com.tistory.deque.previewmaker.kotlin.base.BaseKotlinActivity
+import com.tistory.deque.previewmaker.kotlin.makestamp.KtMakeStampActivity
 import com.tistory.deque.previewmaker.kotlin.util.EzLogger
 import com.tistory.deque.previewmaker.kotlin.util.RequestCode
+import com.tistory.deque.previewmaker.kotlin.util.extension.galleryAddPic
 import kotlinx.android.synthetic.main.activity_kt_main.*
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
@@ -39,6 +41,8 @@ class KtMainActivity : BaseKotlinActivity<KtMainViewModel>() {
     private val stampAdapter: KtStampAdapter by inject()
 
     private var dbOpenHelper: KtDbOpenHelper? = null
+
+    private var mBackPressedTime: Long = 0
 
     override fun initViewStart() {
         setBackButtonAboveActionBar(true, "심플 프리뷰 메이커")
@@ -61,32 +65,28 @@ class KtMainActivity : BaseKotlinActivity<KtMainViewModel>() {
         viewModel.imagePickStartEvent.observe(this, Observer {
             startImagePick()
         })
-        viewModel.addStampLiveData.observe(this, Observer {stamp ->
+        viewModel.addStampLiveData.observe(this, Observer { stamp ->
             stamp?.let {
                 invisibleHint()
                 stampAdapter.addStamp(it)
             }
         })
-        viewModel.makeStampActivityStartEvent.observe(this, Observer {uri ->
+        viewModel.makeStampActivityStartEvent.observe(this, Observer { uri ->
             uri?.let {
-                val intent = Intent(applicationContext, MakeStampActivity::class.java)
+                val intent = Intent(applicationContext, KtMakeStampActivity::class.java)
                 intent.data = it
                 startActivityForResult(intent, RequestCode.REQUEST_MAKE_STAMP_ACTIVITY)
             }
         })
         viewModel.galleryAddPicEvent.observe(this, Observer { path ->
-            path?.let {
-                val mediaScanIntent = Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE)
-                mediaScanIntent.data = Uri.fromFile(File(it))
-                sendBroadcast(mediaScanIntent)
-            }
+            path?.let { galleryAddPic(path) }
         })
     }
 
     private fun invisibleHint() = main_hint_text_view.run { post { visibility = View.GONE } }
 
 
-    private fun startImagePick(){
+    private fun startImagePick() {
         EzLogger.d("start image pick event observe")
         val permissionCheck = ContextCompat.checkSelfPermission(applicationContext,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -107,10 +107,7 @@ class KtMainActivity : BaseKotlinActivity<KtMainViewModel>() {
         main_stamp_add_fab.setOnClickListener {
             TedPermission.with(applicationContext)
                     .setPermissionListener(object : PermissionListener {
-                        override fun onPermissionGranted() {
-                            viewModel.addStamp()
-                        }
-
+                        override fun onPermissionGranted() = viewModel.addStamp()
                         override fun onPermissionDenied(deniedPermissions: ArrayList<String>) {}
                     })
                     .setRationaleMessage(getString(R.string.tedpermission_add_stamp_rational))
@@ -141,6 +138,17 @@ class KtMainActivity : BaseKotlinActivity<KtMainViewModel>() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         viewModel.onActivityResult(applicationContext, requestCode, resultCode, data)
+    }
+
+    override fun onBackPressed() {
+        if (System.currentTimeMillis() - mBackPressedTime > 2000) {
+            Snackbar.make(findViewById(android.R.id.content), getString(R.string.snackbar_main_acti_back_to_exit), Snackbar.LENGTH_LONG)
+                    .setAction(getString(R.string.snackbar_main_acti_back_to_exit_btn)) { finish() }
+                    .show()
+            mBackPressedTime = System.currentTimeMillis()
+        } else {
+            finish()
+        }
     }
 
     private fun setRecyclerView() {
