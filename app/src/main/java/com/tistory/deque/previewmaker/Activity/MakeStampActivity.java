@@ -51,7 +51,7 @@ public class MakeStampActivity extends AppCompatActivity {
 
         setTitle(R.string.title_make_stamp_activity);
         stampImageView.setImageURI(imageURI);
-        Logger.d(TAG, "setImageUri suc");
+        Logger.d(TAG, "setImageView suc");
 
         ActionBar actionBar = getSupportActionBar();
         //뒤로가기 버튼

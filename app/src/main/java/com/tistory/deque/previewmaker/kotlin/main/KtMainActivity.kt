@@ -78,9 +78,6 @@ class KtMainActivity : BaseKotlinActivity<KtMainViewModel>() {
                 startActivityForResult(intent, RequestCode.REQUEST_MAKE_STAMP_ACTIVITY)
             }
         })
-        viewModel.galleryAddPicEvent.observe(this, Observer { path ->
-            path?.let { galleryAddPic(path) }
-        })
     }
 
     private fun invisibleHint() = main_hint_text_view.run { post { visibility = View.GONE } }
@@ -137,7 +134,7 @@ class KtMainActivity : BaseKotlinActivity<KtMainViewModel>() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        viewModel.onActivityResult(applicationContext, requestCode, resultCode, data)
+        viewModel.onActivityResult(requestCode, resultCode, data)
     }
 
     override fun onBackPressed() {

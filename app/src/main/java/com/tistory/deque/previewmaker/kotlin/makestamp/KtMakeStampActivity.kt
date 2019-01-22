@@ -3,16 +3,11 @@ package com.tistory.deque.previewmaker.kotlin.makestamp
 import android.app.Activity
 import android.arch.lifecycle.Observer
 import android.content.Context
-import android.content.Intent
 import android.net.Uri
-import android.support.v7.app.AppCompatActivity
-import android.os.Bundle
-import android.support.design.widget.Snackbar
 import android.view.MenuItem
+import android.view.View
 import android.view.inputmethod.InputMethodManager
-import com.tistory.deque.previewmaker.Activity.MainActivity
 import com.tistory.deque.previewmaker.R
-import com.tistory.deque.previewmaker.Util.Logger
 import com.tistory.deque.previewmaker.kotlin.base.BaseKotlinActivity
 import com.tistory.deque.previewmaker.kotlin.util.EzLogger
 import com.tistory.deque.previewmaker.kotlin.util.extension.galleryAddPic
@@ -35,7 +30,10 @@ class KtMakeStampActivity : BaseKotlinActivity<KtMakeStampViewModel>() {
 
     override fun initDataBinding() {
         viewModel.stampUriLiveData.observe(this, Observer { uri ->
-            uri?.let { make_stamp_image_view.run { post { setImageURI(it) } } }
+            uri?.let {
+                make_stamp_image_view.run { post { setImageURI(it) } }
+                make_stamp_progress_bar.run { post { visibility = View.GONE } }
+            }
         })
         viewModel.finishActivityWithStampNameEvent.observe(this, Observer {name ->
             name?.let {
@@ -47,10 +45,20 @@ class KtMakeStampActivity : BaseKotlinActivity<KtMakeStampViewModel>() {
                 }
             }
         })
+        viewModel.startProgressiveEvent.observe(this, Observer {
+            make_stamp_progress_bar.run { post { visibility = View.VISIBLE } }
+        })
+        viewModel.endProgressiveEvent.observe(this, Observer {
+            make_stamp_progress_bar.run { post { visibility = View.GONE } }
+        })
+        viewModel.galleryAddPicEvent.observe(this, Observer { uri ->
+            EzLogger.d("galleryAddPic observe, uri : $uri")
+            uri?.let { galleryAddPic(it) }
+        })
     }
 
     override fun initViewFinal() {
-        viewModel.setImageUri(intent)
+        viewModel.setImageView(applicationContext, intent)
 
         make_stamp_submit_button.setOnClickListener {
             val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager

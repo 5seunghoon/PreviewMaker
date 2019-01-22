@@ -11,13 +11,12 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:layout_weight="12"
         android:background="@android:color/white"
         android:gravity="center"
         android:orientation="vertical"
-        android:padding="20dp">
+        android:padding="24dp">
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -28,7 +27,7 @@
                 android:id="@+id/make_stamp_name_edit_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:ems="7"
+                android:ems="10"
                 android:hint="@string/hint_stamp_name"
                 android:inputType="textPersonName" />
 
@@ -43,22 +42,35 @@
 
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/make_stamp_image_parent_layout"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
-        android:layout_weight="3"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:layout_height="match_parent">
 
-        <ImageView
-            android:id="@+id/make_stamp_image_view"
+        <ProgressBar
+            android:id="@+id/make_stamp_progress_bar"
+            style="?android:attr/progressBarStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@android:color/transparent" />
+            android:layout_gravity="center"
+            android:visibility="gone" />
 
-    </LinearLayout>
+        <LinearLayout
+            android:id="@+id/make_stamp_image_parent_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <ImageView
+                android:id="@+id/make_stamp_image_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent" />
+
+        </LinearLayout>
+    </FrameLayout>
+
 </LinearLayout>
