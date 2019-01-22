@@ -139,7 +139,7 @@ class KtDbOpenHelper(context: Context?, name: String?, factory: SQLiteDatabase.C
                 cursor.moveToFirst()
                 while (!cursor.isAfterLast) {
                     val stampId = cursor.getInt(0)
-                    val uriPath = cursor.getString(1)
+                    val uriPath = cursor.getString(2)
                     val uriString = Uri.parse(uriPath).path
 
                     EzLogger.d("uriPath : $uriPath, uriString : $uriString")
