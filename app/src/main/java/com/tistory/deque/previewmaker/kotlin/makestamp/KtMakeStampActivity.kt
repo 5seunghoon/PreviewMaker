@@ -4,6 +4,8 @@ import android.app.Activity
 import android.arch.lifecycle.Observer
 import android.content.Context
 import android.net.Uri
+import android.os.AsyncTask
+import android.support.design.widget.Snackbar
 import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -24,6 +26,8 @@ class KtMakeStampActivity : BaseKotlinActivity<KtMakeStampViewModel>() {
         get() = R.layout.activity_kt_make_stamp
     override val viewModel: KtMakeStampViewModel by viewModel()
 
+    private var backPressedTime: Long = 0
+
     override fun initViewStart() {
         setBackButtonAboveActionBar(true, "낙관 이름 설정")
     }
@@ -32,7 +36,6 @@ class KtMakeStampActivity : BaseKotlinActivity<KtMakeStampViewModel>() {
         viewModel.stampUriLiveData.observe(this, Observer { uri ->
             uri?.let {
                 make_stamp_image_view.run { post { setImageURI(it) } }
-                make_stamp_progress_bar.run { post { visibility = View.GONE } }
             }
         })
         viewModel.finishActivityWithStampNameEvent.observe(this, Observer {name ->
@@ -45,14 +48,7 @@ class KtMakeStampActivity : BaseKotlinActivity<KtMakeStampViewModel>() {
                 }
             }
         })
-        viewModel.startProgressiveEvent.observe(this, Observer {
-            make_stamp_progress_bar.run { post { visibility = View.VISIBLE } }
-        })
-        viewModel.endProgressiveEvent.observe(this, Observer {
-            make_stamp_progress_bar.run { post { visibility = View.GONE } }
-        })
         viewModel.galleryAddPicEvent.observe(this, Observer { uri ->
-            EzLogger.d("galleryAddPic observe, uri : $uri")
             uri?.let { galleryAddPic(it) }
         })
     }
@@ -78,12 +74,24 @@ class KtMakeStampActivity : BaseKotlinActivity<KtMakeStampViewModel>() {
         }
     }
 
+    override fun onBackPressed() {
+        if (System.currentTimeMillis() - backPressedTime < 2000) {
+            cancelAndFinish()
+        } else {
+            Snackbar.make(findViewById(android.R.id.content),
+                    getString(R.string.snackbar_make_stamp_acti_back_to_exit),
+                    Snackbar.LENGTH_LONG)
+                    .show()
+            backPressedTime = System.currentTimeMillis()
+        }
+    }
+
     private fun cancelAndFinish() {
         viewModel.stampUriLiveData.value?.let {
             deleteFile(it)
             setResult(RESULT_CANCELED, intent)
             finish()
-        }
+        } ?: finish()
     }
 
     private fun deleteFile(uri: Uri) {
