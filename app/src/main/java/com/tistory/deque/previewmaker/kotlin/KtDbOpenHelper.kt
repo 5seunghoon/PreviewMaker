@@ -5,8 +5,12 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.net.Uri
+import com.tistory.deque.previewmaker.Model_StampData.StampItem
+import com.tistory.deque.previewmaker.Util.Logger
+import com.tistory.deque.previewmaker.kotlin.model.Stamp
 import com.tistory.deque.previewmaker.kotlin.model.enums.StampAnchorEnum
 import com.tistory.deque.previewmaker.kotlin.util.EzLogger
+import java.io.File
 
 class KtDbOpenHelper(context: Context?, name: String?, factory: SQLiteDatabase.CursorFactory?, version: Int) : SQLiteOpenHelper(context, name, factory, version) {
 
@@ -32,8 +36,8 @@ class KtDbOpenHelper(context: Context?, name: String?, factory: SQLiteDatabase.C
         const val DP_OPEN_HELPER_NAME = "DB_OPEN_HELPER_NAME"
         const val dbVersion = 1
 
-        fun getDbOpenHelper(context: Context, name:String?, factory: SQLiteDatabase.CursorFactory?, version:Int): KtDbOpenHelper{
-            if(dbHelper == null) {
+        fun getDbOpenHelper(context: Context, name: String?, factory: SQLiteDatabase.CursorFactory?, version: Int): KtDbOpenHelper {
+            if (dbHelper == null) {
                 dbHelper = KtDbOpenHelper(context, name, factory, version)
             }
             dbHelper?.let {
@@ -44,14 +48,14 @@ class KtDbOpenHelper(context: Context?, name: String?, factory: SQLiteDatabase.C
 
     }
 
-    var db:SQLiteDatabase? = null
+    var db: SQLiteDatabase? = null
 
-    fun dbOpen(){
+    fun dbOpen() {
         EzLogger.d("DB OPEN")
         db = dbHelper?.writableDatabase
     }
 
-    fun dbClose(){
+    fun dbClose() {
         EzLogger.d("DB CLOSE")
         db?.close()
     }
@@ -68,7 +72,7 @@ class KtDbOpenHelper(context: Context?, name: String?, factory: SQLiteDatabase.C
         onCreate(db)
     }
 
-    fun createStampTable(db:SQLiteDatabase){
+    fun createStampTable(db: SQLiteDatabase) {
         val sql = """CREATE TABLE IF NOT EXISTS $TABLE_NAME_STAMPS($PK_ID INTEGER PRIMARY KEY AUTOINCREMENT, $STAMP_NAME_KEY TEXT, $STAMP_URI_KEY TEXT, $STAMP_WIDTH_KEY INTEGER, $STAMP_HEIGHT_KEY INTEGER, $STAMP_POS_WIDTH_PERCENT_KEY INTEGER, $STAMP_POS_HEIGHT_PERCENT_KEY INTEGER, $STAMP_POS_ANCHOR_KEY INTEGER)"""
         EzLogger.d("SQL EXEC : $sql")
         try {
@@ -79,7 +83,7 @@ class KtDbOpenHelper(context: Context?, name: String?, factory: SQLiteDatabase.C
         }
     }
 
-    fun dbInsertStamp(stampName:String, imageUri:Uri): Boolean{
+    fun dbInsertStamp(stampName: String, imageUri: Uri): Boolean {
         db?.let {
             val stampValue = ContentValues()
             stampValue.put(STAMP_NAME_KEY, stampName)
@@ -116,5 +120,58 @@ class KtDbOpenHelper(context: Context?, name: String?, factory: SQLiteDatabase.C
         }
         EzLogger.d("db null -> delete fail")
         return false
+    }
+
+    fun dbGetAll(): ArrayList<Stamp> {
+        /**
+         * Read DB, on List
+         * DB에서 stamp를 전부 읽어서 리스트로 불러옴
+         * 이때 DB에 있는 stamp의 실제 파일이 존재하지 않을 경우 DB에서 삭제함
+         */
+        val stampList = ArrayList<Stamp>()
+        dbHelper?.let {
+
+            val sql = "SELECT * FROM $TABLE_NAME_STAMPS;"
+            val resultCursor = it.db?.rawQuery(sql, null)
+            EzLogger.d("Cursor open, sql : $sql")
+
+            resultCursor?.let { cursor ->
+                cursor.moveToFirst()
+                while (!cursor.isAfterLast) {
+                    val stampId = cursor.getInt(0)
+                    val uriPath = cursor.getString(1)
+                    val uriString = Uri.parse(uriPath).path
+
+                    EzLogger.d("uriPath : $uriPath, uriString : $uriString")
+
+                    val stampFile = File(uriString)
+
+                    EzLogger.d("stampFile : $stampFile")
+
+                    if (!stampFile.exists()) {
+                        dbDeleteStamp(stampId)
+                        EzLogger.d("stamp file not exist -> delete -> continue")
+                        cursor.moveToNext()
+                        continue
+                    }
+
+                    val stamp = Stamp(
+                            stampId,
+                            Uri.parse(uriPath),
+                            cursor.getString(1),
+                            cursor.getInt(3),
+                            cursor.getInt(4),
+                            cursor.getInt(5),
+                            cursor.getInt(6),
+                            cursor.getInt(7)
+                    )
+                    EzLogger.d("stamp : $stamp")
+                    stampList.add(stamp)
+
+                    cursor.moveToNext()
+                }
+            }
+        }
+        return stampList
     }
 }

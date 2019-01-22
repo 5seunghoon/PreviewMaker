@@ -79,6 +79,7 @@
     <string name="message_preview_load_dialog">프리뷰를 불러오는 중입니다.</string>
 
     <string name="message_blurring_bitmap_dialog">블러를 적용 중입니다.</string>
+    <string name="snackbar_main_stamp_source_not_exist">선택된 낙관이 없습니다.</string>
 
 
 </resources>
