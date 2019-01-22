@@ -2,12 +2,8 @@ package com.tistory.deque.previewmaker.kotlin.main
 
 import android.Manifest
 import android.arch.lifecycle.Observer
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
-import android.support.v7.app.AppCompatActivity
-import android.os.Bundle
 import android.provider.MediaStore
 import android.support.design.widget.Snackbar
 import android.support.v4.app.ActivityCompat
@@ -21,20 +17,21 @@ import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.TedPermission
 import com.tistory.deque.previewmaker.Activity.CreditActivity
 import com.tistory.deque.previewmaker.Activity.HelpMainActivity
+import com.tistory.deque.previewmaker.Activity.PreviewEditActivity
 import com.tistory.deque.previewmaker.R
-import com.tistory.deque.previewmaker.Util.Logger
-import com.tistory.deque.previewmaker.kotlin.KtDbOpenHelper
 import com.tistory.deque.previewmaker.kotlin.base.BaseKotlinActivity
 import com.tistory.deque.previewmaker.kotlin.makestamp.KtMakeStampActivity
 import com.tistory.deque.previewmaker.kotlin.model.Stamp
+import com.tistory.deque.previewmaker.kotlin.previewedit.KtPreviewEditActivity
+import com.tistory.deque.previewmaker.kotlin.util.EtcConstant
 import com.tistory.deque.previewmaker.kotlin.util.EzLogger
 import com.tistory.deque.previewmaker.kotlin.util.RequestCode
 import com.tistory.deque.previewmaker.kotlin.util.extension.galleryAddPic
 import kotlinx.android.synthetic.main.activity_kt_main.*
+import me.nereo.multi_image_selector.MultiImageSelectorActivity
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
-import java.io.File
-import java.util.ArrayList
+import kotlin.collections.ArrayList
 
 class KtMainActivity : BaseKotlinActivity<KtMainViewModel>() {
     override val layoutResourceId: Int
@@ -46,7 +43,7 @@ class KtMainActivity : BaseKotlinActivity<KtMainViewModel>() {
     private var mBackPressedTime: Long = 0
 
     override fun initViewStart() {
-        setBackButtonAboveActionBar(true, "심플 프리뷰 메이커")
+        title = "심플 프리뷰 메이커"
         viewModel.dbOpen(applicationContext)
         viewModel.getAllStampFromDb()
         setRecyclerView()
@@ -88,9 +85,58 @@ class KtMainActivity : BaseKotlinActivity<KtMainViewModel>() {
         viewModel.delStampFromAdapterEvent.observe(this, Observer { position ->
             position?.let { stampAdapter.delStamp(it) }
         })
-        viewModel.galleryAddPicEvent.observe(this, Observer {uri ->
+        viewModel.galleryAddPicEvent.observe(this, Observer { uri ->
             uri?.let { galleryAddPic(it) }
         })
+        viewModel.clickStampEvent.observe(this, Observer { stamp ->
+            stamp?.let { clickStamp(it) }
+        })
+        viewModel.previewGalleryStartEvent.observe(this, Observer {
+            startPreviewGallery()
+        })
+        viewModel.previewEditStartEvent.observe(this, Observer { pathList ->
+            pathList?.let { startPreviewEditActivity(it) }
+        })
+    }
+
+    private fun startPreviewEditActivity(pathList: ArrayList<String>) {
+        viewModel.selectedStamp?.let { stamp ->
+            val intent = Intent(applicationContext, KtPreviewEditActivity::class.java).apply {
+                putStringArrayListExtra(EtcConstant.EXTRA_PREVIEW_LIST_INTENT_KEY, pathList)
+                putExtra(EtcConstant.STAMP_INTENT_KEY, stamp)
+            }
+            startActivity(intent)
+        }
+    }
+
+    private fun startPreviewGallery() {
+        val intent = Intent(applicationContext, MultiImageSelectorActivity::class.java)
+        // whether show camera
+        intent.putExtra(MultiImageSelectorActivity.EXTRA_SHOW_CAMERA, false)
+        // max select image amount
+        intent.putExtra(MultiImageSelectorActivity.EXTRA_SELECT_COUNT, EtcConstant.MAX_SELECT_IMAGE_ACCOUNT)
+        // select mode (MultiImageSelectorActivity.MODE_SINGLE OR MultiImageSelectorActivity.MODE_MULTI)
+        intent.putExtra(MultiImageSelectorActivity.EXTRA_SELECT_MODE, MultiImageSelectorActivity.MODE_MULTI)
+        // default select images (support array list)
+        intent.putStringArrayListExtra(MultiImageSelectorActivity.EXTRA_DEFAULT_SELECTED_LIST, ArrayList<String>())
+        startActivityForResult(intent, RequestCode.REQUEST_TAKE_PREVIEW_FROM_ALBUM)
+    }
+
+    private fun clickStamp(stamp: Stamp) {
+        TedPermission.with(applicationContext)
+                .setPermissionListener(object : PermissionListener {
+                    override fun onPermissionGranted() {
+                        viewModel.savePositionAndGetPreview(stamp)
+                    }
+
+                    override fun onPermissionDenied(deniedPermissions: ArrayList<String>) {}
+                })
+                .setRationaleMessage(getString(R.string.tedpermission_select_stamp_rational))
+                .setDeniedMessage(getString(R.string.tedpermission_select_stamp_deny_rational))
+                .setPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                .setPermissions(Manifest.permission.READ_EXTERNAL_STORAGE)
+                .setGotoSettingButton(true)
+                .check()
     }
 
     private fun delAlertShow(stamp: Stamp, position: Int) {
@@ -115,13 +161,13 @@ class KtMainActivity : BaseKotlinActivity<KtMainViewModel>() {
     }
 
     private fun invisibleHint() {
-        if(stampAdapter.size > 0 ) {
+        if (stampAdapter.size > 0) {
             main_hint_text_view.run { post { visibility = View.GONE } }
         }
     }
 
-    private fun visibleHint(){
-        if(stampAdapter.size <= 0 ){
+    private fun visibleHint() {
+        if (stampAdapter.size <= 0) {
             main_hint_text_view.run { post { visibility = View.VISIBLE } }
         }
     }

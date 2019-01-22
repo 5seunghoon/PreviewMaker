@@ -11,6 +11,7 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import com.tistory.deque.previewmaker.R
 import com.tistory.deque.previewmaker.kotlin.base.BaseKotlinActivity
+import com.tistory.deque.previewmaker.kotlin.util.EtcConstant
 import com.tistory.deque.previewmaker.kotlin.util.EzLogger
 import com.tistory.deque.previewmaker.kotlin.util.extension.galleryAddPic
 import kotlinx.android.synthetic.main.activity_kt_make_stamp.*
@@ -18,9 +19,6 @@ import org.koin.android.viewmodel.ext.android.viewModel
 import java.io.File
 
 class KtMakeStampActivity : BaseKotlinActivity<KtMakeStampViewModel>() {
-    companion object {
-        const val STAMP_NAME_INTENT_KEY = "STAMP_NAME_INTENT_KEY"
-    }
 
     override val layoutResourceId: Int
         get() = R.layout.activity_kt_make_stamp
@@ -42,7 +40,7 @@ class KtMakeStampActivity : BaseKotlinActivity<KtMakeStampViewModel>() {
             name?.let {
                 intent.run {
                     data = viewModel.stampUriLiveData.value
-                    putExtra(STAMP_NAME_INTENT_KEY, it)
+                    putExtra(EtcConstant.STAMP_NAME_INTENT_KEY, it)
                     setResult(Activity.RESULT_OK, intent)
                     finish()
                 }

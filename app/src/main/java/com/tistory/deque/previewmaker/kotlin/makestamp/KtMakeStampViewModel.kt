@@ -11,6 +11,7 @@ import android.os.Environment
 import android.provider.MediaStore
 import com.tistory.deque.previewmaker.R
 import com.tistory.deque.previewmaker.kotlin.base.BaseKotlinViewModel
+import com.tistory.deque.previewmaker.kotlin.util.EtcConstant
 import com.tistory.deque.previewmaker.kotlin.util.EzLogger
 import com.tistory.deque.previewmaker.kotlin.util.SingleLiveEvent
 import com.tistory.deque.previewmaker.kotlin.util.extension.getRealPath
@@ -23,17 +24,6 @@ import io.reactivex.ObservableSource
 
 
 class KtMakeStampViewModel : BaseKotlinViewModel() {
-
-    companion object {
-        const val FILE_NAME_FORMAT = "yyyyMMddHHmmssSSS"
-        const val FILE_NAME_HEADER_STAMP = "STAMP_"
-        const val FILE_NAME_HEADER_PREVIEW = "PREVIEW_"
-        const val FILE_NAME_IMAGE_FORMAT = ".png"
-
-        const val MAIN_DIRECTORY = "Pictures"
-        const val PREVIEW_SAVED_DIRECTORY = "Preview" + " " + "Maker"
-        const val STAMP_SAVED_DIRECTORY = "Stamp"
-    }
 
     private val _galleryAddPicEvent = SingleLiveEvent<Uri>()
     val galleryAddPicEvent: LiveData<Uri> get() = _galleryAddPicEvent
@@ -98,14 +88,14 @@ class KtMakeStampViewModel : BaseKotlinViewModel() {
     // 이미지 파일 객체 생성
     private fun createImageFile(): File {
         EzLogger.d("createImageFile func")
-        val timeStamp = SimpleDateFormat(FILE_NAME_FORMAT, Locale.KOREA).format(Date())
-        val imageFileName = FILE_NAME_HEADER_STAMP + timeStamp + FILE_NAME_IMAGE_FORMAT
+        val timeStamp = SimpleDateFormat(EtcConstant.FILE_NAME_FORMAT, Locale.KOREA).format(Date())
+        val imageFileName = EtcConstant.FILE_NAME_HEADER_STAMP + timeStamp + EtcConstant.FILE_NAME_IMAGE_FORMAT
         EzLogger.d("image file name : $imageFileName")
 
 
         val root: File = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
-        val storageParentDir = File(root, PREVIEW_SAVED_DIRECTORY)
-        val storageDir = File(root.toString() + "/" + PREVIEW_SAVED_DIRECTORY, STAMP_SAVED_DIRECTORY)
+        val storageParentDir = File(root, EtcConstant.PREVIEW_SAVED_DIRECTORY)
+        val storageDir = File(root.toString() + "/" + EtcConstant.PREVIEW_SAVED_DIRECTORY, EtcConstant.STAMP_SAVED_DIRECTORY)
         EzLogger.d("storageParentDir : $storageParentDir, storageDir : $storageDir")
 
         if (!storageParentDir.exists()) {

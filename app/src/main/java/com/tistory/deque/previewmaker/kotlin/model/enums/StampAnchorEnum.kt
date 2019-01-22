@@ -1,6 +1,8 @@
 package com.tistory.deque.previewmaker.kotlin.model.enums
 
-enum class StampAnchorEnum(val value:Int){
+import java.io.Serializable
+
+enum class StampAnchorEnum(val value:Int): Serializable{
     LEFT_TOP(0),
     TOP(1),
     RIGHT_TOP(2),

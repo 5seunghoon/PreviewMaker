@@ -6,15 +6,19 @@ import android.arch.lifecycle.MutableLiveData
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import com.tistory.deque.previewmaker.Activity.PreviewEditActivity
 import com.tistory.deque.previewmaker.kotlin.KtDbOpenHelper
 import com.tistory.deque.previewmaker.kotlin.base.BaseKotlinViewModel
 import com.tistory.deque.previewmaker.kotlin.makestamp.KtMakeStampActivity
 import com.tistory.deque.previewmaker.kotlin.model.Stamp
+import com.tistory.deque.previewmaker.kotlin.util.EtcConstant
 import com.tistory.deque.previewmaker.kotlin.util.EzLogger
 import com.tistory.deque.previewmaker.kotlin.util.RequestCode
 import com.tistory.deque.previewmaker.kotlin.util.SingleLiveEvent
+import me.nereo.multi_image_selector.MultiImageSelectorActivity
 import java.io.File
 import java.util.*
+import kotlin.collections.ArrayList
 
 class KtMainViewModel : BaseKotlinViewModel() {
     private val _stampListLiveData = MutableLiveData<ArrayList<Stamp>>()
@@ -41,15 +45,22 @@ class KtMainViewModel : BaseKotlinViewModel() {
     private val _delStampFromAdapterEvent = SingleLiveEvent<Int>()
     val delStampFromAdapterEvent: LiveData<Int> get() = _delStampFromAdapterEvent
 
+    private val _clickStampEvent = SingleLiveEvent<Stamp>()
+    val clickStampEvent: LiveData<Stamp> get() = _clickStampEvent
+
     private val _galleryAddPicEvent = SingleLiveEvent<Uri>()
     val galleryAddPicEvent: LiveData<Uri> get() = _galleryAddPicEvent
 
+    private val _previewGalleryStartEvent = SingleLiveEvent<Any>()
+    val previewGalleryStartEvent: LiveData<Any> get() = _previewGalleryStartEvent
+
+    private val _previewEditStartEvent = SingleLiveEvent<ArrayList<String>>()
+    val previewEditStartEvent: LiveData<ArrayList<String>> get() = _previewEditStartEvent
+
+
     private var dbOpenHelper: KtDbOpenHelper? = null
 
-    private var mCropSourceUri: Uri? = null
-    private var mCropEndURI: Uri? = null //  mCropSourceUri = 자를 uri, mCropEndURI = 자르고 난뒤 uri
-
-    private var patedStampUri: Uri? = null
+    var selectedStamp: Stamp? = null
 
     fun dbOpen(context: Context) {
         EzLogger.d("main activity : db open")
@@ -70,7 +81,7 @@ class KtMainViewModel : BaseKotlinViewModel() {
     }
 
     fun stampClickListener(stamp: Stamp, position: Int) {
-
+        _clickStampEvent.value = stamp
     }
 
     fun stampDeleteListener(stamp: Stamp, position: Int) {
@@ -98,12 +109,22 @@ class KtMainViewModel : BaseKotlinViewModel() {
                 }
             }
 
+            RequestCode.REQUEST_TAKE_PREVIEW_FROM_ALBUM -> {
+                if (resultCode == Activity.RESULT_OK) {
+                    data?.let {
+                        val path = it.getStringArrayListExtra(MultiImageSelectorActivity.EXTRA_RESULT)
+                        _previewEditStartEvent.value = path
+                    }
+
+                }
+            }
+
         }
     }
 
     private fun addStamp(intent: Intent) {
         dbOpenHelper?.let {
-            it.dbInsertStamp(intent.getStringExtra(KtMakeStampActivity.STAMP_NAME_INTENT_KEY), intent.data
+            it.dbInsertStamp(intent.getStringExtra(EtcConstant.STAMP_NAME_INTENT_KEY), intent.data
                     ?: return)
 
             it.db?.rawQuery("SELECT MAX(_id) FROM ${KtDbOpenHelper.TABLE_NAME_STAMPS}", null)?.use { cursor ->
@@ -111,7 +132,7 @@ class KtMainViewModel : BaseKotlinViewModel() {
                 val maxId = cursor.getInt(0)
 
                 val newStamp = Stamp(maxId, intent.data
-                        ?: return, intent.getStringExtra(KtMakeStampActivity.STAMP_NAME_INTENT_KEY))
+                        ?: return, intent.getStringExtra(EtcConstant.STAMP_NAME_INTENT_KEY))
                 EzLogger.d("new stamp : $newStamp")
                 _addStampLiveData.value = newStamp
             }
@@ -131,5 +152,10 @@ class KtMainViewModel : BaseKotlinViewModel() {
         _delStampFromAdapterEvent.value = position // 어뎁터에서 삭제
         _visibleHintEvent.call() // 힌트 보여줄지 체크하고 힌트 보여줌
         showSnackbar("[${stamp.name}] 삭제 완료")
+    }
+
+    fun savePositionAndGetPreview(stamp: Stamp) {
+        selectedStamp = stamp
+        _previewGalleryStartEvent.call()
     }
 }
