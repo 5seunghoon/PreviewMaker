@@ -43,6 +43,7 @@ class KtMainActivity : BaseKotlinActivity<KtMainViewModel>() {
     override fun initViewStart() {
         setBackButtonAboveActionBar(true, "심플 프리뷰 메이커")
         viewModel.dbOpen(applicationContext)
+        viewModel.getAllStampFromDb()
         setRecyclerView()
         return
     }

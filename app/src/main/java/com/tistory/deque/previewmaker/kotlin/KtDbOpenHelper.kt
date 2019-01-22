@@ -72,7 +72,7 @@ class KtDbOpenHelper(context: Context?, name: String?, factory: SQLiteDatabase.C
         onCreate(db)
     }
 
-    fun createStampTable(db: SQLiteDatabase) {
+    private fun createStampTable(db: SQLiteDatabase) {
         val sql = """CREATE TABLE IF NOT EXISTS $TABLE_NAME_STAMPS($PK_ID INTEGER PRIMARY KEY AUTOINCREMENT, $STAMP_NAME_KEY TEXT, $STAMP_URI_KEY TEXT, $STAMP_WIDTH_KEY INTEGER, $STAMP_HEIGHT_KEY INTEGER, $STAMP_POS_WIDTH_PERCENT_KEY INTEGER, $STAMP_POS_HEIGHT_PERCENT_KEY INTEGER, $STAMP_POS_ANCHOR_KEY INTEGER)"""
         EzLogger.d("SQL EXEC : $sql")
         try {
