@@ -6,10 +6,8 @@ import android.arch.lifecycle.MutableLiveData
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import com.tistory.deque.previewmaker.Activity.PreviewEditActivity
-import com.tistory.deque.previewmaker.kotlin.KtDbOpenHelper
+import com.tistory.deque.previewmaker.kotlin.db.KtDbOpenHelper
 import com.tistory.deque.previewmaker.kotlin.base.BaseKotlinViewModel
-import com.tistory.deque.previewmaker.kotlin.makestamp.KtMakeStampActivity
 import com.tistory.deque.previewmaker.kotlin.model.Stamp
 import com.tistory.deque.previewmaker.kotlin.util.EtcConstant
 import com.tistory.deque.previewmaker.kotlin.util.EzLogger
@@ -17,7 +15,6 @@ import com.tistory.deque.previewmaker.kotlin.util.RequestCode
 import com.tistory.deque.previewmaker.kotlin.util.SingleLiveEvent
 import me.nereo.multi_image_selector.MultiImageSelectorActivity
 import java.io.File
-import java.util.*
 import kotlin.collections.ArrayList
 
 class KtMainViewModel : BaseKotlinViewModel() {

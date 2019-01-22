@@ -1,12 +1,10 @@
-package com.tistory.deque.previewmaker.kotlin
+package com.tistory.deque.previewmaker.kotlin.db
 
 import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.net.Uri
-import com.tistory.deque.previewmaker.Model_StampData.StampItem
-import com.tistory.deque.previewmaker.Util.Logger
 import com.tistory.deque.previewmaker.kotlin.model.Stamp
 import com.tistory.deque.previewmaker.kotlin.model.enums.StampAnchorEnum
 import com.tistory.deque.previewmaker.kotlin.util.EzLogger
@@ -43,7 +41,8 @@ class KtDbOpenHelper(context: Context?, name: String?, factory: SQLiteDatabase.C
             dbHelper?.let {
                 EzLogger.d("DB HELPER is not null")
             } ?: EzLogger.d("DB HELPER is null")
-            return dbHelper ?: KtDbOpenHelper(context, name, factory, version)
+            return dbHelper
+                    ?: KtDbOpenHelper(context, name, factory, version)
         }
 
     }

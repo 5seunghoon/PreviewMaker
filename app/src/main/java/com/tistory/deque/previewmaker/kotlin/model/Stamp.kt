@@ -14,7 +14,7 @@ data class Stamp(
         var positionWidthPer: Int,
         var positionHeightPer: Int,
         var positionAnchorEnum: StampAnchorEnum
-) : Serializable {
+) {
     constructor(_id: Int, _imageUri: Uri, _name: String, _width: Int,
                 _height: Int, _posWidthPer: Int, _posHeightPer: Int, _anchorInt: Int) :
             this(_id, _imageUri, _name, _width, _height, _posWidthPer, _posHeightPer, StampAnchorEnum.valueToEnum(_anchorInt))

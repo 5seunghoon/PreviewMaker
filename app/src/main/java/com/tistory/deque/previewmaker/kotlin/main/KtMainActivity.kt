@@ -11,15 +11,17 @@ import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.TedPermission
 import com.tistory.deque.previewmaker.Activity.CreditActivity
 import com.tistory.deque.previewmaker.Activity.HelpMainActivity
-import com.tistory.deque.previewmaker.Activity.PreviewEditActivity
 import com.tistory.deque.previewmaker.R
 import com.tistory.deque.previewmaker.kotlin.base.BaseKotlinActivity
+import com.tistory.deque.previewmaker.kotlin.credit.KtCreditActivity
+import com.tistory.deque.previewmaker.kotlin.helpmain.KtHelpMainActivity
 import com.tistory.deque.previewmaker.kotlin.makestamp.KtMakeStampActivity
 import com.tistory.deque.previewmaker.kotlin.model.Stamp
 import com.tistory.deque.previewmaker.kotlin.previewedit.KtPreviewEditActivity
@@ -99,11 +101,73 @@ class KtMainActivity : BaseKotlinActivity<KtMainViewModel>() {
         })
     }
 
+    override fun initViewFinal() {
+        main_stamp_add_fab.setOnClickListener {
+            TedPermission.with(applicationContext)
+                    .setPermissionListener(object : PermissionListener {
+                        override fun onPermissionGranted() = viewModel.addStamp()
+                        override fun onPermissionDenied(deniedPermissions: ArrayList<String>) {}
+                    })
+                    .setRationaleMessage(getString(R.string.tedpermission_add_stamp_rational))
+                    .setDeniedMessage(getString(R.string.tedpermission_add_stamp_deny_rational))
+                    .setPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    .setPermissions(Manifest.permission.READ_EXTERNAL_STORAGE)
+                    .setGotoSettingButton(true)
+                    .check()
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.toolbar_main_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        when (item?.itemId) {
+            R.id.action_help -> {
+                startActivity(Intent(applicationContext, KtHelpMainActivity::class.java))
+                return true
+            }
+            R.id.action_credit -> {
+                startActivity(Intent(applicationContext, KtCreditActivity::class.java))
+                return true
+            }
+        }
+        return false
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        viewModel.onActivityResult(requestCode, resultCode, data)
+    }
+
+    override fun onBackPressed() {
+        if (System.currentTimeMillis() - mBackPressedTime > 2000) {
+            Snackbar.make(findViewById(android.R.id.content), getString(R.string.snackbar_main_acti_back_to_exit), Snackbar.LENGTH_LONG)
+                    .setAction(getString(R.string.snackbar_main_acti_back_to_exit_btn)) { finish() }
+                    .show()
+            mBackPressedTime = System.currentTimeMillis()
+        } else {
+            finish()
+        }
+    }
+
+    private fun setRecyclerView() {
+        main_stamp_recycler_view.run {
+            layoutManager = LinearLayoutManager(applicationContext, RecyclerView.VERTICAL, false)
+            adapter = stampAdapter.apply {
+                stampClickListener = viewModel::stampClickListener
+                stampDeleteListener = viewModel::stampDeleteListener
+            }
+            setHasFixedSize(true)
+        }
+    }
+
     private fun startPreviewEditActivity(pathList: ArrayList<String>) {
         viewModel.selectedStamp?.let { stamp ->
             val intent = Intent(applicationContext, KtPreviewEditActivity::class.java).apply {
                 putStringArrayListExtra(EtcConstant.EXTRA_PREVIEW_LIST_INTENT_KEY, pathList)
-                putExtra(EtcConstant.STAMP_INTENT_KEY, stamp)
+                putExtra(EtcConstant.STAMP_ID_INTENT_KEY, stamp.id)
+                data = stamp.imageUri
             }
             startActivity(intent)
         }
@@ -188,65 +252,5 @@ class KtMainActivity : BaseKotlinActivity<KtMainViewModel>() {
             startActivityForResult(intent, RequestCode.REQUEST_TAKE_STAMP_FROM_ALBUM)
         }
     }
-
-    override fun initViewFinal() {
-        main_stamp_add_fab.setOnClickListener {
-            TedPermission.with(applicationContext)
-                    .setPermissionListener(object : PermissionListener {
-                        override fun onPermissionGranted() = viewModel.addStamp()
-                        override fun onPermissionDenied(deniedPermissions: ArrayList<String>) {}
-                    })
-                    .setRationaleMessage(getString(R.string.tedpermission_add_stamp_rational))
-                    .setDeniedMessage(getString(R.string.tedpermission_add_stamp_deny_rational))
-                    .setPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                    .setPermissions(Manifest.permission.READ_EXTERNAL_STORAGE)
-                    .setGotoSettingButton(true)
-                    .check()
-        }
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        val id = item?.itemId
-        when (id) {
-            R.id.action_help -> {
-                val intent1 = Intent(applicationContext, HelpMainActivity::class.java)
-                startActivity(intent1)
-                return true
-            }
-            R.id.action_credit -> {
-                val intent2 = Intent(applicationContext, CreditActivity::class.java)
-                startActivity(intent2)
-                return true
-            }
-        }
-        return false
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        viewModel.onActivityResult(requestCode, resultCode, data)
-    }
-
-    override fun onBackPressed() {
-        if (System.currentTimeMillis() - mBackPressedTime > 2000) {
-            Snackbar.make(findViewById(android.R.id.content), getString(R.string.snackbar_main_acti_back_to_exit), Snackbar.LENGTH_LONG)
-                    .setAction(getString(R.string.snackbar_main_acti_back_to_exit_btn)) { finish() }
-                    .show()
-            mBackPressedTime = System.currentTimeMillis()
-        } else {
-            finish()
-        }
-    }
-
-    private fun setRecyclerView() {
-        main_stamp_recycler_view.run {
-            layoutManager = LinearLayoutManager(applicationContext, RecyclerView.VERTICAL, false)
-            adapter = stampAdapter.apply {
-                stampClickListener = viewModel::stampClickListener
-                stampDeleteListener = viewModel::stampDeleteListener
-            }
-            setHasFixedSize(true)
-        }
-    }
-
 
 }
