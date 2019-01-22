@@ -2,6 +2,7 @@ package com.tistory.deque.previewmaker.kotlin.main
 
 import android.Manifest
 import android.arch.lifecycle.Observer
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -11,6 +12,7 @@ import android.provider.MediaStore
 import android.support.design.widget.Snackbar
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
+import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.MenuItem
@@ -24,6 +26,7 @@ import com.tistory.deque.previewmaker.Util.Logger
 import com.tistory.deque.previewmaker.kotlin.KtDbOpenHelper
 import com.tistory.deque.previewmaker.kotlin.base.BaseKotlinActivity
 import com.tistory.deque.previewmaker.kotlin.makestamp.KtMakeStampActivity
+import com.tistory.deque.previewmaker.kotlin.model.Stamp
 import com.tistory.deque.previewmaker.kotlin.util.EzLogger
 import com.tistory.deque.previewmaker.kotlin.util.RequestCode
 import com.tistory.deque.previewmaker.kotlin.util.extension.galleryAddPic
@@ -40,8 +43,6 @@ class KtMainActivity : BaseKotlinActivity<KtMainViewModel>() {
 
     private val stampAdapter: KtStampAdapter by inject()
 
-    private var dbOpenHelper: KtDbOpenHelper? = null
-
     private var mBackPressedTime: Long = 0
 
     override fun initViewStart() {
@@ -57,18 +58,21 @@ class KtMainActivity : BaseKotlinActivity<KtMainViewModel>() {
             invisibleHint()
         })
         viewModel.visibleHintEvent.observe(this, Observer {
-            main_hint_text_view.run { post { visibility = View.VISIBLE } }
+            visibleHint()
         })
         viewModel.stampListLiveData.observe(this, Observer { stampList ->
-            stampList?.let { stampAdapter.copyStampList(it) }
+            stampList?.let {
+                stampAdapter.copyStampList(it)
+                invisibleHint()
+            }
         })
         viewModel.imagePickStartEvent.observe(this, Observer {
             startImagePick()
         })
         viewModel.addStampLiveData.observe(this, Observer { stamp ->
             stamp?.let {
-                invisibleHint()
                 stampAdapter.addStamp(it)
+                invisibleHint()
             }
         })
         viewModel.makeStampActivityStartEvent.observe(this, Observer { uri ->
@@ -78,10 +82,49 @@ class KtMainActivity : BaseKotlinActivity<KtMainViewModel>() {
                 startActivityForResult(intent, RequestCode.REQUEST_MAKE_STAMP_ACTIVITY)
             }
         })
+        viewModel.delStampAlertStartEvent.observe(this, Observer { pair ->
+            pair?.let { delAlertShow(it.first, it.second) }
+        })
+        viewModel.delStampFromAdapterEvent.observe(this, Observer { position ->
+            position?.let { stampAdapter.delStamp(it) }
+        })
+        viewModel.galleryAddPicEvent.observe(this, Observer {uri ->
+            uri?.let { galleryAddPic(it) }
+        })
     }
 
-    private fun invisibleHint() = main_hint_text_view.run { post { visibility = View.GONE } }
+    private fun delAlertShow(stamp: Stamp, position: Int) {
+        val stampDeleteAlert = AlertDialog.Builder(this)
+        stampDeleteAlert
+                .setMessage("낙관 [${stamp.name}] 을 정말 삭제하시겠습니까?").setCancelable(true)
+                .setPositiveButton("YES") { _, _ -> viewModel.deleteStampAndScan(stamp, position) }
+                .setNegativeButton("NO") { _, _ -> }
+        val delAlert = stampDeleteAlert.create()
 
+        TedPermission.with(applicationContext)
+                .setPermissionListener(object : PermissionListener {
+                    override fun onPermissionGranted() = delAlert.show()
+                    override fun onPermissionDenied(deniedPermissions: ArrayList<String>) {}
+                })
+                .setRationaleMessage(getString(R.string.tedpermission_del_stamp_rational))
+                .setDeniedMessage(getString(R.string.tedpermission_del_stamp_deny_rational))
+                .setPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                .setPermissions(Manifest.permission.READ_EXTERNAL_STORAGE)
+                .setGotoSettingButton(true)
+                .check()
+    }
+
+    private fun invisibleHint() {
+        if(stampAdapter.size > 0 ) {
+            main_hint_text_view.run { post { visibility = View.GONE } }
+        }
+    }
+
+    private fun visibleHint(){
+        if(stampAdapter.size <= 0 ){
+            main_hint_text_view.run { post { visibility = View.VISIBLE } }
+        }
+    }
 
     private fun startImagePick() {
         EzLogger.d("start image pick event observe")

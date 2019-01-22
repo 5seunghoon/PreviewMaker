@@ -6,18 +6,19 @@ import android.view.ViewGroup
 import com.tistory.deque.previewmaker.kotlin.model.Stamp
 import com.tistory.deque.previewmaker.kotlin.model.StampAdapterModel
 
-class KtStampAdapter(private val stampAdapterModel: StampAdapterModel): RecyclerView.Adapter<RecyclerView.ViewHolder>(){
+class KtStampAdapter(private val stampAdapterModel: StampAdapterModel) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    var stampClickListener: (Stamp)->Unit = {}
-    var stampDeleteListener: (Stamp)->Unit = {}
+    var stampClickListener: (Stamp, Int) -> Unit = { _, _ -> }
+    var stampDeleteListener: (Stamp, Int) -> Unit = { _, _ -> }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder
-            = KtStampHolder(parent, stampClickListener, stampDeleteListener)
+    val size:Int get() = stampAdapterModel.size
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder = KtStampHolder(parent, stampClickListener, stampDeleteListener)
 
     override fun getItemCount() = stampAdapterModel.size
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        (holder as? KtStampHolder)?.onBind(stampAdapterModel.getItem(position))
+        (holder as? KtStampHolder)?.onBind(stampAdapterModel.getItem(position), position)
     }
 
     fun copyStampList(stampList: ArrayList<Stamp>) {
@@ -28,6 +29,11 @@ class KtStampAdapter(private val stampAdapterModel: StampAdapterModel): Recycler
     fun addStamp(stamp: Stamp) {
         stampAdapterModel.addStamp(stamp)
         notifyItemInserted(stampAdapterModel.size)
+    }
+
+    fun delStamp(position:Int){
+        stampAdapterModel.delStamp(position)
+        notifyDataSetChanged()
     }
 
 }

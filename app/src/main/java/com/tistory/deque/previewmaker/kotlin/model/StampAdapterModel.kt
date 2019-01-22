@@ -1,5 +1,7 @@
 package com.tistory.deque.previewmaker.kotlin.model
 
+import java.lang.IndexOutOfBoundsException
+
 class StampAdapterModel(){
 
     private var stampList: ArrayList<Stamp> = ArrayList()
@@ -16,5 +18,13 @@ class StampAdapterModel(){
 
     fun addStamp(stamp: Stamp) {
         stampList.add(stamp)
+    }
+
+    fun delStamp(position: Int) {
+        try {
+            stampList.removeAt(position)
+        } catch (e: IndexOutOfBoundsException) {
+            e.printStackTrace()
+        }
     }
 }

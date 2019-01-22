@@ -3,13 +3,9 @@ package com.tistory.deque.previewmaker.kotlin.main
 import android.app.Activity
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
-import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.os.Environment
-import android.provider.MediaStore
-import com.tistory.deque.previewmaker.R
 import com.tistory.deque.previewmaker.kotlin.KtDbOpenHelper
 import com.tistory.deque.previewmaker.kotlin.base.BaseKotlinViewModel
 import com.tistory.deque.previewmaker.kotlin.makestamp.KtMakeStampActivity
@@ -17,13 +13,7 @@ import com.tistory.deque.previewmaker.kotlin.model.Stamp
 import com.tistory.deque.previewmaker.kotlin.util.EzLogger
 import com.tistory.deque.previewmaker.kotlin.util.RequestCode
 import com.tistory.deque.previewmaker.kotlin.util.SingleLiveEvent
-import com.tistory.deque.previewmaker.kotlin.util.extension.getRealPath
-import com.tistory.deque.previewmaker.kotlin.util.extension.getUri
 import java.io.File
-import java.io.FileInputStream
-import java.io.FileOutputStream
-import java.io.IOException
-import java.text.SimpleDateFormat
 import java.util.*
 
 class KtMainViewModel : BaseKotlinViewModel() {
@@ -42,9 +32,17 @@ class KtMainViewModel : BaseKotlinViewModel() {
     private val _visibleHintEvent = SingleLiveEvent<Any>()
     val visibleHintEvent: LiveData<Any> get() = _visibleHintEvent
 
-
     private val _makeStampActivityStartEvent = SingleLiveEvent<Uri>()
     val makeStampActivityStartEvent: LiveData<Uri> get() = _makeStampActivityStartEvent
+
+    private val _delStampAlertStartEvent = SingleLiveEvent<Pair<Stamp, Int>>()
+    val delStampAlertStartEvent: LiveData<Pair<Stamp, Int>> get() = _delStampAlertStartEvent
+
+    private val _delStampFromAdapterEvent = SingleLiveEvent<Int>()
+    val delStampFromAdapterEvent: LiveData<Int> get() = _delStampFromAdapterEvent
+
+    private val _galleryAddPicEvent = SingleLiveEvent<Uri>()
+    val galleryAddPicEvent: LiveData<Uri> get() = _galleryAddPicEvent
 
     private var dbOpenHelper: KtDbOpenHelper? = null
 
@@ -67,18 +65,18 @@ class KtMainViewModel : BaseKotlinViewModel() {
 
         if (stampList != null && stampList.size > 0) {
             _stampListLiveData.value = dbOpenHelper?.dbGetAll()
-            _invisibleHintEvent.call()
         }
 
     }
 
-    fun stampClickListener(stamp: Stamp) {
+    fun stampClickListener(stamp: Stamp, position: Int) {
 
     }
 
-    fun stampDeleteListener(stamp: Stamp) {
-
+    fun stampDeleteListener(stamp: Stamp, position: Int) {
+        _delStampAlertStartEvent.value = Pair(stamp, position)
     }
+
 
     fun addStamp() {
         _imagePickStartEvent.call()
@@ -96,14 +94,14 @@ class KtMainViewModel : BaseKotlinViewModel() {
 
             RequestCode.REQUEST_MAKE_STAMP_ACTIVITY -> {
                 if (resultCode == Activity.RESULT_OK) {
-                    addStampToListAndDB(data ?: return)
+                    addStamp(data ?: return)
                 }
             }
 
         }
     }
 
-    private fun addStampToListAndDB(intent: Intent) {
+    private fun addStamp(intent: Intent) {
         dbOpenHelper?.let {
             it.dbInsertStamp(intent.getStringExtra(KtMakeStampActivity.STAMP_NAME_INTENT_KEY), intent.data
                     ?: return)
@@ -112,10 +110,26 @@ class KtMainViewModel : BaseKotlinViewModel() {
                 cursor.moveToFirst()
                 val maxId = cursor.getInt(0)
 
-                val newStamp = Stamp(maxId, intent.data ?: return, intent.getStringExtra(KtMakeStampActivity.STAMP_NAME_INTENT_KEY))
+                val newStamp = Stamp(maxId, intent.data
+                        ?: return, intent.getStringExtra(KtMakeStampActivity.STAMP_NAME_INTENT_KEY))
                 EzLogger.d("new stamp : $newStamp")
                 _addStampLiveData.value = newStamp
             }
         }
+    }
+
+    fun deleteStampAndScan(stamp: Stamp, position: Int) {
+        EzLogger.d("delete position : $position, stamp : $stamp")
+
+        val stampFile = File(stamp.imageUri.path)
+        if (stampFile.exists()) {
+            if(stampFile.delete()){
+                _galleryAddPicEvent.value = stamp.imageUri
+            }
+        }
+        dbOpenHelper?.dbDeleteStamp(stamp.id) // db에서 삭제
+        _delStampFromAdapterEvent.value = position // 어뎁터에서 삭제
+        _visibleHintEvent.call() // 힌트 보여줄지 체크하고 힌트 보여줌
+        showSnackbar("[${stamp.name}] 삭제 완료")
     }
 }

@@ -5,7 +5,7 @@ import com.tistory.deque.previewmaker.Model_Global.DBOpenHelper
 import com.tistory.deque.previewmaker.kotlin.model.enums.StampAnchorEnum
 
 data class Stamp(
-        var Id: Int,
+        var id: Int,
         var imageUri: Uri,
         var name: String,
         var width: Int,

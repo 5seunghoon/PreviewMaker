@@ -15,7 +15,7 @@ import android.view.MenuItem
 abstract class BaseKotlinActivity<T : BaseKotlinViewModel> : AppCompatActivity() {
 
     /**
-     * setContentView로 호출할 Layout의 리소스 Id.
+     * setContentView로 호출할 Layout의 리소스 id.
      * ex) R.layout.activity_sbs_main
      */
     abstract val layoutResourceId: Int
