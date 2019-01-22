@@ -3,18 +3,25 @@ package com.tistory.deque.previewmaker.kotlin.di
 import com.tistory.deque.previewmaker.kotlin.main.KtMainViewModel
 import com.tistory.deque.previewmaker.kotlin.main.KtStampAdapter
 import com.tistory.deque.previewmaker.kotlin.model.StampAdapterModel
+import org.koin.android.viewmodel.ext.koin.viewModel
 import org.koin.dsl.module.module
 
 val viewModelPart = module {
-    KtMainViewModel()
+    viewModel {
+        KtMainViewModel()
+    }
 }
 
 val modelPart = module {
-    StampAdapterModel()
+    factory {
+        StampAdapterModel()
+    }
 }
 
 val adapterPart = module {
-    KtStampAdapter(get())
+    factory {
+        KtStampAdapter(get())
+    }
 }
 
-val diModule = listOf(viewModelPart)
+val diModule = listOf(viewModelPart, modelPart, adapterPart)

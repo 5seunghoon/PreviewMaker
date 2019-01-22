@@ -11,7 +11,7 @@
     <LinearLayout
         android:id="@+id/main_content_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:background="@android:color/white"
         android:orientation="vertical"
         android:padding="8dp">
@@ -19,7 +19,7 @@
         <TextView
             android:id="@+id/main_hint_text_view"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:background="@android:color/white"
             android:ems="10"
             android:gravity="center"
