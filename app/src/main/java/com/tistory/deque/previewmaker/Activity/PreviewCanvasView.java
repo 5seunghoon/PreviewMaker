@@ -1098,6 +1098,7 @@ public class PreviewCanvasView extends View {
 
         @Override
         protected void onPostExecute(String str) {
+
             if (str != ERROR_INVALID_POSITION) {
                 isSaveRoutine = false;
 
@@ -1110,7 +1111,6 @@ public class PreviewCanvasView extends View {
 
 
                 try {
-
 
                     if (str == ERROR_IO_EXCEPTION) {
                         saveInformationSnackbar = Snackbar.make(findViewById(android.R.id.content), "저장 실패!", Snackbar.LENGTH_LONG);
@@ -1148,9 +1148,12 @@ public class PreviewCanvasView extends View {
                     }
                 } catch (NullPointerException e) {
                     e.printStackTrace();
+                } catch (IllegalArgumentException e) {
+                    e.printStackTrace();
                 }
             }
             saveEnd();
         }
     }
 }
+
