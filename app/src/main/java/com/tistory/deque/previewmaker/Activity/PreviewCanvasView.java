@@ -1113,14 +1113,14 @@ public class PreviewCanvasView extends View {
 
 
                     if (str == ERROR_IO_EXCEPTION) {
-                        saveInformationSnackbar = Snackbar.make(mActivity.getCurrentFocus(), "저장 실패!", Snackbar.LENGTH_LONG);
+                        saveInformationSnackbar = Snackbar.make(findViewById(android.R.id.content), "저장 실패!", Snackbar.LENGTH_LONG);
                         saveInformationSnackbar.show();
                     } else if (str == ERROR_TIME_OUT) {
-                        saveInformationSnackbar = Snackbar.make(mActivity.getCurrentFocus(), "저장 시간 초과", Snackbar.LENGTH_LONG);
+                        saveInformationSnackbar = Snackbar.make(findViewById(android.R.id.content), "저장 시간 초과", Snackbar.LENGTH_LONG);
                         saveInformationSnackbar.show();
                     } else {
                         File resultFile = new File(str);
-                        saveInformationSnackbar = Snackbar.make(mActivity.getCurrentFocus(),
+                        saveInformationSnackbar = Snackbar.make(findViewById(android.R.id.content),
                                 "저장 폴더 : " + MainActivity.MAIN_DIRECTORY + "/" + MainActivity.PREVIEW_SAVED_DIRECTORY + "\n파일 이름 : " + resultFile.getName(),
                                 Snackbar.LENGTH_LONG);
                         Logger.d("[MYTAG]", "PATH : " + mActivity.getExternalFilesDir(Environment.DIRECTORY_PICTURES) + "/" + MainActivity.PREVIEW_SAVED_DIRECTORY);

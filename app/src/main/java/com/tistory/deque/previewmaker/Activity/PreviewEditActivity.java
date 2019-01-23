@@ -216,7 +216,7 @@ public class PreviewEditActivity extends AppCompatActivity {
     public void onBackPressed() {
         if (mPreviewCanvasView.backPressed()) return;
         if (System.currentTimeMillis() - mBackPressedTime > 2000) {
-            Snackbar.make(getCurrentFocus(), getString(R.string.snackbar_preview_edit_acti_back_to_exit), Snackbar.LENGTH_LONG)
+            Snackbar.make(findViewById(android.R.id.content), getString(R.string.snackbar_preview_edit_acti_back_to_exit), Snackbar.LENGTH_LONG)
                     .setAction(getString(R.string.snackbar_preview_edit_acti_back_to_exit_btn), new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
