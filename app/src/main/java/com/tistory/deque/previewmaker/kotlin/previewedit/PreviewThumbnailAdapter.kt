@@ -2,17 +2,17 @@ package com.tistory.deque.previewmaker.kotlin.previewedit
 
 import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
+import com.tistory.deque.previewmaker.kotlin.model.PreviewListModel
 
 class PreviewThumbnailAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder>(){
-    override fun onCreateViewHolder(p0: ViewGroup, p1: Int): RecyclerView.ViewHolder {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    var previewListModel: PreviewListModel? = null
 
-    override fun getItemCount(): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder
+            = PreviewThumbnailHolder(parent)
 
-    override fun onBindViewHolder(p0: RecyclerView.ViewHolder, p1: Int) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun getItemCount(): Int = previewListModel?.size ?: 0
+
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        (holder as? PreviewThumbnailHolder)?.onBind(previewListModel?.getPreview(position) ?: return)
     }
 }

@@ -7,6 +7,12 @@ import android.net.Uri
 import android.provider.MediaStore
 import com.tistory.deque.previewmaker.kotlin.util.EzLogger
 
+/**
+ * path -> File : use File(path)
+ * File -> uri : use Uri.fromFile(file)
+ * uri -> path : use Uri.getRealPath()
+ */
+
 fun Uri.getRealPath(contentResolver: ContentResolver): String? {
     val proj = arrayOf(MediaStore.Images.Media.DATA)
 

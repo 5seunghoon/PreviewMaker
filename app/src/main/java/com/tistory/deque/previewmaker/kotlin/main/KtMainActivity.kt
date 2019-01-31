@@ -16,8 +16,6 @@ import android.view.MenuItem
 import android.view.View
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.TedPermission
-import com.tistory.deque.previewmaker.Activity.CreditActivity
-import com.tistory.deque.previewmaker.Activity.HelpMainActivity
 import com.tistory.deque.previewmaker.R
 import com.tistory.deque.previewmaker.kotlin.base.BaseKotlinActivity
 import com.tistory.deque.previewmaker.kotlin.credit.KtCreditActivity
@@ -165,7 +163,7 @@ class KtMainActivity : BaseKotlinActivity<KtMainViewModel>() {
     private fun startPreviewEditActivity(pathList: ArrayList<String>) {
         viewModel.selectedStamp?.let { stamp ->
             val intent = Intent(applicationContext, KtPreviewEditActivity::class.java).apply {
-                putStringArrayListExtra(EtcConstant.EXTRA_PREVIEW_LIST_INTENT_KEY, pathList)
+                putStringArrayListExtra(EtcConstant.PREVIEW_LIST_INTENT_KEY, pathList)
                 putExtra(EtcConstant.STAMP_ID_INTENT_KEY, stamp.id)
                 data = stamp.imageUri
             }

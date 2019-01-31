@@ -1,5 +1,6 @@
-package com.tistory.deque.previewmaker.kotlin.model.enums
+package com.tistory.deque.previewmaker.kotlin.manager
 
+import com.tistory.deque.previewmaker.kotlin.model.enums.PreviewEditStateEnum
 import com.tistory.deque.previewmaker.kotlin.model.enums.PreviewEditStateEnum.*
 
 object PreviewEditStateManager {
@@ -86,7 +87,8 @@ object PreviewEditStateManager {
                 true
             }
             ONE_SEEK_BAR, TWO_SEEK_BAR, ONLY_CANCEL_OR_OK -> run {
-                val temp = prevState ?: HOME
+                val temp = prevState
+                        ?: HOME
                 prevState = nowState
                 nowState = temp
                 true

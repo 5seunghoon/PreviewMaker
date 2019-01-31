@@ -30,7 +30,7 @@ public class PreviewBitmapController {
         this.mActivity = mActivity;
     }
 
-    public static PreviewBitmapController getPreviewBitmapControler(Activity mActivity) {
+    public static PreviewBitmapController getPreviewBitmapController(Activity mActivity) {
         //싱글턴 패턴
         if (pbc == null) {
             pbc = new PreviewBitmapController(mActivity);

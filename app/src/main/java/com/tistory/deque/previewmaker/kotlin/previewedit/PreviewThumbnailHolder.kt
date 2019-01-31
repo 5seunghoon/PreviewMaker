@@ -14,7 +14,7 @@ class PreviewThumbnailHolder(parent:ViewGroup): RecyclerView.ViewHolder(
 ){
     fun onBind(item: Preview) {
         itemView.run {
-            preview_thumbnail_item_image_view.setImageURI(item.thumbnailUri)
+            preview_thumbnail_item_image_view.setImageURI(item.thumbnailImageURI)
         }
     }
 }

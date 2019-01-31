@@ -6,7 +6,7 @@ import android.view.LayoutInflater
 import android.widget.LinearLayout
 import com.tistory.deque.previewmaker.R
 import com.tistory.deque.previewmaker.kotlin.model.enums.PreviewEditStateEnum
-import com.tistory.deque.previewmaker.kotlin.model.enums.PreviewEditStateManager
+import com.tistory.deque.previewmaker.kotlin.manager.PreviewEditStateManager
 import com.tistory.deque.previewmaker.kotlin.util.extension.fadeIn
 import com.tistory.deque.previewmaker.kotlin.util.extension.fadeOut
 import com.tistory.deque.previewmaker.kotlin.util.extension.goneView

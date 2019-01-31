@@ -173,7 +173,7 @@ public class PreviewEditActivity extends AppCompatActivity {
         previewItems = new ArrayList<>();
         previewPaths = intent.getStringArrayListExtra(EXTRA_PREVIEW_LIST);
 
-        pbc = PreviewBitmapController.getPreviewBitmapControler(this);
+        pbc = PreviewBitmapController.getPreviewBitmapController(this);
 
 
         getAnimation();
