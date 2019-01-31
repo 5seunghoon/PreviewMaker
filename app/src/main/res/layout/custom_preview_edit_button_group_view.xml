@@ -1,0 +1,559 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+home -> stamp
+     -> filter
+-->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/custom_edit_group_home_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:id="@+id/custom_edit_group_home_delete"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/ripple_effect_white_normal"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    app:srcCompat="@drawable/btn_all_use_delete_36dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginBottom="2dp"
+                    android:text="@string/action_delete_title"
+                    android:textColor="@color/black"
+                    android:textSize="12dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/custom_edit_group_home_crop"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/ripple_effect_white_normal"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    app:srcCompat="@drawable/btn_edit_main_crop_36dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginBottom="2dp"
+                    android:text="@string/action_crop_title"
+                    android:textColor="@color/black"
+                    android:textSize="12dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/custom_edit_group_home_stamp"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/ripple_effect_white_normal"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    app:srcCompat="@drawable/btn_edit_main_attachstamp_36dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginBottom="2dp"
+                    android:text="@string/action_stamp_title"
+                    android:textColor="@color/black"
+                    android:textSize="12dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/custom_edit_group_home_filter"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/ripple_effect_white_normal"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    app:srcCompat="@drawable/btn_edit_main_previewfilter_36dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginBottom="2dp"
+                    android:text="@string/action_filter_title"
+                    android:textColor="@color/black"
+                    android:textSize="12dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/custom_edit_group_home_save"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/ripple_effect_white_normal"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    app:srcCompat="@drawable/btn_all_use_save_36dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginBottom="2dp"
+                    android:text="@string/action_saveeach_title"
+                    android:textColor="@color/black"
+                    android:textSize="12dp" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/custom_edit_group_stamp_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:id="@+id/custom_edit_group_stamp_delete"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/ripple_effect_white_normal"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    app:srcCompat="@drawable/btn_all_use_delete_36dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginBottom="2dp"
+                    android:text="@string/action_stamp_edit_delete_title"
+                    android:textColor="@color/black"
+                    android:textSize="12dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/custom_edit_group_stamp_brightness"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/ripple_effect_white_normal"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    app:srcCompat="@drawable/btn_stamp_edit_bright_36dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginBottom="2dp"
+                    android:text="@string/action_stamp_edit_brightness_title"
+                    android:textColor="@color/black"
+                    android:textSize="12dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/custom_edit_group_stamp_reset"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/ripple_effect_white_normal"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    app:srcCompat="@drawable/btn_all_use_reset_36dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginBottom="2dp"
+                    android:text="@string/action_preview_edit_reset_title"
+                    android:textColor="@color/black"
+                    android:textSize="12dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/custom_edit_group_stamp_finish"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/ripple_effect_white_normal"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    app:srcCompat="@drawable/btn_all_use_finish_36dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginBottom="2dp"
+                    android:text="@string/action_stamp_edit_finish_title"
+                    android:textColor="@color/black"
+                    android:textSize="12dp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/custom_edit_group_filter_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:id="@+id/custom_edit_group_filter_bright_contra"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/ripple_effect_white_normal"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    app:srcCompat="@drawable/btn_preview_edit_brigtconst_36dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginBottom="2dp"
+                    android:text="@string/action_preview_edit_brightness_contrast_title"
+                    android:textColor="@color/black"
+                    android:textSize="12dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/custom_edit_group_filter_kelvin_satu"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/ripple_effect_white_normal"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    app:srcCompat="@drawable/btn_preview_edit_satukelv_36dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginBottom="2dp"
+                    android:text="@string/action_preview_edit_saturation_kelvin_title"
+                    android:textColor="@color/black"
+                    android:textSize="12dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/custom_edit_group_filter_blur"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/ripple_effect_white_normal"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    app:srcCompat="@drawable/btn_preview_edit_blur_36dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginBottom="2dp"
+                    android:text="@string/action_preview_blur_title"
+                    android:textColor="@color/black"
+                    android:textSize="12dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/custom_edit_group_filter_reset"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/ripple_effect_white_normal"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    app:srcCompat="@drawable/btn_all_use_reset_36dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginBottom="2dp"
+                    android:text="@string/action_preview_edit_reset_title"
+                    android:textColor="@color/black"
+                    android:textSize="12dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/custom_edit_group_filter_finish"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/ripple_effect_white_normal"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    app:srcCompat="@drawable/btn_all_use_finish_36dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginBottom="2dp"
+                    android:text="@string/action_preview_edit_finish_title"
+                    android:textColor="@color/black"
+                    android:textSize="12dp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/custom_edit_group_handler_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="5">
+
+                <LinearLayout
+                    android:id="@+id/custom_edit_group_seek_bar_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <LinearLayout
+                        android:id="@+id/custom_edit_group_seek_bar_first_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/custom_edit_group_seek_bar_first_hint_text_view"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginEnd="8dp"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="ㅇㅇ"
+                            android:textColor="@color/colorAccent"
+                            android:textSize="12dp" />
+
+                        <SeekBar
+                            android:id="@+id/custom_edit_group_seek_bar_first"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="5" />
+
+                        <TextView
+                            android:id="@+id/custom_edit_group_seek_bar_first_value_text_view"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginEnd="8dp"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="000%"
+                            android:textColor="@color/colorAccent"
+                            android:textSize="12dp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/custom_edit_group_seek_bar_second_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/custom_edit_group_seek_bar_second_hint_text_view"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginEnd="8dp"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="ㅇㅇㅇ"
+                            android:textColor="@color/colorAccent"
+                            android:textSize="12dp" />
+
+                        <SeekBar
+                            android:id="@+id/custom_edit_group_seek_bar_second"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="5" />
+
+                        <TextView
+                            android:id="@+id/custom_edit_group_seek_bar_second_value_text_view"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginEnd="8dp"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="000%"
+                            android:textColor="@color/colorAccent"
+                            android:textSize="12dp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/custom_edit_group_only_cancel_or_ok_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="4" />
+
+                    <LinearLayout
+                        android:id="@+id/custom_edit_group_handler_cancel"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="@drawable/ripple_effect_white_normal"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            app:srcCompat="@drawable/btn_all_use_cancle_36dp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:layout_marginBottom="2dp"
+                            android:text="@string/action_preview_edit_cancle_title"
+                            android:textColor="@color/black"
+                            android:textSize="12dp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+            </FrameLayout>
+
+            <LinearLayout
+                android:id="@+id/custom_edit_group_handler_finish"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/ripple_effect_white_normal"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:visibility="visible">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    app:srcCompat="@drawable/btn_all_use_finish_36dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginBottom="2dp"
+                    android:text="@string/action_preview_edit_ok_title"
+                    android:textColor="@color/black"
+                    android:textSize="12dp" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </FrameLayout>
+</LinearLayout>

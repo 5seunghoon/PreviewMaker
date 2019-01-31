@@ -4,6 +4,7 @@ import com.tistory.deque.previewmaker.kotlin.main.KtMainViewModel
 import com.tistory.deque.previewmaker.kotlin.main.KtStampAdapter
 import com.tistory.deque.previewmaker.kotlin.makestamp.KtMakeStampViewModel
 import com.tistory.deque.previewmaker.kotlin.model.StampAdapterModel
+import com.tistory.deque.previewmaker.kotlin.previewedit.KtPreviewEditViewModel
 import org.koin.android.viewmodel.ext.koin.viewModel
 import org.koin.dsl.module.module
 
@@ -13,6 +14,9 @@ val viewModelPart = module {
     }
     viewModel {
         KtMakeStampViewModel()
+    }
+    viewModel {
+        KtPreviewEditViewModel()
     }
 }
 

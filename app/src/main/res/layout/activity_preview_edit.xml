@@ -77,7 +77,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:background="@android:color/white"
-                                android:drawableTop="@drawable/btn_all_use_cancle_30dp"
+                                android:drawableTop="@drawable/btn_all_use_cancle_36dp"
                                 android:paddingTop="4dp"
                                 android:text="@string/action_preview_edit_cancle_title"
                                 android:textSize="12sp" />
@@ -226,7 +226,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:background="@android:color/white"
-                        android:drawableTop="@drawable/btn_all_use_finish_30dp"
+                        android:drawableTop="@drawable/btn_all_use_finish_36dp"
                         android:paddingTop="4dp"
                         android:text="@string/action_preview_edit_ok_title"
                         android:textSize="12sp" />
@@ -257,7 +257,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:background="@android:color/white"
-                                android:drawableTop="@drawable/btn_preview_edit_brigtconst_30dp"
+                                android:drawableTop="@drawable/btn_preview_edit_brigtconst_36dp"
                                 android:paddingTop="4dp"
                                 android:text="@string/action_preview_edit_brightness_contrast_title"
                                 android:textSize="12sp" />
@@ -268,7 +268,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:background="@android:color/white"
-                                android:drawableTop="@drawable/btn_preview_edit_satukelv_30dp"
+                                android:drawableTop="@drawable/btn_preview_edit_satukelv_36dp"
                                 android:paddingTop="4dp"
                                 android:text="@string/action_preview_edit_saturation_kelvin_title"
                                 android:textSize="12sp" />
@@ -279,7 +279,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:background="@android:color/white"
-                                android:drawableTop="@drawable/btn_preview_edit_blur_30dp"
+                                android:drawableTop="@drawable/btn_preview_edit_blur_36dp"
                                 android:paddingTop="4dp"
                                 android:text="@string/action_preview_blur_title"
                                 android:textSize="12sp" />
@@ -290,7 +290,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:background="@android:color/white"
-                                android:drawableTop="@drawable/btn_all_use_reset_30dp"
+                                android:drawableTop="@drawable/btn_all_use_reset_36dp"
                                 android:paddingTop="4dp"
                                 android:text="@string/action_preview_edit_reset_title"
                                 android:textSize="12sp" />
@@ -301,7 +301,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:background="@android:color/white"
-                                android:drawableTop="@drawable/btn_all_use_finish_30dp"
+                                android:drawableTop="@drawable/btn_all_use_finish_36dp"
                                 android:paddingTop="4dp"
                                 android:text="@string/action_preview_edit_finish_title"
                                 android:textSize="12sp" />
@@ -321,7 +321,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:background="@android:color/white"
-                                android:drawableTop="@drawable/btn_all_use_delete_30dp"
+                                android:drawableTop="@drawable/btn_all_use_delete_36dp"
                                 android:paddingTop="4dp"
                                 android:text="@string/action_stamp_edit_delete_title"
                                 android:textSize="12sp" />
@@ -332,7 +332,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:background="@android:color/white"
-                                android:drawableTop="@drawable/btn_stamp_edit_bright_30dp"
+                                android:drawableTop="@drawable/btn_stamp_edit_bright_36dp"
                                 android:paddingTop="4dp"
                                 android:text="@string/action_stamp_edit_brightness_title"
                                 android:textSize="12sp" />
@@ -343,7 +343,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:background="@android:color/white"
-                                android:drawableTop="@drawable/btn_all_use_reset_30dp"
+                                android:drawableTop="@drawable/btn_all_use_reset_36dp"
                                 android:paddingTop="4dp"
                                 android:text="@string/action_stamp_edit_reset"
                                 android:textSize="12sp" />
@@ -354,7 +354,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:background="@android:color/white"
-                                android:drawableTop="@drawable/btn_all_use_finish_30dp"
+                                android:drawableTop="@drawable/btn_all_use_finish_36dp"
                                 android:paddingTop="4dp"
                                 android:text="@string/action_stamp_edit_finish_title"
                                 android:textSize="12sp" />
@@ -375,7 +375,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:background="@android:color/white"
-                                android:drawableTop="@drawable/btn_all_use_delete_30dp"
+                                android:drawableTop="@drawable/btn_all_use_delete_36dp"
                                 android:paddingTop="4dp"
                                 android:text="@string/action_delete_title"
                                 android:textSize="12sp" />
@@ -386,7 +386,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:background="@android:color/white"
-                                android:drawableTop="@drawable/btn_edit_main_crop_30dp"
+                                android:drawableTop="@drawable/btn_edit_main_crop_36dp"
                                 android:paddingTop="4dp"
                                 android:text="@string/action_crop_title"
                                 android:textSize="12sp" />
@@ -397,7 +397,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:background="@android:color/white"
-                                android:drawableTop="@drawable/btn_edit_main_attachstamp_30dp"
+                                android:drawableTop="@drawable/btn_edit_main_attachstamp_36dp"
                                 android:paddingTop="4dp"
                                 android:text="@string/action_stamp_title"
                                 android:textSize="12sp" />
@@ -408,7 +408,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:background="@android:color/white"
-                                android:drawableTop="@drawable/btn_edit_main_previewfilter_30dp"
+                                android:drawableTop="@drawable/btn_edit_main_previewfilter_36dp"
                                 android:paddingTop="4dp"
                                 android:text="@string/action_filter_title"
                                 android:textSize="12sp" />
@@ -419,7 +419,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:background="@android:color/white"
-                                android:drawableTop="@drawable/btn_all_use_save_30dp"
+                                android:drawableTop="@drawable/btn_all_use_save_36dp"
                                 android:paddingTop="4dp"
                                 android:text="@string/action_saveeach_title"
                                 android:textSize="12sp" />

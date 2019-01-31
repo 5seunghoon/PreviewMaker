@@ -71,7 +71,8 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".kotlin.previewedit.KtPreviewEditActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"/>
         <activity android:name=".kotlin.helpmain.KtHelpMainActivity" />
         <activity android:name=".kotlin.credit.KtCreditActivity" />
         <activity android:name=".kotlin.opensource.KtOpenSourceActivity"></activity>
