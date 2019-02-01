@@ -15,7 +15,10 @@ object PreviewBitmapManager {
     private const val bitmapMaxSize = 2000
 
     var selectedPreviewBitmap : Bitmap? = null
-    var selectedPreview: Preview? = null
+
+    fun resetManager(){
+        selectedPreviewBitmap = null
+    }
 
     fun imageUriToBitmap(imageUri: Uri, context: Context): Bitmap? {
         val bitmap: Bitmap

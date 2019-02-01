@@ -7,7 +7,7 @@ import com.tistory.deque.previewmaker.kotlin.model.PreviewListModel
 
 class PreviewThumbnailAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     var previewListModel: PreviewListModel? = null
-    var previewThumbnailClickListener: (Preview) -> Unit = { _ -> }
+    var previewThumbnailClickListener: (Preview, Int) -> Unit = { _, _ -> }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder
             = PreviewThumbnailHolder(parent, previewThumbnailClickListener)
@@ -16,6 +16,6 @@ class PreviewThumbnailAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() 
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         (holder as? PreviewThumbnailHolder)?.onBind(previewListModel?.getPreview(position)
-                ?: return)
+                ?: return, position)
     }
 }

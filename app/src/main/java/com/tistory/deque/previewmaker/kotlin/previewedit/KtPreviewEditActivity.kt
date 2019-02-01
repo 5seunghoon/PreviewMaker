@@ -60,13 +60,13 @@ class KtPreviewEditActivity : BaseKotlinActivity<KtPreviewEditViewModel>() {
 
     private fun setCustomPreviewCanvas(){
         preview_edit_custom_preview_canvas.run {
-            setComponent(viewModel ?: return@run)
+            setComponent(this@KtPreviewEditActivity)
         }
     }
 
-    private fun previewThumbnailClickListener(preview: Preview) {
+    private fun previewThumbnailClickListener(preview: Preview, position:Int) {
         EzLogger.d("previewThumbnailAdapter previewThumbnailClickListener")
-        viewModel.previewThumbnailClickListener(applicationContext, preview)
+        viewModel.previewThumbnailClickListener(applicationContext, preview, position)
     }
 
     override fun initDataBinding() {
@@ -93,7 +93,9 @@ class KtPreviewEditActivity : BaseKotlinActivity<KtPreviewEditViewModel>() {
             preview_edit_hint_text_view.run { post { visibility = View.GONE } }
             mainLoadingProgressBarStart()
         })
-        viewModel.stopLoadingPreviewToCanvas.observe(this, Observer {
+        viewModel.finishLoadingPreviewToCanvas.observe(this, Observer {
+            preview_edit_custom_preview_canvas.run { post { invalidate() } }
+            EzLogger.d("preview_edit_custom_preview_canvas invalidate")
             mainLoadingProgressBarStop()
         })
     }
@@ -111,7 +113,7 @@ class KtPreviewEditActivity : BaseKotlinActivity<KtPreviewEditViewModel>() {
     }
 
     override fun onDestroy() {
-        PreviewBitmapManager.selectedPreviewBitmap = null
+        PreviewBitmapManager.resetManager()
         super.onDestroy()
     }
 }

@@ -12,6 +12,7 @@ import com.tistory.deque.previewmaker.kotlin.manager.PreviewEditButtonViewStateM
 import com.tistory.deque.previewmaker.kotlin.manager.PreviewEditClickStateManager
 import com.tistory.deque.previewmaker.kotlin.model.Preview
 import com.tistory.deque.previewmaker.kotlin.model.Stamp
+import com.tistory.deque.previewmaker.kotlin.previewedit.KtPreviewEditActivity
 import com.tistory.deque.previewmaker.kotlin.previewedit.KtPreviewEditViewModel
 import com.tistory.deque.previewmaker.kotlin.util.EzLogger
 
@@ -20,12 +21,11 @@ class CustomPreviewCanvas: View{
         initView()
     }
 
-    var viewModel: KtPreviewEditViewModel? = null
-    private set
-
-    val preview: Preview? get() = viewModel?.selectedPreview
-    val stamp: Stamp? get() = viewModel?.stamp
+    private var activity: KtPreviewEditActivity? = null
     private var canvas: Canvas? = null
+
+    val preview: Preview? get() = activity?.viewModel?.selectedPreview
+    val stamp: Stamp? get() = activity?.viewModel?.stamp
 
     var isStampShow: Boolean = false
 
@@ -37,14 +37,16 @@ class CustomPreviewCanvas: View{
 
     }
 
-    fun setComponent(viewModel: KtPreviewEditViewModel){
-        this.viewModel = viewModel
+    fun setComponent(activity: KtPreviewEditActivity){
+        EzLogger.d("setComponent viewModel set ")
+        this.activity = activity
         PreviewEditButtonViewStateManager.initState()
     }
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
         this.canvas = canvas
+
         setBackgroundColor(ContextCompat.getColor(context, R.color.backgroundGray))
         preview?.let {
 
@@ -68,11 +70,7 @@ class CustomPreviewCanvas: View{
     }
 
     private fun drawBaseBitmap(preview:Preview){
-        if(preview.originalImageUri != PreviewBitmapManager.selectedPreview?.originalImageUri) {
-            EzLogger.d("preview not same with PreviewBitmapManager, and selected preview!!")
-        } else {
-            EzLogger.d("HIHIHIHIHIHIHIHIHIFJDIOSFJIOSDJFIODJSFIO:DS")
-        }
+        EzLogger.d("preview : ${preview.originalImageUri}")
     }
 
 }
