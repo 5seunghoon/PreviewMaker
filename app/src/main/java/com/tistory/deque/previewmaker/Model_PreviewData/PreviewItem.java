@@ -44,7 +44,7 @@ public class PreviewItem {
         this.contrast = 0;
         this.kelvin = 0;
         this.saturation = 0;
-        //mBitmap = URIToBitmap(originalImageURI, mActivity);
+        //mBitmap = URIToBitmap(originalImageUri, mActivity);
     }
 
     public Bitmap getBitmap() {
@@ -84,7 +84,7 @@ public class PreviewItem {
 
     public void setOriginalImageURI(Uri originalImageURI) {
         this.originalImageURI = originalImageURI;
-        //mBitmap = URIToBitmap(originalImageURI, mActivity);
+        //mBitmap = URIToBitmap(originalImageUri, mActivity);
     }
 
     private Uri makeResultImageFile() {

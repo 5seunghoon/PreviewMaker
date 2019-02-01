@@ -1,6 +1,6 @@
 package com.tistory.deque.previewmaker.kotlin.model.enums
 
-enum class PreviewEditStateEnum {
+enum class PreviewEditButtonViewStateEnum {
     HOME,
     STAMP,
     FILTER,

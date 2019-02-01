@@ -70,7 +70,14 @@
                     android:id="@+id/preview_edit_canvas_parent"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:background="@color/white"
+                    android:padding="8dp">
+
+                    <com.tistory.deque.previewmaker.kotlin.customview.CustomPreviewCanvas
+                        android:id="@+id/preview_edit_custom_preview_canvas"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
 
                 </LinearLayout>
 

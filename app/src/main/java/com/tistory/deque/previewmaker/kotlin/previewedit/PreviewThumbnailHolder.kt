@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.tistory.deque.previewmaker.R
 import com.tistory.deque.previewmaker.kotlin.model.Preview
-import com.tistory.deque.previewmaker.kotlin.util.EzLogger
 import kotlinx.android.synthetic.main.kt_preview_thumbnail_item.view.*
 
 class PreviewThumbnailHolder(parent:ViewGroup, var previewThumbnailClickListener: (Preview) -> Unit): RecyclerView.ViewHolder(
@@ -15,7 +14,7 @@ class PreviewThumbnailHolder(parent:ViewGroup, var previewThumbnailClickListener
 ){
     fun onBind(item: Preview) {
         itemView.run {
-            preview_thumbnail_item_image_view.setImageURI(item.thumbnailImageURI)
+            preview_thumbnail_item_image_view.setImageURI(item.thumbnailImageUri)
             preview_thumbnail_item_layout.setOnClickListener {
                 previewThumbnailClickListener(item)
             }

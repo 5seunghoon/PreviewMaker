@@ -237,6 +237,10 @@ class KtMainActivity : BaseKotlinActivity<KtMainViewModel>() {
         EzLogger.d("start image pick event observe")
         val permissionCheck = ContextCompat.checkSelfPermission(applicationContext,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE)
+
+        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), 1)
+        }
         val intent = Intent(Intent.ACTION_PICK)
         intent.type = "image/*"
         intent.type = MediaStore.Images.Media.CONTENT_TYPE

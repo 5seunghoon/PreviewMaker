@@ -8,6 +8,7 @@ import android.net.Uri
 import com.tistory.deque.previewmaker.kotlin.model.Stamp
 import com.tistory.deque.previewmaker.kotlin.model.enums.StampAnchorEnum
 import com.tistory.deque.previewmaker.kotlin.util.EzLogger
+import com.tistory.deque.previewmaker.kotlin.util.extension.getRealPath
 import java.io.File
 
 class KtDbOpenHelper(context: Context?, name: String?, factory: SQLiteDatabase.CursorFactory?, version: Int) : SQLiteOpenHelper(context, name, factory, version) {
@@ -119,6 +120,29 @@ class KtDbOpenHelper(context: Context?, name: String?, factory: SQLiteDatabase.C
         }
         EzLogger.d("db null -> delete fail")
         return false
+    }
+
+    fun dbGetStamp(stampId: Int): Stamp? {
+        db?.let {
+            val sql = """SELECT * FROM $TABLE_NAME_STAMPS WHERE _ID IN($stampId);"""
+            EzLogger.d("dbGetStamp sql : $sql")
+            it.rawQuery(sql, null)?.use { stampCursor ->
+                stampCursor.moveToFirst()
+                val imageUri = stampCursor.getString(2)
+                EzLogger.d("dbGetStamp imageUri : $imageUri")
+                return Stamp(
+                        stampCursor.getInt(0),
+                        Uri.parse(stampCursor.getString(2)),
+                        stampCursor.getString(1),
+                        stampCursor.getInt(3),
+                        stampCursor.getInt(4),
+                        stampCursor.getInt(5),
+                        stampCursor.getInt(6),
+                        stampCursor.getInt(7)
+                )
+            }
+        }
+        return null
     }
 
     fun dbGetAll(): ArrayList<Stamp> {

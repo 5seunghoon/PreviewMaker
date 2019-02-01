@@ -1,13 +1,16 @@
 package com.tistory.deque.previewmaker.kotlin.manager
 
-import com.tistory.deque.previewmaker.kotlin.model.enums.PreviewEditStateEnum
-import com.tistory.deque.previewmaker.kotlin.model.enums.PreviewEditStateEnum.*
+import com.tistory.deque.previewmaker.kotlin.model.enums.PreviewEditButtonViewStateEnum
+import com.tistory.deque.previewmaker.kotlin.model.enums.PreviewEditButtonViewStateEnum.*
 import com.tistory.deque.previewmaker.kotlin.util.EzLogger
 
-object PreviewEditStateManager {
+/**
+ * 프리뷰를 편집하는 버튼들의 상태를 관리
+ */
+object PreviewEditButtonViewStateManager {
 
-    var nowState: PreviewEditStateEnum = HOME
-    var prevState: PreviewEditStateEnum? = null
+    var nowState: PreviewEditButtonViewStateEnum = HOME
+    var prevState: PreviewEditButtonViewStateEnum? = null
 
     fun initState() {
         nowState = HOME

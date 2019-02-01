@@ -11,9 +11,9 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 data class Preview(
-        var originalImageURI: Uri,
-        var thumbnailImageURI: Uri,
-        var resultImageURI: Uri,
+        var originalImageUri: Uri,
+        var thumbnailImageUri: Uri,
+        var resultImageUri: Uri,
         var isSaved: Boolean,
 
         var brightness: Int,
@@ -48,7 +48,7 @@ data class Preview(
             this(originalImageURI, thumbnailImageURI, makeResultImageFile(), true,
                     0,0,0,0)
 
-    fun getBitmap(context:Context) = PreviewBitmapManager.imageUriToBitmap(this.originalImageURI, context)
+    fun getBitmap(context:Context) = PreviewBitmapManager.imageUriToBitmap(this.originalImageUri, context)
 
     fun saved() {
         isSaved = true

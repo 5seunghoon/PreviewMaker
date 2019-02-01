@@ -6,6 +6,7 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.provider.MediaStore
 import com.tistory.deque.previewmaker.Util.Logger
+import com.tistory.deque.previewmaker.kotlin.model.Preview
 import com.tistory.deque.previewmaker.kotlin.util.EzLogger
 import java.io.FileNotFoundException
 import java.io.IOException
@@ -14,6 +15,7 @@ object PreviewBitmapManager {
     private const val bitmapMaxSize = 2000
 
     var selectedPreviewBitmap : Bitmap? = null
+    var selectedPreview: Preview? = null
 
     fun imageUriToBitmap(imageUri: Uri, context: Context): Bitmap? {
         val bitmap: Bitmap

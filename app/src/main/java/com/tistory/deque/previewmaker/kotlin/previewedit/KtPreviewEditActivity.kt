@@ -7,9 +7,12 @@ import android.support.v7.widget.RecyclerView
 import android.view.View
 import com.tistory.deque.previewmaker.R
 import com.tistory.deque.previewmaker.kotlin.base.BaseKotlinActivity
+import com.tistory.deque.previewmaker.kotlin.manager.PreviewBitmapManager
 import com.tistory.deque.previewmaker.kotlin.model.Preview
 import com.tistory.deque.previewmaker.kotlin.util.EtcConstant
 import com.tistory.deque.previewmaker.kotlin.util.EzLogger
+import com.tistory.deque.previewmaker.kotlin.util.extension.fadeIn
+import com.tistory.deque.previewmaker.kotlin.util.extension.fadeOut
 import kotlinx.android.synthetic.main.activity_kt_preview_edit.*
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
@@ -29,8 +32,10 @@ class KtPreviewEditActivity : BaseKotlinActivity<KtPreviewEditViewModel>() {
     override fun initViewStart() {
         setBackButtonAboveActionBar(true, "프리뷰 편집")
         preview_edit_loading_progress_bar_layout.run { post { visibility = View.GONE } }
-        setPreviewThumbnailRecyclerView()
+        viewModel.dbOpen(applicationContext)
         addComponentFromIntent()
+        setPreviewThumbnailRecyclerView()
+        setCustomPreviewCanvas()
     }
 
     private fun addComponentFromIntent() {
@@ -39,6 +44,7 @@ class KtPreviewEditActivity : BaseKotlinActivity<KtPreviewEditViewModel>() {
             stampImageUri = data
             previewPathList = getStringArrayListExtra(EtcConstant.PREVIEW_LIST_INTENT_KEY)
         }
+        viewModel.getStamp(stampId)
     }
 
     private fun setPreviewThumbnailRecyclerView() {
@@ -49,6 +55,12 @@ class KtPreviewEditActivity : BaseKotlinActivity<KtPreviewEditViewModel>() {
             }
             layoutManager = LinearLayoutManager(applicationContext, RecyclerView.HORIZONTAL, false)
             setHasFixedSize(true)
+        }
+    }
+
+    private fun setCustomPreviewCanvas(){
+        preview_edit_custom_preview_canvas.run {
+            setComponent(viewModel ?: return@run)
         }
     }
 
@@ -91,10 +103,15 @@ class KtPreviewEditActivity : BaseKotlinActivity<KtPreviewEditViewModel>() {
     }
 
     private fun mainLoadingProgressBarStart() {
-        preview_edit_loading_progress_bar_layout.run { post { visibility = View.VISIBLE } }
+        preview_edit_loading_progress_bar_layout.fadeIn()
     }
 
     private fun mainLoadingProgressBarStop() {
-        preview_edit_loading_progress_bar_layout.run { post { visibility = View.GONE } }
+        preview_edit_loading_progress_bar_layout.fadeOut()
+    }
+
+    override fun onDestroy() {
+        PreviewBitmapManager.selectedPreviewBitmap = null
+        super.onDestroy()
     }
 }
