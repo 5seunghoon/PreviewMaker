@@ -21,10 +21,10 @@
 
         <LinearLayout
             android:id="@+id/preview_thumbnail_item_layout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="90dp"
+            android:layout_height="90dp"
             android:background="@drawable/ripple_effect_transparent_normal"
-            android:orientation="vertical"/>
+            android:orientation="vertical" />
     </FrameLayout>
 
 </android.support.v7.widget.CardView>

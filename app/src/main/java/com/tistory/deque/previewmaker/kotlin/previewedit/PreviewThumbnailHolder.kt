@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.tistory.deque.previewmaker.R
 import com.tistory.deque.previewmaker.kotlin.model.Preview
+import com.tistory.deque.previewmaker.kotlin.util.EzLogger
 import kotlinx.android.synthetic.main.kt_preview_thumbnail_item.view.*
 
 class PreviewThumbnailHolder(parent:ViewGroup, var previewThumbnailClickListener: (Preview) -> Unit): RecyclerView.ViewHolder(

@@ -136,6 +136,7 @@ class KtPreviewEditViewModel : BaseKotlinViewModel() {
 
     inner class LoadingPreviewToCanvas(val context:Context, val preview: Preview): AsyncTask<Void, Void, Void>(){
         override fun doInBackground(vararg params: Void?): Void? {
+            EzLogger.d("LoadingPreviewToCanvas doInBackground")
             PreviewBitmapManager.selectedPreviewBitmap = preview.getBitmap(context)
             return null
         }

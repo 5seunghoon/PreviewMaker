@@ -7,6 +7,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.View
 import com.tistory.deque.previewmaker.R
 import com.tistory.deque.previewmaker.kotlin.base.BaseKotlinActivity
+import com.tistory.deque.previewmaker.kotlin.model.Preview
 import com.tistory.deque.previewmaker.kotlin.util.EtcConstant
 import com.tistory.deque.previewmaker.kotlin.util.EzLogger
 import kotlinx.android.synthetic.main.activity_kt_preview_edit.*
@@ -27,6 +28,7 @@ class KtPreviewEditActivity : BaseKotlinActivity<KtPreviewEditViewModel>() {
 
     override fun initViewStart() {
         setBackButtonAboveActionBar(true, "프리뷰 편집")
+        preview_edit_loading_progress_bar_layout.run { post { visibility = View.GONE } }
         setPreviewThumbnailRecyclerView()
         addComponentFromIntent()
     }
@@ -43,13 +45,16 @@ class KtPreviewEditActivity : BaseKotlinActivity<KtPreviewEditViewModel>() {
         preview_edit_thumbnail_recycler_view.run {
             adapter = previewThumbnailAdapter.apply {
                 previewListModel = viewModel.previewListModel
-                previewThumbnailClickListener = { preview ->
-                    viewModel.previewThumbnailClickListener(applicationContext, preview)
-                }
+                previewThumbnailClickListener = this@KtPreviewEditActivity::previewThumbnailClickListener
             }
             layoutManager = LinearLayoutManager(applicationContext, RecyclerView.HORIZONTAL, false)
             setHasFixedSize(true)
         }
+    }
+
+    private fun previewThumbnailClickListener(preview: Preview) {
+        EzLogger.d("previewThumbnailAdapter previewThumbnailClickListener")
+        viewModel.previewThumbnailClickListener(applicationContext, preview)
     }
 
     override fun initDataBinding() {
@@ -85,11 +90,11 @@ class KtPreviewEditActivity : BaseKotlinActivity<KtPreviewEditViewModel>() {
         viewModel.makePreviewThumbnail(applicationContext, previewPathList)
     }
 
-    private fun mainLoadingProgressBarStart(){
+    private fun mainLoadingProgressBarStart() {
         preview_edit_loading_progress_bar_layout.run { post { visibility = View.VISIBLE } }
     }
 
-    private fun mainLoadingProgressBarStop(){
+    private fun mainLoadingProgressBarStop() {
         preview_edit_loading_progress_bar_layout.run { post { visibility = View.GONE } }
     }
 }
