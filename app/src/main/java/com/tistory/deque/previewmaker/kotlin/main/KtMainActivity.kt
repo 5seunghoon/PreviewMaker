@@ -104,6 +104,7 @@ class KtMainActivity : BaseKotlinActivity<KtMainViewModel>() {
             TedPermission.with(applicationContext)
                     .setPermissionListener(object : PermissionListener {
                         override fun onPermissionGranted() = viewModel.addStamp()
+
                         override fun onPermissionDenied(deniedPermissions: ArrayList<String>) {}
                     })
                     .setRationaleMessage(getString(R.string.tedpermission_add_stamp_rational))
@@ -187,9 +188,7 @@ class KtMainActivity : BaseKotlinActivity<KtMainViewModel>() {
     private fun clickStamp(stamp: Stamp) {
         TedPermission.with(applicationContext)
                 .setPermissionListener(object : PermissionListener {
-                    override fun onPermissionGranted() {
-                        viewModel.savePositionAndGetPreview(stamp)
-                    }
+                    override fun onPermissionGranted() = viewModel.savePositionAndGetPreview(stamp)
 
                     override fun onPermissionDenied(deniedPermissions: ArrayList<String>) {}
                 })
@@ -238,17 +237,11 @@ class KtMainActivity : BaseKotlinActivity<KtMainViewModel>() {
         EzLogger.d("start image pick event observe")
         val permissionCheck = ContextCompat.checkSelfPermission(applicationContext,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE)
-        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
-            EzLogger.d("permission not granted")
-            ActivityCompat.requestPermissions(this,
-                    arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), 1)
-        } else {
-            val intent = Intent(Intent.ACTION_PICK)
-            intent.type = "image/*"
-            intent.type = MediaStore.Images.Media.CONTENT_TYPE
-            EzLogger.d("start Activity : album intent")
-            startActivityForResult(intent, RequestCode.REQUEST_TAKE_STAMP_FROM_ALBUM)
-        }
+        val intent = Intent(Intent.ACTION_PICK)
+        intent.type = "image/*"
+        intent.type = MediaStore.Images.Media.CONTENT_TYPE
+        EzLogger.d("start Activity : album intent")
+        startActivityForResult(intent, RequestCode.REQUEST_TAKE_STAMP_FROM_ALBUM)
     }
 
 }

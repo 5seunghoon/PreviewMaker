@@ -85,7 +85,6 @@ class KtMainViewModel : BaseKotlinViewModel() {
         _delStampAlertStartEvent.value = Pair(stamp, position)
     }
 
-
     fun addStamp() {
         _imagePickStartEvent.call()
     }
