@@ -2,14 +2,20 @@ package com.tistory.deque.previewmaker.kotlin.manager
 
 import com.tistory.deque.previewmaker.kotlin.model.enums.PreviewEditStateEnum
 import com.tistory.deque.previewmaker.kotlin.model.enums.PreviewEditStateEnum.*
+import com.tistory.deque.previewmaker.kotlin.util.EzLogger
 
 object PreviewEditStateManager {
 
-    var nowState : PreviewEditStateEnum = HOME
-    var prevState : PreviewEditStateEnum? = null
+    var nowState: PreviewEditStateEnum = HOME
+    var prevState: PreviewEditStateEnum? = null
+
+    fun initState() {
+        nowState = HOME
+        prevState = null
+    }
 
     fun setStampState(): Boolean {
-        return when(nowState){
+        return when (nowState) {
             HOME -> run {
                 prevState = HOME
                 nowState = STAMP
@@ -20,7 +26,7 @@ object PreviewEditStateManager {
     }
 
     fun setFilterState(): Boolean {
-        return when(nowState){
+        return when (nowState) {
             HOME -> run {
                 prevState = HOME
                 nowState = FILTER
@@ -31,7 +37,7 @@ object PreviewEditStateManager {
     }
 
     fun clickStampBrightness(): Boolean {
-        return when(nowState){
+        return when (nowState) {
             STAMP -> run {
                 prevState = STAMP
                 nowState = ONE_SEEK_BAR
@@ -42,7 +48,7 @@ object PreviewEditStateManager {
     }
 
     fun clickFilterBrightContra(): Boolean {
-        return when(nowState){
+        return when (nowState) {
             FILTER -> run {
                 prevState = FILTER
                 nowState = TWO_SEEK_BAR
@@ -53,7 +59,7 @@ object PreviewEditStateManager {
     }
 
     fun clickFilterKelvinSatu(): Boolean {
-        return when(nowState){
+        return when (nowState) {
             FILTER -> run {
                 prevState = FILTER
                 nowState = TWO_SEEK_BAR
@@ -63,8 +69,8 @@ object PreviewEditStateManager {
         }
     }
 
-    fun clickFilterBlur(): Boolean{
-        return when(nowState){
+    fun clickFilterBlur(): Boolean {
+        return when (nowState) {
             FILTER -> run {
                 prevState = FILTER
                 nowState = ONLY_CANCEL_OR_OK
@@ -75,7 +81,8 @@ object PreviewEditStateManager {
     }
 
     fun finishEdit(): Boolean {
-        return when(nowState) {
+        EzLogger.d("finishEdit, nowState : ${nowState}")
+        return when (nowState) {
             STAMP -> run {
                 prevState = STAMP
                 nowState = HOME
@@ -87,8 +94,7 @@ object PreviewEditStateManager {
                 true
             }
             ONE_SEEK_BAR, TWO_SEEK_BAR, ONLY_CANCEL_OR_OK -> run {
-                val temp = prevState
-                        ?: HOME
+                val temp = prevState ?: HOME
                 prevState = nowState
                 nowState = temp
                 true

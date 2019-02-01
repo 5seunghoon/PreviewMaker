@@ -1,5 +1,7 @@
 package com.tistory.deque.previewmaker.kotlin.base
 
+import android.app.Dialog
+import android.arch.lifecycle.Observer
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
@@ -46,6 +48,8 @@ abstract class BaseKotlinActivity<T : BaseKotlinViewModel> : AppCompatActivity()
      */
     abstract fun initViewFinal()
 
+    private var mLoadingDialog: Dialog? = null
+
     private var isSetBackButtonValid = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,7 +57,7 @@ abstract class BaseKotlinActivity<T : BaseKotlinViewModel> : AppCompatActivity()
 
         setContentView(layoutResourceId)
 
-        snackbarObserving()
+        baseObserving()
         initViewStart()
         initDataBinding()
         initViewFinal()
@@ -70,7 +74,7 @@ abstract class BaseKotlinActivity<T : BaseKotlinViewModel> : AppCompatActivity()
         return super.onOptionsItemSelected(item)
     }
 
-    private fun snackbarObserving() {
+    private fun baseObserving() {
         viewModel.observeSnackbarMessage(this) {
             Snackbar.make(findViewById(android.R.id.content), it, Snackbar.LENGTH_LONG).show()
         }
@@ -78,6 +82,7 @@ abstract class BaseKotlinActivity<T : BaseKotlinViewModel> : AppCompatActivity()
             Snackbar.make(findViewById(android.R.id.content), it, Snackbar.LENGTH_LONG).show()
         }
     }
+
 
     /**
      * 기본 툴바를 썼을 때 뒤로가기 버튼을 넣는 코드

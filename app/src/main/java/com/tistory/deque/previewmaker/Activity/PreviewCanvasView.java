@@ -435,7 +435,7 @@ public class PreviewCanvasView extends View {
     }
 
     private void drawCanvasOriginalSize(int previewPosition, boolean isSaveRoutineWithBlur) {
-        //Bitmap previewBitmap = previewItems.get(previewPosition).getmBitmap();
+        //Bitmap selectedPreviewBitmap = previewItems.get(previewPosition).getmBitmap();
         Bitmap previewBitmap = pbc.getPreviewBitmap();
         int previewOrigBitmapWidth = pbc.getBitmapWidth();
         int previewOrigBitmapHeight = pbc.getBitmapHeight();
@@ -546,7 +546,7 @@ public class PreviewCanvasView extends View {
     }
 
     private void drawBellowBitmap() {
-        //Bitmap previewBitmap = previewItems.get(getPosition()).getmBitmap();
+        //Bitmap selectedPreviewBitmap = previewItems.get(getPosition()).getmBitmap();
         Bitmap previewBitmap = pbc.getPreviewBitmap();
         int previewBitmapWidth = pbc.getBitmapWidth();
         int previewBitmapHeight = pbc.getBitmapHeight();
@@ -567,7 +567,7 @@ public class PreviewCanvasView extends View {
 
         try {
             mCanvas.drawBitmap(previewBitmap, null, new Rect(previewPosWidth, previewPosHeight, (previewPosWidth + previewWidth), (previewPosHeight + previewHeight)), paintPreviewContrastBrightness);
-            //mCanvas.drawBitmap(previewBitmap, null, new Rect(500,500,previewWidth + 500,previewHeight+500), paintPreviewContrastBrightness);
+            //mCanvas.drawBitmap(selectedPreviewBitmap, null, new Rect(500,500,previewWidth + 500,previewHeight+500), paintPreviewContrastBrightness);
             Logger.d(TAG, previewPosWidth + "," + previewPosHeight + "," + (previewPosWidth + previewWidth) + "," + (previewPosHeight + previewHeight));
         } catch (NullPointerException e) {
             Toast.makeText(mActivity.getApplicationContext(), "NullPointerException: canvas.drawBitmap", Toast.LENGTH_LONG).show();

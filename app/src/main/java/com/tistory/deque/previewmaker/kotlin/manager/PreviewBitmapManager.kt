@@ -13,6 +13,8 @@ import java.io.IOException
 object PreviewBitmapManager {
     private const val bitmapMaxSize = 2000
 
+    var selectedPreviewBitmap : Bitmap? = null
+
     fun imageUriToBitmap(imageUri: Uri, context: Context): Bitmap? {
         val bitmap: Bitmap
         var resizedBitmap: Bitmap? = null

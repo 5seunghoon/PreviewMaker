@@ -4,9 +4,11 @@ import android.arch.lifecycle.Observer
 import android.net.Uri
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.view.View
 import com.tistory.deque.previewmaker.R
 import com.tistory.deque.previewmaker.kotlin.base.BaseKotlinActivity
 import com.tistory.deque.previewmaker.kotlin.util.EtcConstant
+import com.tistory.deque.previewmaker.kotlin.util.EzLogger
 import kotlinx.android.synthetic.main.activity_kt_preview_edit.*
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
@@ -41,6 +43,9 @@ class KtPreviewEditActivity : BaseKotlinActivity<KtPreviewEditViewModel>() {
         preview_edit_thumbnail_recycler_view.run {
             adapter = previewThumbnailAdapter.apply {
                 previewListModel = viewModel.previewListModel
+                previewThumbnailClickListener = { preview ->
+                    viewModel.previewThumbnailClickListener(applicationContext, preview)
+                }
             }
             layoutManager = LinearLayoutManager(applicationContext, RecyclerView.HORIZONTAL, false)
             setHasFixedSize(true)
@@ -48,14 +53,43 @@ class KtPreviewEditActivity : BaseKotlinActivity<KtPreviewEditViewModel>() {
     }
 
     override fun initDataBinding() {
-        viewModel.addPreviewThumbnailEvent.observe(this, Observer {preview ->
-            preview?.let {
-                previewThumbnailAdapter.notifyDataSetChanged()
+        viewModel.startLoadingThumbnailEvent.observe(this, Observer { size ->
+            preview_edit_thumbnail_loading_progress_bar.run {
+                post {
+                    visibility = View.VISIBLE
+                    max = size ?: EtcConstant.MAX_SELECT_IMAGE_ACCOUNT
+                }
             }
+        })
+        viewModel.loadingFinishEachThumbnailEvent.observe(this, Observer { position ->
+            position?.let {
+                EzLogger.d("loadingFinishEachThumbnailEvent observe position : $position")
+                previewThumbnailAdapter.notifyDataSetChanged()
+                preview_edit_thumbnail_loading_progress_bar.run { post { progress = position } }
+            }
+        })
+        viewModel.finishLoadingThumbnailEvent.observe(this, Observer { size ->
+            previewThumbnailAdapter.notifyDataSetChanged()
+            preview_edit_thumbnail_loading_progress_bar.run { post { visibility = View.GONE } }
+        })
+        viewModel.startLoadingPreviewToCanvas.observe(this, Observer {
+            preview_edit_hint_text_view.run { post { visibility = View.GONE } }
+            mainLoadingProgressBarStart()
+        })
+        viewModel.stopLoadingPreviewToCanvas.observe(this, Observer {
+            mainLoadingProgressBarStop()
         })
     }
 
     override fun initViewFinal() {
         viewModel.makePreviewThumbnail(applicationContext, previewPathList)
+    }
+
+    private fun mainLoadingProgressBarStart(){
+        preview_edit_loading_progress_bar_layout.run { post { visibility = View.VISIBLE } }
+    }
+
+    private fun mainLoadingProgressBarStop(){
+        preview_edit_loading_progress_bar_layout.run { post { visibility = View.GONE } }
     }
 }

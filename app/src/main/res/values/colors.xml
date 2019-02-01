@@ -6,5 +6,6 @@
     <color name="backgroundGray">#EEEEEE</color>
     <color name="black">#000000</color>
     <color name="white">#FFFFFF</color>
+    <color name="grayLoadingBackground">#55000000</color>
     <color name="whiteRipple">#CCCCCC</color>
 </resources>

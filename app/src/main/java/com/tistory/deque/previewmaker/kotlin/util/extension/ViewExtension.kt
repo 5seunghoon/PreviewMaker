@@ -4,10 +4,9 @@ import android.view.View
 import android.view.animation.AlphaAnimation
 
 private const val animationDuration = 300L
-private val fadeInAnimation = AlphaAnimation(0f, 1f).apply { duration = animationDuration }
-private val fadeOutAnimation = AlphaAnimation(1f, 0f).apply { duration = animationDuration }
 
 fun View.fadeOut() {
+    val fadeOutAnimation = AlphaAnimation(1f, 0f).apply { duration = animationDuration }
     this.run {
         post {
             visibility = View.GONE
@@ -17,6 +16,7 @@ fun View.fadeOut() {
 }
 
 fun View.fadeIn() {
+    val fadeInAnimation = AlphaAnimation(0f, 1f).apply { duration = animationDuration }
     this.run {
         post {
             visibility = View.VISIBLE

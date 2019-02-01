@@ -860,7 +860,7 @@ public class PreviewEditActivity extends AppCompatActivity {
                 previewItems.add(new PreviewItem(originalUri, thumbnailUri, param[0]));
                 if (firstAdd) {
                     //처음 섬네일 로딩할때 pbc에 비트맵을 미리 넣어둠
-                    //pbc.setPreviewBitmap(previewItems.get(0));
+                    //pbc.setSelectedPreviewBitmap(previewItems.get(0));
                     firstAdd = false;
                 }
                 Logger.d(TAG, "previewItem success : " + originalUri);
