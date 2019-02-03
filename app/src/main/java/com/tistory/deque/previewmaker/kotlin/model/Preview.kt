@@ -45,11 +45,15 @@ data class Preview(
         }
     }
 
-    constructor(originalImageURI: Uri, thumbnailImageURI: Uri) :
+    constructor(originalImageURI: Uri, thumbnailImageURI: Uri, rotation: Int) :
             this(originalImageURI, thumbnailImageURI, makeResultImageFile(), true,
-                    0, 0, 0, 0)
+                    0, 0, 0, 0) {
+        this.rotation = rotation
+    }
 
-    fun getBitmap(context: Context) = PreviewBitmapManager.previewImageUriToBitmap(this.originalImageUri, context)
+    fun getBitmap(context: Context) = PreviewBitmapManager.previewImageUriToBitmap(this.originalImageUri, context, this.rotation)
+
+    var rotation: Int? = null
 
     var brightness: Int
         get() = _brightness + EtcConstant.SeekBarPreviewBrightnessMax / 2   //시크바에 들어갈 값이 리턴됨 (0~512) 실제 brightness 는 -255~+255

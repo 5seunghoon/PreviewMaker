@@ -476,9 +476,9 @@ class CustomPreviewCanvas : View {
         val deltaX = x - movePrevX
         val deltaY = y - movePrevY
 
-        if ((stampWidthPos - (stamp?.width ?: 0) + deltaX >= 0)
+        if ((stampWidthPos + (stamp?.width ?: 0) + deltaX >= 0)
                 && (stampWidthPos + deltaX <= this.width)) stampWidthPos += deltaX
-        if ((stampHeightPos - (stamp?.height ?: 0) + deltaY >= 0)
+        if ((stampHeightPos + (stamp?.height ?: 0) + deltaY >= 0)
                 && (stampHeightPos + deltaY <= this.height)) stampHeightPos += deltaY
 
         invalidate()

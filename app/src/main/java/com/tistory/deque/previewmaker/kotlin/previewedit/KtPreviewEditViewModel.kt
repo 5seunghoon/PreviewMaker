@@ -3,6 +3,7 @@ package com.tistory.deque.previewmaker.kotlin.previewedit
 import android.arch.lifecycle.LiveData
 import android.content.Context
 import android.database.CursorIndexOutOfBoundsException
+import android.media.ExifInterface
 import android.net.Uri
 import android.os.AsyncTask
 import android.provider.MediaStore
@@ -162,7 +163,10 @@ class KtPreviewEditViewModel : BaseKotlinViewModel() {
 
                 EzLogger.d("Thumbnail parsing success : $thumbnailUri")
 
-                val preview = Preview(originalUri, thumbnailUri)
+                val rotation = ExifInterface(previewPath)
+                        .getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED)
+
+                val preview = Preview(originalUri, thumbnailUri, rotation)
                 previewListModel.addPreview(preview)
 
                 publishProgress(loadingCounter)

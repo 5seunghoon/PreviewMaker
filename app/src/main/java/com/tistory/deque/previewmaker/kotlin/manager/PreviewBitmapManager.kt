@@ -7,6 +7,10 @@ import android.provider.MediaStore
 import com.tistory.deque.previewmaker.kotlin.util.EzLogger
 import java.io.FileNotFoundException
 import java.io.IOException
+import android.media.ExifInterface
+import android.R.attr.orientation
+import android.graphics.Matrix
+
 
 object PreviewBitmapManager {
     private const val previewBitmapMaxSize = 2000
@@ -21,22 +25,23 @@ object PreviewBitmapManager {
     }
 
     fun stampImageUriToBitmap(imageUri: Uri, context: Context): Bitmap? {
-        return imageUriToBitmap(stampBitmapMaxSize, imageUri, context)
+        return imageUriToBitmap(stampBitmapMaxSize, imageUri, context, null)
     }
 
-    fun previewImageUriToBitmap(imageUri: Uri, context: Context): Bitmap? {
-        return imageUriToBitmap(previewBitmapMaxSize, imageUri, context)
+    fun previewImageUriToBitmap(imageUri: Uri, context: Context, rotation: Int?): Bitmap? {
+        return imageUriToBitmap(previewBitmapMaxSize, imageUri, context, rotation)
     }
 
-    private fun imageUriToBitmap(maxSize: Int, imageUri: Uri, context: Context): Bitmap? {
-        val bitmap: Bitmap
+    private fun imageUriToBitmap(maxSize: Int, imageUri: Uri, context: Context, rotation:Int?): Bitmap? {
+        EzLogger.d("rotation : $rotation")
+        var bitmap: Bitmap? = null
         var resizedBitmap: Bitmap? = null
         val width: Int
         val height: Int
         val rate: Double
 
         try {
-            bitmap = MediaStore.Images.Media.getBitmap(context.contentResolver, imageUri)
+            bitmap = MediaStore.Images.Media.getBitmap(context.contentResolver, imageUri) ?: return null
             width = bitmap.width
             height = bitmap.height
             rate = width.toDouble() / height.toDouble()
@@ -57,6 +62,29 @@ object PreviewBitmapManager {
         } catch (e: IOException) {
             EzLogger.d("URI -> Bitmap : IOException$imageUri")
             e.printStackTrace()
+        }
+
+        if(rotation != null && resizedBitmap != null){
+            try {
+                val matrix = Matrix()
+                when (rotation) {
+                    ExifInterface.ORIENTATION_ROTATE_90 -> {
+                        matrix.postRotate(90f)
+                        resizedBitmap = Bitmap.createBitmap(resizedBitmap, 0, 0, resizedBitmap.width, resizedBitmap.height, matrix, true)
+                    }
+                    ExifInterface.ORIENTATION_ROTATE_180 -> {
+                        matrix.postRotate(180f)
+                        resizedBitmap = Bitmap.createBitmap(resizedBitmap, 0, 0, resizedBitmap.width, resizedBitmap.height, matrix, true)
+                    }
+                    ExifInterface.ORIENTATION_ROTATE_270 -> {
+                        matrix.postRotate(270f)
+                        resizedBitmap = Bitmap.createBitmap(resizedBitmap, 0, 0, resizedBitmap.width, resizedBitmap.height, matrix, true)
+                    }
+                }
+            } catch (e: OutOfMemoryError){
+                EzLogger.d("out of memory error ...")
+                e.printStackTrace()
+            }
         }
 
         return resizedBitmap
