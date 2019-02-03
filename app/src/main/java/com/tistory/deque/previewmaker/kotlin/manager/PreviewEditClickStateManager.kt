@@ -52,4 +52,19 @@ object PreviewEditClickStateManager {
 
     fun isBlurGuide() = (nowState == STATE_BITMAP_FILTER_BLUR_GUIDE)
 
+    fun clickBlur() {
+        if(nowState == STATE_BITMAP_FILTER) nowState = STATE_BITMAP_FILTER_BLUR_GUIDE
+    }
+
+    fun endBlurGuild() {
+        // blur guide -> blur
+        if(nowState == STATE_BITMAP_FILTER_BLUR_GUIDE) nowState = STATE_BITMAP_FILTER_BLUR
+    }
+
+    fun blurEnd() {
+        if((nowState == STATE_BITMAP_FILTER_BLUR_GUIDE) || (nowState == STATE_BITMAP_FILTER_BLUR)) {
+            nowState = STATE_BITMAP_FILTER
+        }
+    }
+
 }

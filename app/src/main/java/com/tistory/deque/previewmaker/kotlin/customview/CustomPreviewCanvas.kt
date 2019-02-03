@@ -8,11 +8,9 @@ import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
+import com.tistory.deque.previewmaker.Controler.BlurController
 import com.tistory.deque.previewmaker.R
-import com.tistory.deque.previewmaker.kotlin.manager.PreviewBitmapManager
-import com.tistory.deque.previewmaker.kotlin.manager.PreviewEditButtonViewStateManager
-import com.tistory.deque.previewmaker.kotlin.manager.PreviewEditClickStateManager
-import com.tistory.deque.previewmaker.kotlin.manager.RetouachingPaintManager
+import com.tistory.deque.previewmaker.kotlin.manager.*
 import com.tistory.deque.previewmaker.kotlin.model.Preview
 import com.tistory.deque.previewmaker.kotlin.model.Stamp
 import com.tistory.deque.previewmaker.kotlin.model.enums.PreviewEditClickStateEnum
@@ -71,13 +69,31 @@ class CustomPreviewCanvas : View {
 
             drawBaseBitmap(it)
 
+            if (PreviewEditClickStateManager.isBlurGuide()) {
+                drawBlurGuide()
+            }
+
             if (isStampShown) {
                 drawStamp()
                 if (PreviewEditClickStateManager.isShowGuildLine()) {
                     drawStampGuideLine()
                 }
             }
+
         } ?: setBackgroundColor(Color.WHITE)
+    }
+
+    /**
+     * 블러의 가이드를 그림
+     *
+     * 1. 타원을 사용자가 설정하면
+     * 5. OK를 눌리면 바로 블러링 연산
+     * 2. 그 타원을 포함하는 사각형을 구하고
+     * 3. 그 사각형만큼 비트맵을 블러 적용
+     * 4. 그 후 그 블러된 비트맵을 pbc.blurBitmap에 저장
+     */
+    private fun drawBlurGuide() {
+        canvas?.drawOval(BlurManager.blurGuideOvalRectF, BlurManager.blurGuidePaint)
     }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
@@ -138,6 +154,20 @@ class CustomPreviewCanvas : View {
 
     fun filterResetListener() {
         previewFilterReset()
+        invalidate()
+    }
+
+    fun filterBlurListener() {
+        PreviewEditClickStateManager.clickBlur()
+    }
+
+    fun filterBlurCancelListener(){
+        PreviewEditClickStateManager.blurEnd()
+        invalidate()
+    }
+
+    fun filterBlurOkListener(){
+        PreviewEditClickStateManager.blurEnd()
         invalidate()
     }
 
@@ -342,7 +372,7 @@ class CustomPreviewCanvas : View {
     private fun touchDown(event: MotionEvent) {
         if (PreviewEditClickStateManager.isBlur()) {
             touchDownForBlur(event)
-        }
+        } // 이하를 if else로 고치지 말것
         if (PreviewEditClickStateManager.isBlurGuide()) {
             touchDownForBlurGuide(event)
         } else {
@@ -426,7 +456,8 @@ class CustomPreviewCanvas : View {
     }
 
     private fun touchDownForBlurGuide(event: MotionEvent) {
-
+        BlurManager.resetGuideOvalRectF(event.x, event.y)
+        invalidate()
     }
 
     private fun touchMove(event: MotionEvent) {
@@ -446,7 +477,16 @@ class CustomPreviewCanvas : View {
     }
 
     private fun touchUpForBlurGuide(event: MotionEvent) {
+        PreviewEditClickStateManager.endBlurGuild()
+        if(BlurManager.cutOval(changedPreviewWidth, changedPreviewHeight,
+                changedPreviewPosWidth, changedPreviewPosHeight)){
+            makeOvalBlur()
+        }
+        invalidate()
+    }
 
+    private fun makeOvalBlur() {
+        activity?.makeOvalBlur()
     }
 
     private fun touchUpForStamp() {
@@ -454,7 +494,8 @@ class CustomPreviewCanvas : View {
     }
 
     private fun touchMoveForBlurGuide(event: MotionEvent) {
-
+        BlurManager.setGuideOvalRectFRightBottom(event.x, event.y)
+        invalidate()
     }
 
     private fun touchMoveForStamp(event: MotionEvent) {
@@ -601,7 +642,7 @@ class CustomPreviewCanvas : View {
         }
     }
 
-    private fun previewFilterReset(){
+    private fun previewFilterReset() {
         preview?.resetFilterValue()
     }
 

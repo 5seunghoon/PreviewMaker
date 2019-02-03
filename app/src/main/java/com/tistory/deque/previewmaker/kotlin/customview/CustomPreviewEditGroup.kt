@@ -153,6 +153,7 @@ class CustomPreviewEditGroup : LinearLayout {
         }
         custom_edit_group_filter_blur.setOnClickListener {
             PreviewEditButtonViewStateManager.clickFilterBlur()
+            customPreviewCanvas?.filterBlurListener()
             layoutChange()
         }
         custom_edit_group_filter_reset.setOnClickListener {
@@ -167,10 +168,16 @@ class CustomPreviewEditGroup : LinearLayout {
         // 4.
         custom_edit_group_handler_finish.setOnClickListener {
             PreviewEditButtonViewStateManager.finishEdit()
+            if(PreviewEditClickStateManager.isBlur() || PreviewEditClickStateManager.isBlurGuide()) {
+                customPreviewCanvas?.filterBlurOkListener()
+            }
             layoutChange()
         }
         custom_edit_group_handler_cancel.setOnClickListener {
             PreviewEditButtonViewStateManager.finishEdit()
+            if(PreviewEditClickStateManager.isBlur() || PreviewEditClickStateManager.isBlurGuide()) {
+                customPreviewCanvas?.filterBlurCancelListener()
+            }
             layoutChange()
         }
     }

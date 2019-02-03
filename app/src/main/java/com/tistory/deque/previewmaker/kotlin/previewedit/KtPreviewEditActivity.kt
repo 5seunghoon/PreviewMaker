@@ -166,4 +166,8 @@ class KtPreviewEditActivity : BaseKotlinActivity<KtPreviewEditViewModel>() {
     fun stampUpdate(id: Int, stamp: Stamp) {
         viewModel.dbUpdateStamp(id, stamp)
     }
+
+    fun makeOvalBlur() {
+
+    }
 }

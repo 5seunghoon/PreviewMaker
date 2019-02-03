@@ -77,19 +77,19 @@ public class BlurController {
     }
 
     /**
-     * @param previewWidth
-     * @param previewHeight
-     * @param previewPosWidth
-     * @param previewPosHeigth
+     * @param changedPreviewWidth
+     * @param changedPreviewHeight
+     * @param changedPreviewPosWidth
+     * @param changedPreviewPosHeight
      * @return 불가능한 타원(좌표가 하나라도 음수)일때 false반환
      */
-    public static boolean cutOval(int previewWidth, int previewHeight, int previewPosWidth, int previewPosHeigth) {
+    public static boolean cutOval(int changedPreviewWidth, int changedPreviewHeight, int changedPreviewPosWidth, int changedPreviewPosHeight) {
         //불가능한 타원을 만들면 앱이 터짐
         int left = Math.min((int) guideOvalRectFLeft, (int) guideOvalRectFRight);
         int top = Math.min((int) guideOvalRectFTop, (int) guideOvalRectFBottom);
         int right = Math.max((int) guideOvalRectFLeft, (int) guideOvalRectFRight);
         int bottom = Math.max((int) guideOvalRectFTop, (int) guideOvalRectFBottom);
-        int b_left = previewPosWidth, b_top = previewPosHeigth, b_right = previewPosWidth + previewWidth, b_bottom = previewPosHeigth + previewHeight; //비트맵의 좌표
+        int b_left = changedPreviewPosWidth, b_top = changedPreviewPosHeight, b_right = changedPreviewPosWidth + changedPreviewWidth, b_bottom = changedPreviewPosHeight + changedPreviewHeight; //비트맵의 좌표
 
         Logger.d("MYTAG", "CUT OVAL, BITMAP : "+ b_left + ", " + b_top + ", " + b_right + ", " + b_bottom);
         Logger.d("MYTAG", "OVAL : " + left + ", " + top + ", " + right+ ", " +bottom);

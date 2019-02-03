@@ -18,6 +18,7 @@ object PreviewBitmapManager {
 
     var selectedPreviewBitmap : Bitmap? = null
     var selectedStampBitmap : Bitmap? = null
+    var blurredPreviewBitmap : Bitmap? = null
 
     fun resetManager(){
         selectedPreviewBitmap = null
