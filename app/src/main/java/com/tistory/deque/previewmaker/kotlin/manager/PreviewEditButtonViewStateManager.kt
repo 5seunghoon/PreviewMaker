@@ -106,4 +106,13 @@ object PreviewEditButtonViewStateManager {
         }
     }
 
+    fun forceChangeStampState() {
+        EzLogger.d("forceChangeStampState")
+        if(nowState != HOME) return
+        EzLogger.d("prevState : $prevState, nowState: $nowState")
+        prevState = nowState
+        nowState = STAMP
+        EzLogger.d("change -> \nprevState : $prevState, nowState: $nowState")
+    }
+
 }

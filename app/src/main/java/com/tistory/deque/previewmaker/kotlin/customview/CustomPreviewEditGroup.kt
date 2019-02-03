@@ -7,6 +7,8 @@ import android.widget.LinearLayout
 import com.tistory.deque.previewmaker.R
 import com.tistory.deque.previewmaker.kotlin.model.enums.PreviewEditButtonViewStateEnum
 import com.tistory.deque.previewmaker.kotlin.manager.PreviewEditButtonViewStateManager
+import com.tistory.deque.previewmaker.kotlin.manager.PreviewEditClickStateManager
+import com.tistory.deque.previewmaker.kotlin.model.enums.PreviewEditClickStateEnum
 import com.tistory.deque.previewmaker.kotlin.util.EzLogger
 import com.tistory.deque.previewmaker.kotlin.util.extension.goneView
 import com.tistory.deque.previewmaker.kotlin.util.extension.visibleView
@@ -67,6 +69,7 @@ class CustomPreviewEditGroup : LinearLayout {
         }
         custom_edit_group_home_filter.setOnClickListener {
             PreviewEditButtonViewStateManager.setFilterState()
+            customPreviewCanvas?.homeFilterListener()
             layoutChange()
         }
         custom_edit_group_home_save.setOnClickListener {
@@ -77,6 +80,7 @@ class CustomPreviewEditGroup : LinearLayout {
         custom_edit_group_stamp_delete.setOnClickListener {
             PreviewEditButtonViewStateManager.finishEdit()
             stampDeleteListener()
+            customPreviewCanvas?.stampDeleteListener()
             layoutChange()
         }
         custom_edit_group_stamp_brightness.setOnClickListener {
@@ -89,7 +93,7 @@ class CustomPreviewEditGroup : LinearLayout {
         custom_edit_group_stamp_finish.setOnClickListener {
             PreviewEditButtonViewStateManager.finishEdit()
             stampFinishListener()
-            customPreviewCanvas?.stampDeleteListener()
+            customPreviewCanvas?.stampFinishListener()
             layoutChange()
         }
 
@@ -111,6 +115,7 @@ class CustomPreviewEditGroup : LinearLayout {
         }
         custom_edit_group_filter_finish.setOnClickListener {
             PreviewEditButtonViewStateManager.finishEdit()
+            customPreviewCanvas?.filterFinishListener()
             layoutChange()
         }
 
@@ -204,5 +209,13 @@ class CustomPreviewEditGroup : LinearLayout {
         }
     }
 
+    fun setSyncClickState() {
+        EzLogger.d("setSyncClickState, nowState : ${PreviewEditClickStateManager.nowState}")
+        if (PreviewEditClickStateManager.nowState == PreviewEditClickStateEnum.STATE_STAMP_EDIT
+                || PreviewEditClickStateManager.nowState == PreviewEditClickStateEnum.STATE_STAMP_ZOOM) {
+            PreviewEditButtonViewStateManager.forceChangeStampState()
+        }
+        layoutChange()
+    }
 
 }

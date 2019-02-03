@@ -1,34 +1,36 @@
 package com.tistory.deque.previewmaker.kotlin.customview
 
-import android.app.Activity
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Rect
+import android.graphics.*
 import android.net.Uri
 import android.provider.MediaStore
 import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
+import android.view.MotionEvent
 import android.view.View
 import com.tistory.deque.previewmaker.R
-import com.tistory.deque.previewmaker.Util.Logger
 import com.tistory.deque.previewmaker.kotlin.manager.PreviewBitmapManager
 import com.tistory.deque.previewmaker.kotlin.manager.PreviewEditButtonViewStateManager
 import com.tistory.deque.previewmaker.kotlin.manager.PreviewEditClickStateManager
 import com.tistory.deque.previewmaker.kotlin.manager.RetouachingPaintManager
 import com.tistory.deque.previewmaker.kotlin.model.Preview
 import com.tistory.deque.previewmaker.kotlin.model.Stamp
-import com.tistory.deque.previewmaker.kotlin.model.enums.StampAnchorEnum
+import com.tistory.deque.previewmaker.kotlin.model.enums.PreviewEditClickStateEnum
 import com.tistory.deque.previewmaker.kotlin.previewedit.KtPreviewEditActivity
 import com.tistory.deque.previewmaker.kotlin.util.EzLogger
 import java.io.IOException
+import java.lang.IllegalArgumentException
 import java.util.ArrayList
+import kotlin.math.roundToInt
 
 class CustomPreviewCanvas : View {
     init {
         initView()
     }
+
+    private val stampGuideRectWidth = 5f
+    private val stampGuideLineWidth = 2f
+    private val stampGuideCircleRadius = 15f
 
     private var activity: KtPreviewEditActivity? = null
     private var canvas: Canvas? = null
@@ -45,8 +47,10 @@ class CustomPreviewCanvas : View {
     private var stampHeightPos: Int = 0
     private var stampRate: Double = 0.0
 
+    private var movePrevX: Int = 0
+    private var movePrevY: Int = 0
 
-    var isStampShow: Boolean = false
+    var isStampShown: Boolean = false
         private set
 
     constructor(context: Context) : super(context)
@@ -57,6 +61,33 @@ class CustomPreviewCanvas : View {
 
     }
 
+    override fun onDraw(canvas: Canvas?) {
+        super.onDraw(canvas)
+        this.canvas = canvas
+
+        setBackgroundColor(ContextCompat.getColor(context, R.color.backgroundGray))
+        preview?.let {
+
+            drawBaseBitmap(it)
+
+            if (isStampShown) {
+                drawStamp()
+                if (PreviewEditClickStateManager.isShowGuildLine()) {
+                    drawStampGuideLine()
+                }
+            }
+        } ?: setBackgroundColor(Color.WHITE)
+    }
+
+    override fun onTouchEvent(event: MotionEvent?): Boolean {
+        when (event?.action) {
+            MotionEvent.ACTION_DOWN -> touchDown(event)
+            MotionEvent.ACTION_MOVE -> touchMove(event)
+            MotionEvent.ACTION_UP -> touchUp(event)
+        }
+        return true
+    }
+
     fun setComponent(activity: KtPreviewEditActivity) {
         EzLogger.d("setComponent viewModel set ")
         this.activity = activity
@@ -64,23 +95,47 @@ class CustomPreviewCanvas : View {
     }
 
     fun showStamp() {
-        isStampShow = true
+        isStampShown = true
     }
 
     fun hideStamp() {
-        isStampShow = false
+        isStampShown = false
     }
 
     fun homeStampListener() {
         showStamp()
+        PreviewEditClickStateManager.setStampEditState()
         setStampComponent()
         invalidate()
     }
 
-    private fun setStampComponent(){
+    fun stampDeleteListener() {
+        PreviewEditClickStateManager.setNoneClickState()
+        hideStamp()
+        invalidate()
+    }
+
+    fun stampFinishListener() {
+        PreviewEditClickStateManager.setNoneClickState()
+        invalidate()
+    }
+
+    fun homeFilterListener() {
+        PreviewEditClickStateManager.setBitmapFilterState()
+        invalidate()
+    }
+
+    fun filterFinishListener() {
+        PreviewEditClickStateManager.setNoneClickState()
+        invalidate()
+    }
+
+    private fun setStampComponent() {
         stamp?.let { stamp ->
-            if(stamp.width <= 0 ) stamp.width = PreviewBitmapManager.selectedStampBitmap?.width ?: -1
-            if(stamp.height <= 0) stamp.height = PreviewBitmapManager.selectedStampBitmap?.height ?: -1
+            if (stamp.width <= 0) stamp.width = PreviewBitmapManager.selectedStampBitmap?.width
+                    ?: -1
+            if (stamp.height <= 0) stamp.height = PreviewBitmapManager.selectedStampBitmap?.height
+                    ?: -1
 
             EzLogger.d("setStampComponent, stamp : $stamp")
 
@@ -91,7 +146,7 @@ class CustomPreviewCanvas : View {
             val widthAnchor = stamp.positionAnchorEnum.value % 3
 
             stampWidthPos = (stamp.positionWidthPer * changedPreviewBitmapWidth / 100000.0f
-                    - stamp.width * widthAnchor + changedPreviewPosWidth).toInt()
+                    - stamp.width * widthAnchor / 2.0f + changedPreviewPosWidth).toInt()
             stampHeightPos = (stamp.positionHeightPer * changedPreviewBitmapHeight / 100000.0f
                     - stamp.height * heightAnchor / 2.0f + changedPreviewPosHeight).toInt()
 
@@ -106,29 +161,6 @@ class CustomPreviewCanvas : View {
             EzLogger.d("stampWidth : ${stamp.width}, stampWidthPos : $stampWidthPos, " +
                     "stampHeight : ${stamp.height}, stampHeightPos : $stampHeightPos")
         } ?: EzLogger.d("setStampComponent stamp null")
-    }
-
-
-    fun stampDeleteListener() {
-        hideStamp()
-    }
-
-    override fun onDraw(canvas: Canvas?) {
-        super.onDraw(canvas)
-        this.canvas = canvas
-
-        setBackgroundColor(ContextCompat.getColor(context, R.color.backgroundGray))
-        preview?.let {
-
-            drawBaseBitmap(it)
-
-            if (isStampShow) {
-                drawStamp()
-                if (PreviewEditClickStateManager.isShowGuildLine()) {
-                    drawStampGuildLine()
-                }
-            }
-        } ?: setBackgroundColor(Color.WHITE)
     }
 
     private fun drawBaseBitmap(preview: Preview) {
@@ -169,7 +201,12 @@ class CustomPreviewCanvas : View {
     private fun drawStamp() {
         EzLogger.d("custom preview canvas, draw stamp : $stamp")
         stamp?.let {
-            val paintContrastBrightness = RetouachingPaintManager.getPaint(1f, it.getAbsoluteBrightness().toFloat(), 1f, 1f)
+            val paintContrastBrightness =
+                    RetouachingPaintManager.getPaint(
+                            1f,
+                            it.getAbsoluteBrightness().toFloat(),
+                            1f,
+                            1f)
             val rect = Rect(stampWidthPos, stampHeightPos, stampWidthPos + it.width, stampHeightPos + it.height)
 
             canvas?.drawBitmap(
@@ -193,8 +230,44 @@ class CustomPreviewCanvas : View {
         }
 
     }
-    private fun drawStampGuildLine() {
 
+    private fun drawStampGuideLine() {
+        stamp?.let { stamp ->
+            val xStart = stampWidthPos
+            val xEnd = stampWidthPos + stamp.width
+            val xLength = stamp.width
+            val yStart = stampHeightPos
+            val yEnd = stampHeightPos + stamp.height
+            val yLength = stamp.height
+
+            val guideRectPaint = Paint().apply {
+                strokeWidth = stampGuideRectWidth
+                color = Color.WHITE
+                style = Paint.Style.STROKE
+            }
+            canvas?.drawRect(xStart.toFloat(), yStart.toFloat(), xEnd.toFloat(), yEnd.toFloat(), guideRectPaint)
+
+            val guideLine = Paint().apply {
+                strokeWidth = stampGuideLineWidth
+                color = Color.WHITE
+            }
+            canvas?.run {
+                drawLine(xStart.toFloat(), yLength / 3.0f + yStart, xEnd.toFloat(), yLength / 3.0f + yStart, guideLine)
+                drawLine(xStart.toFloat(), yLength * 2 / 3.0f + yStart, xEnd.toFloat(), yLength * 2 / 3.0f + yStart, guideLine)
+                drawLine(xLength / 3.0f + xStart, yStart.toFloat(), xLength / 3.0f + xStart, yEnd.toFloat(), guideLine)
+                drawLine(xLength * 2 / 3.0f + xStart, yStart.toFloat(), xLength * 2 / 3.0f + xStart, yEnd.toFloat(), guideLine)
+            }
+
+            val guideCircle = Paint().apply {
+                color = Color.WHITE
+            }
+            canvas?.run {
+                drawCircle(xStart.toFloat(), yStart.toFloat(), stampGuideCircleRadius, guideCircle)
+                drawCircle(xStart.toFloat(), yEnd.toFloat(), stampGuideCircleRadius, guideCircle)
+                drawCircle(xEnd.toFloat(), yStart.toFloat(), stampGuideCircleRadius, guideCircle)
+                drawCircle(xEnd.toFloat(), yEnd.toFloat(), stampGuideCircleRadius, guideCircle)
+            }
+        }
     }
 
     /**
@@ -254,4 +327,177 @@ class CustomPreviewCanvas : View {
 
         return elements
     }
+
+    private fun touchDown(event: MotionEvent) {
+        if (PreviewEditClickStateManager.isBlur()) {
+            touchDownForBlur(event)
+        }
+        if (PreviewEditClickStateManager.isBlurGuide()) {
+            touchDownForBlurGuide(event)
+        } else {
+            touchDownForStamp(event)
+        }
+    }
+
+    private fun touchDownForStamp(event: MotionEvent) {
+        var x = 0
+        var y = 0
+        try {
+            x = event.x.roundToInt()
+            y = event.y.roundToInt()
+        } catch (e: IllegalArgumentException) {
+            e.printStackTrace()
+            return
+        }
+        movePrevX = x
+        movePrevY = y
+
+        EzLogger.d("""touchDownForStamp,
+                | prevX : $movePrevX, prevY : $movePrevY
+                | newX : $x, newY : $y
+            """.trimMargin())
+
+        if (isTouchInStamp(x, y) && isStampShown) {
+            clickStamp()
+        } else if (isTouchStampZoom(x, y) && isStampShown) {
+            clickStampToZoom()
+        }
+    }
+
+    private fun isTouchInStamp(x: Int, y: Int): Boolean {
+        stamp?.let { stamp ->
+            return isInBoxWithWidth(x, y, stampWidthPos, stampHeightPos, stamp.width, stamp.height)
+        } ?: return false
+    }
+
+    private fun isTouchStampZoom(x: Int, y: Int): Boolean {
+        stamp?.let { stamp ->
+            val radius = (stampGuideCircleRadius + 25).toInt()
+            val xStart = stampWidthPos //x start
+            val xEnd = stampWidthPos + stamp.width //x end
+            val yStart = stampHeightPos // y start
+            val yEnd = stampHeightPos + stamp.height // y end
+
+            return (isInBoxWithRadius(x, y, xStart, yStart, radius)
+                    || isInBoxWithRadius(x, y, xStart, yEnd, radius)
+                    || isInBoxWithRadius(x, y, xEnd, yStart, radius)
+                    || isInBoxWithRadius(x, y, xEnd, yEnd, radius))
+
+        } ?: return false
+    }
+
+    private fun isInBoxWithWidth(x: Int, y: Int, x1: Int, y1: Int, xWidth: Int, yWidth: Int): Boolean {
+        return (x > x1) && (x < x1 + xWidth) && (y > y1) && (y < y1 + yWidth)
+    }
+
+    private fun isInBoxWithRadius(x: Int, y: Int, xCenter: Int, yCenter: Int, radius: Int): Boolean {
+        return (x - xCenter) * (x - xCenter) + (y - yCenter) * (y - yCenter) < radius * radius
+    }
+
+    private fun clickStamp() {
+        EzLogger.d("clickStamp")
+        if (PreviewEditClickStateManager.clickStamp()) {
+            activity?.setSyncClickState()
+        }
+        invalidate()
+    }
+
+    private fun clickStampToZoom() {
+        EzLogger.d("clickStampToZoom")
+        if (PreviewEditClickStateManager.clickStampZoomStart()) {
+            activity?.setSyncClickState()
+        }
+        invalidate()
+    }
+
+    private fun touchDownForBlur(event: MotionEvent) {
+
+    }
+
+    private fun touchDownForBlurGuide(event: MotionEvent) {
+
+    }
+
+    private fun touchMove(event: MotionEvent) {
+        if (PreviewEditClickStateManager.isBlurGuide()) {
+            touchMoveForBlurGuide(event)
+        } else {
+            touchMoveForStamp(event)
+        }
+    }
+
+    private fun touchUp(event: MotionEvent) {
+        if(PreviewEditClickStateManager.isBlurGuide()) {
+            touchUpForBlurGuide(event)
+        } else {
+            touchUpForStamp()
+        }
+    }
+
+    private fun touchUpForBlurGuide(event: MotionEvent) {
+
+    }
+
+    private fun touchUpForStamp() {
+        PreviewEditClickStateManager.clickStampZoomEnd()
+    }
+
+    private fun touchMoveForBlurGuide(event: MotionEvent) {
+
+    }
+
+    private fun touchMoveForStamp(event: MotionEvent) {
+        var x: Int = 0
+        var y: Int = 0
+        try {
+            x = event.x.roundToInt()
+            y = event.y.roundToInt()
+        } catch (e: IllegalArgumentException) {
+            e.printStackTrace()
+            return
+        }
+
+        when (PreviewEditClickStateManager.nowState) {
+            PreviewEditClickStateEnum.STATE_STAMP_EDIT -> stampMove(x, y)
+            PreviewEditClickStateEnum.STATE_STAMP_ZOOM -> stampZoom(x, y)
+        }
+
+        movePrevX = x
+        movePrevY = y
+    }
+
+    private fun stampMove(x:Int, y:Int){
+        val deltaX = x - movePrevX
+        val deltaY = y - movePrevY
+
+        stampWidthPos += deltaX
+        stampHeightPos += deltaY
+
+        invalidate()
+    }
+
+    private fun stampZoom(x: Int, y: Int) {
+        stamp?.let { stamp ->
+            val stampCenterX = (stampWidthPos + stamp.width / 2.0f).toDouble()
+            val stampCenterY = (stampHeightPos + stamp.height / 2.0f).toDouble()
+
+            val nowDist = Math.sqrt(
+                    Math.pow(stampCenterX - x, 2.0) + Math.pow(stampCenterY - y, 2.0))
+
+            if(stampRate == 0.0) stamp.width.toDouble() / stamp.height.toDouble()
+            val newHeight = (2.0f * nowDist) / Math.sqrt((Math.pow(stampRate, 2.0) + 1))
+            val newWidth = newHeight * stampRate
+
+            try {
+                stampWidthPos = (stampCenterX - newWidth / 2.0f).roundToInt()
+                stampHeightPos = (stampCenterY - newHeight / 2.0f).roundToInt()
+                stamp.width = (stampCenterX + newWidth / 2.0f).roundToInt() - stampWidthPos
+                stamp.height = (stampCenterY + newHeight / 2.0f).roundToInt() - stampHeightPos
+            } catch (e: IllegalArgumentException) {
+                e.printStackTrace()
+            }
+            invalidate()
+        }
+    }
+
 }

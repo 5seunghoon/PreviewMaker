@@ -11,7 +11,9 @@ import com.tistory.deque.previewmaker.R
 import com.tistory.deque.previewmaker.kotlin.base.BaseKotlinActivity
 import com.tistory.deque.previewmaker.kotlin.helppreviewedit.KtHelpPreviewEditActivity
 import com.tistory.deque.previewmaker.kotlin.manager.PreviewBitmapManager
+import com.tistory.deque.previewmaker.kotlin.manager.PreviewEditClickStateManager
 import com.tistory.deque.previewmaker.kotlin.model.Preview
+import com.tistory.deque.previewmaker.kotlin.model.enums.PreviewEditClickStateEnum
 import com.tistory.deque.previewmaker.kotlin.util.EtcConstant
 import com.tistory.deque.previewmaker.kotlin.util.EzLogger
 import com.tistory.deque.previewmaker.kotlin.util.extension.fadeIn
@@ -151,5 +153,9 @@ class KtPreviewEditActivity : BaseKotlinActivity<KtPreviewEditViewModel>() {
     override fun onDestroy() {
         PreviewBitmapManager.resetManager()
         super.onDestroy()
+    }
+
+    fun setSyncClickState() {
+        preview_edit_custom_edit_group.setSyncClickState()
     }
 }

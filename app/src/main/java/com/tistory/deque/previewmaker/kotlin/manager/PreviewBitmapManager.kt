@@ -17,6 +17,7 @@ object PreviewBitmapManager {
 
     fun resetManager(){
         selectedPreviewBitmap = null
+        selectedStampBitmap = null
     }
 
     fun stampImageUriToBitmap(imageUri: Uri, context: Context): Bitmap? {

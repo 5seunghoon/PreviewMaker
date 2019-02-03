@@ -29,21 +29,22 @@ data class Stamp(
                     DBOpenHelper.STAMP_POS_HEIGHT_PERCENT_KEY_INIT_VALUE,
                     StampAnchorEnum.CENTER)
 
-    var brightness: Int = 0
+    private var _brightness:Int = 0
+    var brightness: Int
         get() {
             //시크바에 들어갈 값이 리턴됨 (0~512)
             //실제 brightness 는 -255~+255
             //TODO : return brightness + SeekBarListener.SeekBarStampBrightnessMax / 2
-            return field + EtcConstant.SeekBarStampBrightnessMax / 2
+            return _brightness + EtcConstant.SeekBarStampBrightnessMax / 2
         }
         set(value) {
             //TODO : field = value - SeekBarListener.SeekBarStampBrightnessMax / 2
-            field = value - EtcConstant.SeekBarStampBrightnessMax / 2
+            _brightness = value - EtcConstant.SeekBarStampBrightnessMax / 2
         }
 
     fun getAbsoluteBrightness(): Int {
         //-255~255값을 반환, 스탬프에 실제로 필터를 적용할때 이용
-        return brightness
+        return _brightness
     }
 
 }

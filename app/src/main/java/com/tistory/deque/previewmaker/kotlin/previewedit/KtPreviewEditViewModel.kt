@@ -63,8 +63,6 @@ class KtPreviewEditViewModel : BaseKotlinViewModel() {
             stamp = it.dbGetStamp(stampId)
             stamp?.let { stamp ->
                 EzLogger.d("stamp found : $stamp")
-                PreviewBitmapManager.selectedStampBitmap =
-                        PreviewBitmapManager.stampImageUriToBitmap(stamp.imageUri, context)
             } ?: run {
                 showSnackbar(R.string.snackbar_stamp_not_found)
             }
@@ -187,6 +185,12 @@ class KtPreviewEditViewModel : BaseKotlinViewModel() {
         override fun doInBackground(vararg params: Void?): Preview {
             EzLogger.d("LoadingPreviewToCanvas doInBackground")
             PreviewBitmapManager.selectedPreviewBitmap = preview.getBitmap(context)
+            if(PreviewBitmapManager.selectedStampBitmap == null){
+                stamp?.imageUri?.let { url ->
+                    PreviewBitmapManager.selectedStampBitmap =
+                            PreviewBitmapManager.stampImageUriToBitmap(url, context)
+                }
+            }
             return preview
         }
 
