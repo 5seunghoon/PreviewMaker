@@ -2,7 +2,9 @@ package com.tistory.deque.previewmaker.kotlin.model
 
 import android.net.Uri
 import com.tistory.deque.previewmaker.Model_Global.DBOpenHelper
+import com.tistory.deque.previewmaker.Model_Global.SeekBarListener
 import com.tistory.deque.previewmaker.kotlin.model.enums.StampAnchorEnum
+import com.tistory.deque.previewmaker.kotlin.util.EtcConstant
 import java.io.Serializable
 
 data class Stamp(
@@ -28,15 +30,15 @@ data class Stamp(
                     StampAnchorEnum.CENTER)
 
     var brightness: Int = 0
-        set(value) {
-            //TODO : field = value - SeekBarListener.SeekBarStampBrightnessMax / 2
-            field = value - 512 / 2
-        }
         get() {
             //시크바에 들어갈 값이 리턴됨 (0~512)
             //실제 brightness 는 -255~+255
             //TODO : return brightness + SeekBarListener.SeekBarStampBrightnessMax / 2
-            return brightness + 512 / 2
+            return field + EtcConstant.SeekBarStampBrightnessMax / 2
+        }
+        set(value) {
+            //TODO : field = value - SeekBarListener.SeekBarStampBrightnessMax / 2
+            field = value - EtcConstant.SeekBarStampBrightnessMax / 2
         }
 
     fun getAbsoluteBrightness(): Int {

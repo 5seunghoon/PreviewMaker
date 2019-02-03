@@ -8,8 +8,6 @@ import com.tistory.deque.previewmaker.R
 import com.tistory.deque.previewmaker.kotlin.model.enums.PreviewEditButtonViewStateEnum
 import com.tistory.deque.previewmaker.kotlin.manager.PreviewEditButtonViewStateManager
 import com.tistory.deque.previewmaker.kotlin.util.EzLogger
-import com.tistory.deque.previewmaker.kotlin.util.extension.fadeIn
-import com.tistory.deque.previewmaker.kotlin.util.extension.fadeOut
 import com.tistory.deque.previewmaker.kotlin.util.extension.goneView
 import com.tistory.deque.previewmaker.kotlin.util.extension.visibleView
 import kotlinx.android.synthetic.main.custom_preview_edit_button_group_view.view.*
@@ -23,14 +21,18 @@ class CustomPreviewEditGroup : LinearLayout {
     constructor(ctx: Context, attrs: AttributeSet) : super(ctx, attrs)
     constructor(ctx: Context, attrs: AttributeSet, defStyleAttr: Int) : super(ctx, attrs, defStyleAttr)
 
-    var previewDeleteListener: () -> Unit = {}
-    var previewCropListener: () -> Unit = {}
-    var previewSaveListener: () -> Unit = {}
+    var homeDeleteListener: () -> Unit = {}
+    var homeCropListener: () -> Unit = {}
+    var homeStampListener: () -> Unit = {}
+    var homeSaveListener: () -> Unit = {}
 
     var stampDeleteListener: () -> Unit = {}
     var stampResetListener: () -> Unit = {}
+    var stampFinishListener: () -> Unit = {}
 
     var filterResetListener: () -> Unit = {}
+
+    var customPreviewCanvas:CustomPreviewCanvas? = null
 
     private fun initView() {
         val li = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as? LayoutInflater
@@ -53,13 +55,14 @@ class CustomPreviewEditGroup : LinearLayout {
     private fun setClickListener() {
         //1. home
         custom_edit_group_home_delete.setOnClickListener {
-
+            homeDeleteListener()
         }
         custom_edit_group_home_crop.setOnClickListener {
-
+            homeCropListener()
         }
         custom_edit_group_home_stamp.setOnClickListener {
             PreviewEditButtonViewStateManager.setStampState()
+            customPreviewCanvas?.homeStampListener()
             layoutChange()
         }
         custom_edit_group_home_filter.setOnClickListener {
@@ -67,22 +70,26 @@ class CustomPreviewEditGroup : LinearLayout {
             layoutChange()
         }
         custom_edit_group_home_save.setOnClickListener {
-
+            homeSaveListener()
         }
 
         //2. stamp
         custom_edit_group_stamp_delete.setOnClickListener {
-
+            PreviewEditButtonViewStateManager.finishEdit()
+            stampDeleteListener()
+            layoutChange()
         }
         custom_edit_group_stamp_brightness.setOnClickListener {
             PreviewEditButtonViewStateManager.clickStampBrightness()
             layoutChange()
         }
         custom_edit_group_stamp_reset.setOnClickListener {
-
+            stampResetListener()
         }
         custom_edit_group_stamp_finish.setOnClickListener {
             PreviewEditButtonViewStateManager.finishEdit()
+            stampFinishListener()
+            customPreviewCanvas?.stampDeleteListener()
             layoutChange()
         }
 
@@ -100,7 +107,7 @@ class CustomPreviewEditGroup : LinearLayout {
             layoutChange()
         }
         custom_edit_group_filter_reset.setOnClickListener {
-
+            filterResetListener()
         }
         custom_edit_group_filter_finish.setOnClickListener {
             PreviewEditButtonViewStateManager.finishEdit()
@@ -122,16 +129,16 @@ class CustomPreviewEditGroup : LinearLayout {
         val ps = PreviewEditButtonViewStateManager.prevState
         val ns = PreviewEditButtonViewStateManager.nowState
         EzLogger.d("ps : $ps, ns : $ns")
-        when(ps) {
+        when (ps) {
             PreviewEditButtonViewStateEnum.HOME -> {
                 when (ns) {
                     PreviewEditButtonViewStateEnum.STAMP -> {
-                        custom_edit_group_stamp_layout.fadeIn()
+                        custom_edit_group_stamp_layout.visibleView()
                         custom_edit_group_filter_layout.goneView()
                         custom_edit_group_handler_layout.goneView()
                     }
                     PreviewEditButtonViewStateEnum.FILTER -> {
-                        custom_edit_group_filter_layout.fadeIn()
+                        custom_edit_group_filter_layout.visibleView()
                         custom_edit_group_handler_layout.goneView()
                     }
                 }
@@ -146,7 +153,7 @@ class CustomPreviewEditGroup : LinearLayout {
                         custom_edit_group_seek_bar_second_layout.goneView()
                     }
                     PreviewEditButtonViewStateEnum.HOME -> {
-                        custom_edit_group_stamp_layout.fadeOut()
+                        custom_edit_group_stamp_layout.goneView()
                         custom_edit_group_filter_layout.goneView()
                         custom_edit_group_handler_layout.goneView()
                     }
@@ -167,28 +174,28 @@ class CustomPreviewEditGroup : LinearLayout {
                         custom_edit_group_only_cancel_or_ok_layout.visibleView()
                     }
                     PreviewEditButtonViewStateEnum.HOME -> {
-                        custom_edit_group_filter_layout.fadeOut()
+                        custom_edit_group_filter_layout.goneView()
                         custom_edit_group_stamp_layout.goneView()
                         custom_edit_group_handler_layout.goneView()
                     }
                 }
             }
             PreviewEditButtonViewStateEnum.ONE_SEEK_BAR -> {
-                when(ns) {
+                when (ns) {
                     PreviewEditButtonViewStateEnum.STAMP -> {
                         custom_edit_group_handler_layout.goneView()
                     }
                 }
             }
             PreviewEditButtonViewStateEnum.TWO_SEEK_BAR -> {
-                when(ns){
+                when (ns) {
                     PreviewEditButtonViewStateEnum.FILTER -> {
                         custom_edit_group_handler_layout.goneView()
                     }
                 }
             }
             PreviewEditButtonViewStateEnum.ONLY_CANCEL_OR_OK -> {
-                when(ns) {
+                when (ns) {
                     PreviewEditButtonViewStateEnum.FILTER -> {
                         custom_edit_group_handler_layout.goneView()
                     }

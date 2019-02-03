@@ -1,26 +1,33 @@
 package com.tistory.deque.previewmaker.kotlin.manager
 
-import android.app.Activity
 import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
 import android.provider.MediaStore
-import com.tistory.deque.previewmaker.Util.Logger
-import com.tistory.deque.previewmaker.kotlin.model.Preview
 import com.tistory.deque.previewmaker.kotlin.util.EzLogger
 import java.io.FileNotFoundException
 import java.io.IOException
 
 object PreviewBitmapManager {
-    private const val bitmapMaxSize = 2000
+    private const val previewBitmapMaxSize = 2000
+    private const val stampBitmapMaxSize = 1000
 
     var selectedPreviewBitmap : Bitmap? = null
+    var selectedStampBitmap : Bitmap? = null
 
     fun resetManager(){
         selectedPreviewBitmap = null
     }
 
-    fun imageUriToBitmap(imageUri: Uri, context: Context): Bitmap? {
+    fun stampImageUriToBitmap(imageUri: Uri, context: Context): Bitmap? {
+        return imageUriToBitmap(stampBitmapMaxSize, imageUri, context)
+    }
+
+    fun previewImageUriToBitmap(imageUri: Uri, context: Context): Bitmap? {
+        return imageUriToBitmap(previewBitmapMaxSize, imageUri, context)
+    }
+
+    private fun imageUriToBitmap(maxSize: Int, imageUri: Uri, context: Context): Bitmap? {
         val bitmap: Bitmap
         var resizedBitmap: Bitmap? = null
         val width: Int
@@ -33,12 +40,12 @@ object PreviewBitmapManager {
             height = bitmap.height
             rate = width.toDouble() / height.toDouble()
 
-            resizedBitmap = if (rate > 1 && width > bitmapMaxSize) { // w > h
-                EzLogger.d("RATE : $rate , W : $bitmapMaxSize , H : ${(bitmapMaxSize * (1 / rate)).toInt()}")
-                Bitmap.createScaledBitmap(bitmap, bitmapMaxSize, (bitmapMaxSize * (1 / rate)).toInt(), true)
-            } else if (rate <= 1 && height > bitmapMaxSize) { // h > w
-                EzLogger.d("RATE : $rate , W : ${(bitmapMaxSize * rate).toInt()} , H : $bitmapMaxSize")
-                Bitmap.createScaledBitmap(bitmap, (bitmapMaxSize * rate).toInt(), bitmapMaxSize, true)
+            resizedBitmap = if (rate > 1 && width > maxSize) { // w > h
+                EzLogger.d("RATE : $rate , W : $maxSize , H : ${(maxSize * (1 / rate)).toInt()}")
+                Bitmap.createScaledBitmap(bitmap, maxSize, (maxSize * (1 / rate)).toInt(), true)
+            } else if (rate <= 1 && height > maxSize) { // h > w
+                EzLogger.d("RATE : $rate , W : ${(maxSize * rate).toInt()} , H : $maxSize")
+                Bitmap.createScaledBitmap(bitmap, (maxSize * rate).toInt(), maxSize, true)
             } else {
                 bitmap
             }

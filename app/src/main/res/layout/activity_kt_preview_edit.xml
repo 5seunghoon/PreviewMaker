@@ -45,6 +45,7 @@
             </LinearLayout>
 
             <com.tistory.deque.previewmaker.kotlin.customview.CustomPreviewEditGroup
+                android:id="@+id/preview_edit_custom_edit_group"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 

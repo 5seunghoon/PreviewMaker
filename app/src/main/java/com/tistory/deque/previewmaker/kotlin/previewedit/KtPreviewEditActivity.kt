@@ -3,6 +3,7 @@ package com.tistory.deque.previewmaker.kotlin.previewedit
 import android.arch.lifecycle.Observer
 import android.content.Intent
 import android.net.Uri
+import android.support.design.widget.Snackbar
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.View
@@ -31,6 +32,8 @@ class KtPreviewEditActivity : BaseKotlinActivity<KtPreviewEditViewModel>() {
 
     private val previewThumbnailAdapter: PreviewThumbnailAdapter by inject()
 
+    private var backPressedTime: Long = 0
+
     override fun initViewStart() {
         setBackButtonAboveActionBar(true, "프리뷰 편집")
         preview_edit_loading_progress_bar_layout.run { post { visibility = View.GONE } }
@@ -38,6 +41,7 @@ class KtPreviewEditActivity : BaseKotlinActivity<KtPreviewEditViewModel>() {
         addComponentFromIntent()
         setPreviewThumbnailRecyclerView()
         setCustomPreviewCanvas()
+        setCustomEditGroup()
     }
 
     private fun addComponentFromIntent() {
@@ -46,7 +50,7 @@ class KtPreviewEditActivity : BaseKotlinActivity<KtPreviewEditViewModel>() {
             stampImageUri = data
             previewPathList = getStringArrayListExtra(EtcConstant.PREVIEW_LIST_INTENT_KEY)
         }
-        viewModel.getStamp(stampId)
+        viewModel.getStamp(stampId, applicationContext)
     }
 
     private fun setPreviewThumbnailRecyclerView() {
@@ -65,6 +69,17 @@ class KtPreviewEditActivity : BaseKotlinActivity<KtPreviewEditViewModel>() {
         preview_edit_custom_preview_canvas.run {
             setComponent(this@KtPreviewEditActivity)
         }
+    }
+
+    private fun setCustomEditGroup(){
+        preview_edit_custom_edit_group.run {
+            customPreviewCanvas = preview_edit_custom_preview_canvas
+            homeSaveListener = this@KtPreviewEditActivity::homeSaveListener
+        }
+    }
+
+    private fun homeSaveListener(){
+        return
     }
 
     private fun previewThumbnailHelpClickListener(){
@@ -114,6 +129,17 @@ class KtPreviewEditActivity : BaseKotlinActivity<KtPreviewEditViewModel>() {
         viewModel.makePreviewThumbnail(applicationContext, previewPathList)
     }
 
+    override fun onBackPressed() {
+        if (System.currentTimeMillis() - backPressedTime < 2000) {
+            finish()
+        } else {
+            Snackbar.make(findViewById(android.R.id.content),
+                    getString(R.string.snackbar_preview_edit_acti_back_to_exit),
+                    Snackbar.LENGTH_LONG)
+                    .show()
+            backPressedTime = System.currentTimeMillis()
+        }
+    }
     private fun mainLoadingProgressBarStart() {
         preview_edit_loading_progress_bar_layout.fadeIn()
     }

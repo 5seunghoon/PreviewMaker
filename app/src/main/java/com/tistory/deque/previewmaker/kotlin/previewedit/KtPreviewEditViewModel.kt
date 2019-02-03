@@ -34,8 +34,8 @@ class KtPreviewEditViewModel : BaseKotlinViewModel() {
     private val _startLoadingPreviewToCanvas = SingleLiveEvent<Any>()
     val startLoadingPreviewToCanvas: LiveData<Any> get() = _startLoadingPreviewToCanvas
 
-    private val _finishoadingPreviewToCanvas = SingleLiveEvent<Any>()
-    val finishLoadingPreviewToCanvas: LiveData<Any> get() = _finishoadingPreviewToCanvas
+    private val _finishLoadingPreviewToCanvas = SingleLiveEvent<Any>()
+    val finishLoadingPreviewToCanvas: LiveData<Any> get() = _finishLoadingPreviewToCanvas
 
     var previewListModel: PreviewListModel = PreviewListModel()
     private val previewListSize: Int
@@ -58,11 +58,16 @@ class KtPreviewEditViewModel : BaseKotlinViewModel() {
         dbOpenHelper?.dbOpen() ?: EzLogger.d("db open fail : dbOpenHelper null")
     }
 
-    fun getStamp(stampId: Int) {
+    fun getStamp(stampId: Int, context: Context) {
         dbOpenHelper?.let {
             stamp = it.dbGetStamp(stampId)
-            if (stamp == null) showSnackbar(R.string.snackbar_stamp_not_found)
-            else EzLogger.d("stamp found : $stamp")
+            stamp?.let { stamp ->
+                EzLogger.d("stamp found : $stamp")
+                PreviewBitmapManager.selectedStampBitmap =
+                        PreviewBitmapManager.stampImageUriToBitmap(stamp.imageUri, context)
+            } ?: run {
+                showSnackbar(R.string.snackbar_stamp_not_found)
+            }
         }
     }
 
@@ -124,7 +129,7 @@ class KtPreviewEditViewModel : BaseKotlinViewModel() {
 
     private fun finishLoadingPreviewToCanvas(preview: Preview) {
         selectedPreview = preview
-        _finishoadingPreviewToCanvas.call()
+        _finishLoadingPreviewToCanvas.call()
     }
 
     fun previewThumbnailClickListener(context: Context, preview: Preview, position: Int) {

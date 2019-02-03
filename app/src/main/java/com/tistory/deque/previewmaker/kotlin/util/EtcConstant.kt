@@ -15,4 +15,10 @@ object EtcConstant{
     const val STAMP_NAME_INTENT_KEY = "STAMP_NAME_INTENT_KEY"
     const val STAMP_ID_INTENT_KEY = "STAMP_ID_INTENT_KEY"
     const val PREVIEW_LIST_INTENT_KEY = "PREVIEW_LIST_INTENT_KEY"
+
+    const val SeekBarStampBrightnessMax = 512
+    const val SeekBarPreviewBrightnessMax = 512
+    const val SeekBarPreviewContrastMax = 512
+    const val SeekBarPreviewSaturationMax = 512
+    const val SeekBarPreviewKelvinMax = 512
 }
