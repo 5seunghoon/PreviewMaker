@@ -22,6 +22,9 @@ class KtPreviewEditViewModel : BaseKotlinViewModel() {
     private val _startLoadingThumbnailEvent = SingleLiveEvent<Int>()
     val startLoadingThumbnailEvent: LiveData<Int> get() = _startLoadingThumbnailEvent
 
+    private val _previewThumbnailAdapterNotifyDataSet = SingleLiveEvent<Any>()
+    val previewThumbnailAdapterNotifyDataSet: LiveData<Any> get() = _previewThumbnailAdapterNotifyDataSet
+
     private val _loadingFinishEachThumbnailEvent = SingleLiveEvent<Int>()
     val loadingFinishEachThumbnailEvent: LiveData<Int> get() = _loadingFinishEachThumbnailEvent
 
@@ -136,6 +139,12 @@ class KtPreviewEditViewModel : BaseKotlinViewModel() {
     inner class AddPreviewThumbnailAsyncTask(val context: Context) : AsyncTask<Void, Int, Int>() {
 
         private var loadingCounter = 0
+
+        override fun onPreExecute() {
+            super.onPreExecute()
+            previewListModel.initPreviewList()
+            _previewThumbnailAdapterNotifyDataSet.call()
+        }
 
         override fun doInBackground(vararg params: Void?): Int {
             previewPathList.forEach { previewPath ->

@@ -105,6 +105,9 @@ class KtPreviewEditActivity : BaseKotlinActivity<KtPreviewEditViewModel>() {
             EzLogger.d("preview_edit_custom_preview_canvas invalidate")
             mainLoadingProgressBarStop()
         })
+        viewModel.previewThumbnailAdapterNotifyDataSet.observe(this, Observer {
+            previewThumbnailAdapter.notifyDataSetChanged()
+        })
     }
 
     override fun initViewFinal() {
