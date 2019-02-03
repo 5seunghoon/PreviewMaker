@@ -59,7 +59,7 @@ data class Preview(
         }
 
     var contrast: Int
-        get() = (_contrast.toFloat() / 512.0f + 1.0f).toInt() //실제 필터를 적용할 때 이용. 0.5~1.5를 리턴
+        get() = _contrast + EtcConstant.SeekBarPreviewContrastMax / 2
         set(value: Int) {
             //0~512를 인자로 받아서 -255~+255로 수정후 저장
             _contrast = value - EtcConstant.SeekBarPreviewContrastMax / 2
@@ -72,7 +72,7 @@ data class Preview(
         }
 
     var saturation: Int
-        get() = (_saturation.toFloat() / 2048.0f + 1.0f).toInt()
+        get() = _saturation + EtcConstant.SeekBarPreviewSaturationMax / 2
         set(value: Int) {
             _saturation = value - EtcConstant.SeekBarPreviewSaturationMax / 2
         }

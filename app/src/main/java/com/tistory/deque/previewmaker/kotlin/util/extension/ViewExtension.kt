@@ -29,6 +29,10 @@ fun View.goneView(){
     this.run { post { visibility = View.GONE } }
 }
 
+fun View.invisibleView(){
+    this.run { post { visibility = View.GONE } }
+}
+
 fun View.visibleView(){
     this.run { post { visibility = View.VISIBLE } }
 }

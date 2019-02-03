@@ -11,10 +11,8 @@ import com.tistory.deque.previewmaker.R
 import com.tistory.deque.previewmaker.kotlin.base.BaseKotlinActivity
 import com.tistory.deque.previewmaker.kotlin.helppreviewedit.KtHelpPreviewEditActivity
 import com.tistory.deque.previewmaker.kotlin.manager.PreviewBitmapManager
-import com.tistory.deque.previewmaker.kotlin.manager.PreviewEditClickStateManager
 import com.tistory.deque.previewmaker.kotlin.model.Preview
 import com.tistory.deque.previewmaker.kotlin.model.Stamp
-import com.tistory.deque.previewmaker.kotlin.model.enums.PreviewEditClickStateEnum
 import com.tistory.deque.previewmaker.kotlin.util.EtcConstant
 import com.tistory.deque.previewmaker.kotlin.util.EzLogger
 import com.tistory.deque.previewmaker.kotlin.util.extension.fadeIn

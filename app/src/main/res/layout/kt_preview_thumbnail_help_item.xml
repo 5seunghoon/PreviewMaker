@@ -6,7 +6,7 @@
     android:layout_marginTop="8dp"
     android:layout_marginEnd="8dp"
     android:layout_marginBottom="8dp"
-    app:cardBackgroundColor="@color/white">
+    app:cardBackgroundColor="@color/backgroundGray">
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -25,7 +25,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@drawable/ripple_effect_transparent_normal"
-            android:orientation="vertical"/>
+            android:orientation="vertical" />
 
     </FrameLayout>
 

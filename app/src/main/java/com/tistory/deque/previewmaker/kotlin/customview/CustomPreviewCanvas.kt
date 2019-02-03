@@ -542,4 +542,27 @@ class CustomPreviewCanvas : View {
         }
     }
 
+    fun stampBrightnessSeekBarListener(progress: Int) {
+        stamp?.let { stamp ->
+            stamp.brightness = progress
+            invalidate()
+        }
+    }
+
+    fun previewBrightnessSeekBarListener(progress: Int) {
+
+    }
+
+    fun previewContrastSeekBarListener(progress: Int) {
+
+    }
+
+    fun previewSaturationSeekBarListener(progress: Int) {
+
+    }
+
+    fun previewKelvinSeekBarListener(progress: Int) {
+
+    }
+
 }
