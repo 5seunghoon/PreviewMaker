@@ -28,16 +28,8 @@ class CustomPreviewEditGroup : LinearLayout {
     constructor(ctx: Context, attrs: AttributeSet) : super(ctx, attrs)
     constructor(ctx: Context, attrs: AttributeSet, defStyleAttr: Int) : super(ctx, attrs, defStyleAttr)
 
-    var homeDeleteListener: () -> Unit = {}
     var homeCropListener: () -> Unit = {}
-    var homeStampListener: () -> Unit = {}
     var homeSaveListener: () -> Unit = {}
-
-    var stampDeleteListener: () -> Unit = {}
-    var stampResetListener: () -> Unit = {}
-    var stampFinishListener: () -> Unit = {}
-
-    var filterResetListener: () -> Unit = {}
 
     var customPreviewCanvas: CustomPreviewCanvas? = null
 
@@ -70,7 +62,6 @@ class CustomPreviewEditGroup : LinearLayout {
     private fun setClickListener() {
         //1. home
         custom_edit_group_home_delete.setOnClickListener {
-            homeDeleteListener()
         }
         custom_edit_group_home_crop.setOnClickListener {
             homeCropListener()
@@ -92,7 +83,6 @@ class CustomPreviewEditGroup : LinearLayout {
         //2. stamp
         custom_edit_group_stamp_delete.setOnClickListener {
             PreviewEditButtonViewStateManager.finishEdit()
-            stampDeleteListener()
             customPreviewCanvas?.stampDeleteListener()
             layoutChange()
         }
@@ -110,12 +100,10 @@ class CustomPreviewEditGroup : LinearLayout {
             layoutChange()
         }
         custom_edit_group_stamp_reset.setOnClickListener {
-            stampResetListener()
             customPreviewCanvas?.stampResetListener()
         }
         custom_edit_group_stamp_finish.setOnClickListener {
             PreviewEditButtonViewStateManager.finishEdit()
-            stampFinishListener()
             customPreviewCanvas?.stampFinishListener()
             layoutChange()
         }
@@ -168,7 +156,7 @@ class CustomPreviewEditGroup : LinearLayout {
             layoutChange()
         }
         custom_edit_group_filter_reset.setOnClickListener {
-            filterResetListener()
+            customPreviewCanvas?.filterResetListener()
         }
         custom_edit_group_filter_finish.setOnClickListener {
             PreviewEditButtonViewStateManager.finishEdit()
@@ -223,8 +211,8 @@ class CustomPreviewEditGroup : LinearLayout {
 
     private fun allLayoutInvisible(){
         ArrayList<View>().apply {
+            add(custom_edit_group_home_layout)
             add(custom_edit_group_stamp_layout)
-            add(custom_edit_group_filter_layout)
             add(custom_edit_group_filter_layout)
             add(custom_edit_group_handler_layout)
             add(custom_edit_group_seek_bar_layout)

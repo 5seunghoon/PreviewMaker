@@ -76,10 +76,15 @@ class KtPreviewEditActivity : BaseKotlinActivity<KtPreviewEditViewModel>() {
         preview_edit_custom_edit_group.run {
             customPreviewCanvas = preview_edit_custom_preview_canvas
             homeSaveListener = this@KtPreviewEditActivity::homeSaveListener
+            homeCropListener = this@KtPreviewEditActivity::homeCropListener
         }
     }
 
     private fun homeSaveListener(){
+        return
+    }
+
+    private fun homeCropListener(){
         return
     }
 

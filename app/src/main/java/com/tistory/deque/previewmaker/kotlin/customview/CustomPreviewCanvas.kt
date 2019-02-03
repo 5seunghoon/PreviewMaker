@@ -136,6 +136,11 @@ class CustomPreviewCanvas : View {
         invalidate()
     }
 
+    fun filterResetListener() {
+        previewFilterReset()
+        invalidate()
+    }
+
     private fun setStampComponent() {
         stamp?.let { stamp ->
             if (stamp.width <= 0) stamp.width = PreviewBitmapManager.selectedStampBitmap?.width
@@ -569,19 +574,36 @@ class CustomPreviewCanvas : View {
     }
 
     fun previewBrightnessSeekBarListener(progress: Int) {
-
+        preview?.let {
+            it.brightness = progress
+            invalidate()
+        }
     }
 
     fun previewContrastSeekBarListener(progress: Int) {
-
+        preview?.let {
+            it.contrast = progress
+            invalidate()
+        }
     }
 
     fun previewSaturationSeekBarListener(progress: Int) {
-
+        preview?.let {
+            it.saturation = progress
+            invalidate()
+        }
     }
 
     fun previewKelvinSeekBarListener(progress: Int) {
-
+        preview?.let {
+            it.kelvin = progress
+            invalidate()
+        }
     }
+
+    private fun previewFilterReset(){
+        preview?.resetFilterValue()
+    }
+
 
 }
