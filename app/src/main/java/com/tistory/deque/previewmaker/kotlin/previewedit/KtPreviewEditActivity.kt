@@ -13,6 +13,7 @@ import com.tistory.deque.previewmaker.kotlin.helppreviewedit.KtHelpPreviewEditAc
 import com.tistory.deque.previewmaker.kotlin.manager.PreviewBitmapManager
 import com.tistory.deque.previewmaker.kotlin.manager.PreviewEditClickStateManager
 import com.tistory.deque.previewmaker.kotlin.model.Preview
+import com.tistory.deque.previewmaker.kotlin.model.Stamp
 import com.tistory.deque.previewmaker.kotlin.model.enums.PreviewEditClickStateEnum
 import com.tistory.deque.previewmaker.kotlin.util.EtcConstant
 import com.tistory.deque.previewmaker.kotlin.util.EzLogger
@@ -157,5 +158,9 @@ class KtPreviewEditActivity : BaseKotlinActivity<KtPreviewEditViewModel>() {
 
     fun setSyncClickState() {
         preview_edit_custom_edit_group.setSyncClickState()
+    }
+
+    fun stampUpdate(id: Int, stamp: Stamp) {
+        viewModel.dbUpdateStamp(id, stamp)
     }
 }

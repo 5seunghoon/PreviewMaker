@@ -139,6 +139,10 @@ class KtPreviewEditViewModel : BaseKotlinViewModel() {
         }
     }
 
+    fun dbUpdateStamp(id: Int, stamp: Stamp) {
+        dbOpenHelper?.dbUpdateStamp(id, stamp)
+    }
+
     inner class AddPreviewThumbnailAsyncTask(val context: Context) : AsyncTask<Void, Int, Int>() {
 
         private var loadingCounter = 0

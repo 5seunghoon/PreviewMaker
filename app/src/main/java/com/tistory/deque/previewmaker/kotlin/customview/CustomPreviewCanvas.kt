@@ -16,6 +16,7 @@ import com.tistory.deque.previewmaker.kotlin.manager.RetouachingPaintManager
 import com.tistory.deque.previewmaker.kotlin.model.Preview
 import com.tistory.deque.previewmaker.kotlin.model.Stamp
 import com.tistory.deque.previewmaker.kotlin.model.enums.PreviewEditClickStateEnum
+import com.tistory.deque.previewmaker.kotlin.model.enums.StampAnchorEnum
 import com.tistory.deque.previewmaker.kotlin.previewedit.KtPreviewEditActivity
 import com.tistory.deque.previewmaker.kotlin.util.EzLogger
 import java.io.IOException
@@ -40,8 +41,8 @@ class CustomPreviewCanvas : View {
 
     private var changedPreviewPosWidth: Int = 0
     private var changedPreviewPosHeight: Int = 0
-    private var changedPreviewBitmapWidth: Int = 0
-    private var changedPreviewBitmapHeight: Int = 0
+    private var changedPreviewWidth: Int = 0
+    private var changedPreviewHeight: Int = 0
 
     private var stampWidthPos: Int = 0
     private var stampHeightPos: Int = 0
@@ -117,6 +118,7 @@ class CustomPreviewCanvas : View {
 
     fun stampFinishListener() {
         PreviewEditClickStateManager.setNoneClickState()
+        finishStampEdit()
         invalidate()
     }
 
@@ -145,13 +147,13 @@ class CustomPreviewCanvas : View {
             val heightAnchor: Int = stamp.positionAnchorEnum.value / 3
             val widthAnchor = stamp.positionAnchorEnum.value % 3
 
-            stampWidthPos = (stamp.positionWidthPer * changedPreviewBitmapWidth / 100000.0f
+            stampWidthPos = (stamp.positionWidthPer * changedPreviewWidth / 100000.0f
                     - stamp.width * widthAnchor / 2.0f + changedPreviewPosWidth).toInt()
-            stampHeightPos = (stamp.positionHeightPer * changedPreviewBitmapHeight / 100000.0f
+            stampHeightPos = (stamp.positionHeightPer * changedPreviewHeight / 100000.0f
                     - stamp.height * heightAnchor / 2.0f + changedPreviewPosHeight).toInt()
 
             EzLogger.d("""stamp.positionWidthPer : ${stamp.positionWidthPer}
-                | changedPreviewBitmapWidth : $changedPreviewBitmapWidth
+                | changedPreviewWidth : $changedPreviewWidth
                 | stamp.width : ${stamp.width}
                 | widthAnchor : $widthAnchor
                 | changedPreviewPosWidth : $changedPreviewPosWidth
@@ -175,8 +177,8 @@ class CustomPreviewCanvas : View {
             getResizedBitmapElements(bitmapWidth, bitmapHeight, canvasWidth, canvasHeight).let { changed ->
                 changedPreviewPosWidth = changed[0]
                 changedPreviewPosHeight = changed[1]
-                changedPreviewBitmapWidth = changed[2]
-                changedPreviewBitmapHeight = changed[3]
+                changedPreviewWidth = changed[2]
+                changedPreviewHeight = changed[3]
             }
             val paintPreviewContrastBrightness = RetouachingPaintManager.getPaint(
                     preview.getContrastForFilter(),
@@ -187,8 +189,8 @@ class CustomPreviewCanvas : View {
             val previewBitmapRect = Rect(
                     changedPreviewPosWidth,
                     changedPreviewPosHeight,
-                    changedPreviewPosWidth + changedPreviewBitmapWidth,
-                    changedPreviewPosHeight + changedPreviewBitmapHeight)
+                    changedPreviewPosWidth + changedPreviewWidth,
+                    changedPreviewPosHeight + changedPreviewHeight)
             EzLogger.d("previewBitmapRect : $previewBitmapRect")
 
             canvas?.drawBitmap(it,
@@ -470,8 +472,8 @@ class CustomPreviewCanvas : View {
         val deltaX = x - movePrevX
         val deltaY = y - movePrevY
 
-        stampWidthPos += deltaX
-        stampHeightPos += deltaY
+        if((stampWidthPos + deltaX >= 0) && (stampWidthPos + deltaX <= this.width)) stampWidthPos += deltaX
+        if((stampHeightPos + deltaY >= 0)&& (stampHeightPos + deltaY <= this.height)) stampHeightPos += deltaY
 
         invalidate()
     }
@@ -497,6 +499,46 @@ class CustomPreviewCanvas : View {
                 e.printStackTrace()
             }
             invalidate()
+        }
+    }
+
+    private fun finishStampEdit(){
+        stamp?.let { stamp ->
+            val id = stamp.id
+            stamp.positionWidthPer =
+                    (((stamp.width / 2.0f) + stampWidthPos - changedPreviewPosWidth)
+                            * 100000.0f / changedPreviewWidth).roundToInt()
+            stamp.positionHeightPer =
+                    (((stamp.height / 2.0f) + stampHeightPos - changedPreviewPosHeight)
+                            * 100000.0f / changedPreviewHeight).roundToInt()
+
+            val widthAnchor =  when(stamp.positionWidthPer){
+                in Int.MIN_VALUE..33333 -> 0
+                in 33334..66666 -> 1
+                else -> 2
+            }
+            val heightAnchor = when(stamp.positionHeightPer){
+                in Int.MIN_VALUE..33333 -> 0
+                in 33334..66666 -> 1
+                else -> 2
+            }
+            stamp.positionAnchorEnum = StampAnchorEnum.valueToEnum(widthAnchor + heightAnchor * 3)
+
+            // 앵커를 고려해서 위치를 다시 계산
+            stamp.positionWidthPer =
+                    (((stamp.width / 2.0f) * widthAnchor + stampWidthPos - changedPreviewPosWidth)
+                            * 100000.0f / changedPreviewWidth).roundToInt()
+            stamp.positionHeightPer =
+                    (((stamp.height / 2.0f) * heightAnchor + stampHeightPos - changedPreviewPosHeight)
+                            * 100000.0f / changedPreviewHeight).roundToInt()
+
+            EzLogger.d("""
+                finishStampEdit()
+                stamp : $stamp
+                widthAnchor : $widthAnchor, heightAnchor : $heightAnchor, anchor : ${stamp.positionAnchorEnum}
+            """.trimIndent())
+
+            activity?.stampUpdate(id, stamp)
         }
     }
 

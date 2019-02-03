@@ -194,4 +194,16 @@ class KtDbOpenHelper(context: Context?, name: String?, factory: SQLiteDatabase.C
         }
         return stampList
     }
+
+    fun dbUpdateStamp(id: Int, stamp: Stamp) {
+        val sql: String = "UPDATE $TABLE_NAME_STAMPS SET " +
+                "$STAMP_WIDTH_KEY = ${stamp.width}, " +
+                "$STAMP_HEIGHT_KEY = ${stamp.height}, " +
+                "$STAMP_POS_WIDTH_PERCENT_KEY = ${stamp.positionWidthPer}, " +
+                "$STAMP_POS_HEIGHT_PERCENT_KEY = ${stamp.positionHeightPer}, " +
+                "$STAMP_POS_ANCHOR_KEY = ${stamp.positionAnchorEnum.value} " +
+                "WHERE _ID IN($id);"
+        db?.execSQL(sql)
+        EzLogger.d("dbUpdateStamp , sql : $sql")
+    }
 }
