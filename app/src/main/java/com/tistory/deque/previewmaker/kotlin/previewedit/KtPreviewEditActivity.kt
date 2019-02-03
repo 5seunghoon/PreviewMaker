@@ -1,12 +1,14 @@
 package com.tistory.deque.previewmaker.kotlin.previewedit
 
 import android.arch.lifecycle.Observer
+import android.content.Intent
 import android.net.Uri
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import com.tistory.deque.previewmaker.R
 import com.tistory.deque.previewmaker.kotlin.base.BaseKotlinActivity
+import com.tistory.deque.previewmaker.kotlin.helppreviewedit.KtHelpPreviewEditActivity
 import com.tistory.deque.previewmaker.kotlin.manager.PreviewBitmapManager
 import com.tistory.deque.previewmaker.kotlin.model.Preview
 import com.tistory.deque.previewmaker.kotlin.util.EtcConstant
@@ -52,6 +54,7 @@ class KtPreviewEditActivity : BaseKotlinActivity<KtPreviewEditViewModel>() {
             adapter = previewThumbnailAdapter.apply {
                 previewListModel = viewModel.previewListModel
                 previewThumbnailClickListener = this@KtPreviewEditActivity::previewThumbnailClickListener
+                previewThumbnailHelpClickListener = this@KtPreviewEditActivity::previewThumbnailHelpClickListener
             }
             layoutManager = LinearLayoutManager(applicationContext, RecyclerView.HORIZONTAL, false)
             setHasFixedSize(true)
@@ -62,6 +65,10 @@ class KtPreviewEditActivity : BaseKotlinActivity<KtPreviewEditViewModel>() {
         preview_edit_custom_preview_canvas.run {
             setComponent(this@KtPreviewEditActivity)
         }
+    }
+
+    private fun previewThumbnailHelpClickListener(){
+        startActivity(Intent(applicationContext, KtHelpPreviewEditActivity::class.java))
     }
 
     private fun previewThumbnailClickListener(preview: Preview, position:Int) {

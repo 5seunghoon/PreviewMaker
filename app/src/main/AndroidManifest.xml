@@ -14,6 +14,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="com.tistory.deque.previewmaker"
@@ -50,8 +51,8 @@
         -->
         <activity
             android:name="me.nereo.multi_image_selector.MultiImageSelectorActivity"
-            android:launchMode="singleTask"
             android:configChanges="orientation|screenSize"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait" />
         <activity
             android:name="com.yalantis.ucrop.UCropActivity"
@@ -76,13 +77,19 @@
             android:name=".kotlin.previewedit.KtPreviewEditActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"/>
-        <activity android:name=".kotlin.helpmain.KtHelpMainActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".kotlin.helpmain.KtHelpMainActivity"
             android:launchMode="singleTask" />
-        <activity android:name=".kotlin.credit.KtCreditActivity"
+        <activity
+            android:name=".kotlin.credit.KtCreditActivity"
             android:launchMode="singleTask" />
-        <activity android:name=".kotlin.opensource.KtOpenSourceActivity"
-            android:launchMode="singleTask"></activity>
+        <activity
+            android:name=".kotlin.opensource.KtOpenSourceActivity"
+            android:launchMode="singleTask" />
+        <activity
+            android:name=".kotlin.helppreviewedit.KtHelpPreviewEditActivity"
+            android:launchMode="singleTask" />
     </application>
 
 </manifest>

@@ -27,7 +27,7 @@
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/preview_edit_thumbnail_recycler_view"
                     android:layout_width="match_parent"
-                    android:layout_height="96dp"
+                    android:layout_height="wrap_content"
                     android:background="@color/white"
                     android:clipToPadding="false"
                     android:overScrollMode="never"

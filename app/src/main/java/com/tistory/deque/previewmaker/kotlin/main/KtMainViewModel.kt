@@ -54,7 +54,7 @@ class KtMainViewModel : BaseKotlinViewModel() {
     private val _previewEditStartEvent = SingleLiveEvent<ArrayList<String>>()
     val previewEditStartEvent: LiveData<ArrayList<String>> get() = _previewEditStartEvent
 
-
+    private var mStampClickTime: Long = 0
     private var dbOpenHelper: KtDbOpenHelper? = null
 
     var selectedStamp: Stamp? = null
@@ -78,6 +78,10 @@ class KtMainViewModel : BaseKotlinViewModel() {
     }
 
     fun stampClickListener(stamp: Stamp, position: Int) {
+        if(System.currentTimeMillis() - mStampClickTime < 1000){
+            return
+        }
+        mStampClickTime = System.currentTimeMillis()
         _clickStampEvent.value = stamp
     }
 
