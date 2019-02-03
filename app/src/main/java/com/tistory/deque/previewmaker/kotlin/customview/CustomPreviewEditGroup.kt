@@ -111,6 +111,7 @@ class CustomPreviewEditGroup : LinearLayout {
         }
         custom_edit_group_stamp_reset.setOnClickListener {
             stampResetListener()
+            customPreviewCanvas?.stampResetListener()
         }
         custom_edit_group_stamp_finish.setOnClickListener {
             PreviewEditButtonViewStateManager.finishEdit()

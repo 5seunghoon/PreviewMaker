@@ -47,4 +47,8 @@ data class Stamp(
         return _brightness
     }
 
+    fun resetBrightness() {
+        _brightness = 0
+    }
+
 }

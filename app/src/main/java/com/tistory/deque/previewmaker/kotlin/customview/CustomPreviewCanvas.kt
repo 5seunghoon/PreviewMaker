@@ -116,6 +116,10 @@ class CustomPreviewCanvas : View {
         invalidate()
     }
 
+    fun stampResetListener() {
+        stampReset()
+    }
+
     fun stampFinishListener() {
         PreviewEditClickStateManager.setNoneClickState()
         finishStampEdit()
@@ -429,7 +433,7 @@ class CustomPreviewCanvas : View {
     }
 
     private fun touchUp(event: MotionEvent) {
-        if(PreviewEditClickStateManager.isBlurGuide()) {
+        if (PreviewEditClickStateManager.isBlurGuide()) {
             touchUpForBlurGuide(event)
         } else {
             touchUpForStamp()
@@ -468,12 +472,14 @@ class CustomPreviewCanvas : View {
         movePrevY = y
     }
 
-    private fun stampMove(x:Int, y:Int){
+    private fun stampMove(x: Int, y: Int) {
         val deltaX = x - movePrevX
         val deltaY = y - movePrevY
 
-        if((stampWidthPos + deltaX >= 0) && (stampWidthPos + deltaX <= this.width)) stampWidthPos += deltaX
-        if((stampHeightPos + deltaY >= 0)&& (stampHeightPos + deltaY <= this.height)) stampHeightPos += deltaY
+        if ((stampWidthPos - (stamp?.width ?: 0) + deltaX >= 0)
+                && (stampWidthPos + deltaX <= this.width)) stampWidthPos += deltaX
+        if ((stampHeightPos - (stamp?.height ?: 0) + deltaY >= 0)
+                && (stampHeightPos + deltaY <= this.height)) stampHeightPos += deltaY
 
         invalidate()
     }
@@ -486,7 +492,7 @@ class CustomPreviewCanvas : View {
             val nowDist = Math.sqrt(
                     Math.pow(stampCenterX - x, 2.0) + Math.pow(stampCenterY - y, 2.0))
 
-            if(stampRate == 0.0) stamp.width.toDouble() / stamp.height.toDouble()
+            if (stampRate == 0.0) stamp.width.toDouble() / stamp.height.toDouble()
             val newHeight = (2.0f * nowDist) / Math.sqrt((Math.pow(stampRate, 2.0) + 1))
             val newWidth = newHeight * stampRate
 
@@ -502,7 +508,7 @@ class CustomPreviewCanvas : View {
         }
     }
 
-    private fun finishStampEdit(){
+    private fun finishStampEdit() {
         stamp?.let { stamp ->
             val id = stamp.id
             stamp.positionWidthPer =
@@ -512,12 +518,12 @@ class CustomPreviewCanvas : View {
                     (((stamp.height / 2.0f) + stampHeightPos - changedPreviewPosHeight)
                             * 100000.0f / changedPreviewHeight).roundToInt()
 
-            val widthAnchor =  when(stamp.positionWidthPer){
+            val widthAnchor = when (stamp.positionWidthPer) {
                 in Int.MIN_VALUE..33333 -> 0
                 in 33334..66666 -> 1
                 else -> 2
             }
-            val heightAnchor = when(stamp.positionHeightPer){
+            val heightAnchor = when (stamp.positionHeightPer) {
                 in Int.MIN_VALUE..33333 -> 0
                 in 33334..66666 -> 1
                 else -> 2
@@ -539,6 +545,19 @@ class CustomPreviewCanvas : View {
             """.trimIndent())
 
             activity?.stampUpdate(id, stamp)
+        }
+    }
+
+    private fun stampReset() {
+        stamp?.let { stamp ->
+            stamp.width = PreviewBitmapManager.selectedStampBitmap?.width ?: stamp.width
+            stamp.height = PreviewBitmapManager.selectedStampBitmap?.height ?: stamp.height
+            stamp.positionWidthPer = 50000
+            stamp.positionHeightPer = 50000
+            stampWidthPos = (changedPreviewWidth / 2.0f - stamp.width / 2.0f).roundToInt() + changedPreviewPosWidth
+            stampHeightPos = (changedPreviewHeight / 2.0f - stamp.height / 2.0f).roundToInt() + changedPreviewPosHeight
+            stamp.resetBrightness()
+            invalidate()
         }
     }
 
