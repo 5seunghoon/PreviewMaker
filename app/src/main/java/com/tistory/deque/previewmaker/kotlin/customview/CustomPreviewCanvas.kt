@@ -8,7 +8,7 @@ import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
-import com.tistory.deque.previewmaker.Controler.BlurController
+import com.tistory.deque.previewmaker.Controler.RetouchingPaintController
 import com.tistory.deque.previewmaker.R
 import com.tistory.deque.previewmaker.kotlin.manager.*
 import com.tistory.deque.previewmaker.kotlin.model.Preview
@@ -33,7 +33,6 @@ class CustomPreviewCanvas : View {
 
     private var activity: KtPreviewEditActivity? = null
     private var canvas: Canvas? = null
-
     val preview: Preview? get() = activity?.viewModel?.selectedPreview
     val stamp: Stamp? get() = activity?.viewModel?.stamp
 
@@ -51,6 +50,7 @@ class CustomPreviewCanvas : View {
 
     var isStampShown: Boolean = false
         private set
+    var isBlurRoutine: Boolean = false
 
     constructor(context: Context) : super(context)
     constructor(ctx: Context, attrs: AttributeSet) : super(ctx, attrs)
@@ -66,21 +66,53 @@ class CustomPreviewCanvas : View {
 
         setBackgroundColor(ContextCompat.getColor(context, R.color.backgroundGray))
         preview?.let {
-
             drawBaseBitmap(it)
 
             if (PreviewEditClickStateManager.isBlurGuide()) {
                 drawBlurGuide()
             }
-
+            if (PreviewEditClickStateManager.isBlur()) {
+                if (isBlurRoutine) drawBlurGuide()
+                else drawBlur()
+            }
             if (isStampShown) {
                 drawStamp()
                 if (PreviewEditClickStateManager.isShowGuildLine()) {
                     drawStampGuideLine()
                 }
             }
-
         } ?: setBackgroundColor(Color.WHITE)
+    }
+
+    private fun drawBlur() {
+        PreviewBitmapManager.blurredPreviewBitmap?.let {
+            val left: Int
+            val top: Int
+            val right: Int
+            val bottom: Int
+            try {
+                left = Math.min(BlurManager.getGuideOvalRectFLeftTop().first, BlurManager.getGuideOvalRectFRightBottom().first).roundToInt()
+                top = Math.min(BlurManager.getGuideOvalRectFLeftTop().second, BlurManager.getGuideOvalRectFRightBottom().second).roundToInt()
+                right = Math.max(BlurManager.getGuideOvalRectFLeftTop().first, BlurManager.getGuideOvalRectFRightBottom().first).roundToInt()
+                bottom = Math.max(BlurManager.getGuideOvalRectFLeftTop().second, BlurManager.getGuideOvalRectFRightBottom().second).roundToInt()
+            } catch (e: IllegalArgumentException) {
+                e.printStackTrace()
+                return
+            }
+
+            preview?.let { preview ->
+                val paint = RetouchingPaintController.getPaint(
+                        preview.getContrastForFilter(), preview.getBrightnessForFilter(),
+                        preview.getSaturationForFilter(), preview.getKelvinForFilter()
+                )
+                val blurredBitmapRect = Rect(left, top, right, bottom)
+                canvas?.drawBitmap(PreviewBitmapManager.blurredPreviewBitmap
+                        ?: return, null, blurredBitmapRect, paint)
+                EzLogger.d("drawBlur --------------------------------------------------------------")
+                EzLogger.d("${PreviewBitmapManager.blurredPreviewBitmap?.width}, ${PreviewBitmapManager.blurredPreviewBitmap?.height}")
+                EzLogger.d("$left, $top, $right, $bottom")
+            }
+        }
     }
 
     /**
@@ -161,12 +193,12 @@ class CustomPreviewCanvas : View {
         PreviewEditClickStateManager.clickBlur()
     }
 
-    fun filterBlurCancelListener(){
+    fun filterBlurCancelListener() {
         PreviewEditClickStateManager.blurEnd()
         invalidate()
     }
 
-    fun filterBlurOkListener(){
+    fun filterBlurOkListener() {
         PreviewEditClickStateManager.blurEnd()
         invalidate()
     }
@@ -213,7 +245,7 @@ class CustomPreviewCanvas : View {
             val canvasWidth = this.width
             val canvasHeight = this.height
 
-            getResizedBitmapElements(bitmapWidth, bitmapHeight, canvasWidth, canvasHeight).let { changed ->
+            PreviewBitmapManager.getResizedBitmapElements(bitmapWidth, bitmapHeight, canvasWidth, canvasHeight).let { changed ->
                 changedPreviewPosWidth = changed[0]
                 changedPreviewPosHeight = changed[1]
                 changedPreviewWidth = changed[2]
@@ -261,17 +293,6 @@ class CustomPreviewCanvas : View {
         }
     }
 
-    fun stampUriToBitmap(imageUri: Uri, context: Context): Bitmap? {
-        try {
-            return MediaStore.Images.Media.getBitmap(context.contentResolver, imageUri)
-        } catch (e: IOException) {
-            EzLogger.d("URI -> Bitmap : IOException$imageUri")
-            e.printStackTrace()
-            return null
-        }
-
-    }
-
     private fun drawStampGuideLine() {
         stamp?.let { stamp ->
             val xStart = stampWidthPos
@@ -311,64 +332,6 @@ class CustomPreviewCanvas : View {
         }
     }
 
-    /**
-     * 비트맵을 어느 좌표에 어떤 크기로 그릴지 결정
-     *
-     * @return previewPosWidth, previewPosHeight, previewWidth, previewHeight
-     */
-    private fun getResizedBitmapElements(previewBitmapWidth: Int, previewBitmapHeight: Int, canvasWidth: Int, canvasHeight: Int): ArrayList<Int> {
-        val bitmapRate: Double = previewBitmapWidth.toDouble() / previewBitmapHeight.toDouble()
-        val canvasRate: Double = canvasWidth.toDouble() / canvasHeight.toDouble()
-
-        EzLogger.d("""
-            bitmapRate: $bitmapRate, canvasRate : $canvasRate,
-            previewBitmapWidth : $previewBitmapWidth, previewBitmapHeight : $previewBitmapHeight
-            canvasWidth: $canvasWidth, canvasHeight : $canvasHeight
-        """.trimIndent())
-
-        val changedPreviewPosWidth: Int
-        val changedPreviewPosHeight: Int
-        val changedPreviewBitmapWidth: Int
-        val changedPreviewBitmapHeight: Int
-
-        val elements = ArrayList<Int>()
-
-        EzLogger.d("getResizedBitmapElements canvas w, h : $canvasWidth, $canvasHeight")
-
-        if (bitmapRate >= canvasRate && previewBitmapWidth >= canvasWidth) { // w > h
-            EzLogger.d("getResizedBitmapElements case 1")
-
-            changedPreviewPosWidth = 0
-            changedPreviewPosHeight = (canvasHeight - (canvasWidth * (1 / bitmapRate)).toInt()) / 2
-            changedPreviewBitmapWidth = canvasWidth
-            changedPreviewBitmapHeight = (canvasWidth * (1 / bitmapRate)).toInt()
-
-        } else if (bitmapRate < canvasRate && previewBitmapHeight >= canvasHeight) { // w < h
-            EzLogger.d("getResizedBitmapElements case 2")
-
-            changedPreviewPosWidth = (canvasWidth - (canvasHeight * bitmapRate).toInt()) / 2
-            changedPreviewPosHeight = 0
-            changedPreviewBitmapWidth = (canvasHeight * bitmapRate).toInt()
-            changedPreviewBitmapHeight = canvasHeight
-
-        } else {
-            EzLogger.d("getResizedBitmapElements case 3")
-
-            changedPreviewPosWidth = (canvasWidth - previewBitmapWidth) / 2
-            changedPreviewPosHeight = (canvasHeight - previewBitmapHeight) / 2
-            changedPreviewBitmapWidth = previewBitmapWidth
-            changedPreviewBitmapHeight = previewBitmapHeight
-
-        }
-
-        elements.add(changedPreviewPosWidth)
-        elements.add(changedPreviewPosHeight)
-        elements.add(changedPreviewBitmapWidth)
-        elements.add(changedPreviewBitmapHeight)
-
-        return elements
-    }
-
     private fun touchDown(event: MotionEvent) {
         if (PreviewEditClickStateManager.isBlur()) {
             touchDownForBlur(event)
@@ -381,8 +344,8 @@ class CustomPreviewCanvas : View {
     }
 
     private fun touchDownForStamp(event: MotionEvent) {
-        var x = 0
-        var y = 0
+        val x: Int
+        val y: Int
         try {
             x = event.x.roundToInt()
             y = event.y.roundToInt()
@@ -452,7 +415,7 @@ class CustomPreviewCanvas : View {
     }
 
     private fun touchDownForBlur(event: MotionEvent) {
-
+        PreviewEditClickStateManager.restartBlur()
     }
 
     private fun touchDownForBlurGuide(event: MotionEvent) {
@@ -478,15 +441,15 @@ class CustomPreviewCanvas : View {
 
     private fun touchUpForBlurGuide(event: MotionEvent) {
         PreviewEditClickStateManager.endBlurGuild()
-        if(BlurManager.cutOval(changedPreviewWidth, changedPreviewHeight,
-                changedPreviewPosWidth, changedPreviewPosHeight)){
+        if (BlurManager.cutOval(changedPreviewWidth, changedPreviewHeight,
+                        changedPreviewPosWidth, changedPreviewPosHeight)) {
             makeOvalBlur()
         }
         invalidate()
     }
 
     private fun makeOvalBlur() {
-        activity?.makeOvalBlur()
+        activity?.makeOvalBlur(this.width, this.height)
     }
 
     private fun touchUpForStamp() {
@@ -645,6 +608,5 @@ class CustomPreviewCanvas : View {
     private fun previewFilterReset() {
         preview?.resetFilterValue()
     }
-
 
 }

@@ -3,8 +3,10 @@ package com.tistory.deque.previewmaker.kotlin.manager
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.RectF
+import android.util.Pair
 import com.tistory.deque.previewmaker.Util.Logger
 import com.tistory.deque.previewmaker.kotlin.util.EzLogger
+import java.util.ArrayList
 
 object BlurManager {
     val blurGuidePaint = Paint().apply {
@@ -92,6 +94,102 @@ object BlurManager {
             EzLogger.d("CASE 3 TRUE : $guideOvalRectFLeft, $guideOvalRectFTop, $guideOvalRectFRight, $guideOvalRectFBottom")
             return true
         }
+    }
+
+    fun getGuideOvalRectFLeftTop(): Pair<Float, Float> {
+        return Pair(guideOvalRectFLeft, guideOvalRectFTop)
+    }
+
+    fun getGuideOvalRectFRightBottom(): Pair<Float, Float> {
+        return Pair(guideOvalRectFRight, guideOvalRectFBottom)
+    }
+
+    /**
+     * 자르기 전 타원의 좌표
+     */
+    fun getGuideOvalRectFOrig(): ArrayList<Float> {
+        val result = ArrayList<Float>()
+        val leftOrig = Math.min(guideOvalRectFLeftOrig, guideOvalRectFRightOrig)
+        val topOrig = Math.min(guideOvalRectFTopOrig, guideOvalRectFBottomOrig)
+        val rightOrig = Math.max(guideOvalRectFLeftOrig, guideOvalRectFRightOrig)
+        val bottomOrig = Math.max(guideOvalRectFTopOrig, guideOvalRectFBottomOrig)
+
+        guideOvalRectFLeftOrig = leftOrig
+        guideOvalRectFTopOrig = topOrig
+        guideOvalRectFRightOrig = rightOrig
+        guideOvalRectFBottomOrig = bottomOrig
+
+        result.add(guideOvalRectFLeftOrig)
+        result.add(guideOvalRectFTopOrig)
+        result.add(guideOvalRectFRightOrig)
+        result.add(guideOvalRectFBottomOrig)
+
+        return result
+    }
+
+    /**
+     * 리사이징된 비트맵의 타원에서 원래 비트맵의 타원을 계산해냄
+     * @return partLeft, partTop, partRight, partBottom, ovalOrigLeft, ovalOrigTop, ovalOrigRight, ovalOrigBottom
+     * 잘린 사각형의 좌상 좌표, 우하 좌표, 잘리기 전 타원의 원본 사이즈의 좌상 좌표, 우하 좌표
+     */
+    fun resizedBlurOvalToOriginalBlurOval(canvasWidth: Int, canvasHeight: Int): java.util.ArrayList<Double> {
+        val left = Math.min(BlurManager.getGuideOvalRectFLeftTop().first, BlurManager.getGuideOvalRectFRightBottom().first)
+        val top = Math.min(BlurManager.getGuideOvalRectFLeftTop().second, BlurManager.getGuideOvalRectFRightBottom().second)
+        val right = Math.max(BlurManager.getGuideOvalRectFLeftTop().first, BlurManager.getGuideOvalRectFRightBottom().first)
+        val bottom = Math.max(BlurManager.getGuideOvalRectFLeftTop().second, BlurManager.getGuideOvalRectFRightBottom().second)
+
+        val ovalLeft = Math.min(BlurManager.getGuideOvalRectFOrig()[0], BlurManager.getGuideOvalRectFOrig()[2])
+        val ovalTop = Math.min(BlurManager.getGuideOvalRectFOrig()[1], BlurManager.getGuideOvalRectFOrig()[3])
+        val ovalRight = Math.max(BlurManager.getGuideOvalRectFOrig()[0], BlurManager.getGuideOvalRectFOrig()[2])
+        val ovalBottom = Math.max(BlurManager.getGuideOvalRectFOrig()[1], BlurManager.getGuideOvalRectFOrig()[3])
+
+        EzLogger.d("""
+            left = $left
+            top = $top
+            right = $right
+            bottom = $bottom
+            ovalLeft = $ovalLeft
+            ovalTop = $ovalTop
+            ovalRight = $ovalRight
+            ovalBottom = $ovalBottom
+        """.trimIndent())
+
+        val pbw = PreviewBitmapManager.selectedPreviewBitmap?.width  ?: 0
+        val pbh =  PreviewBitmapManager.selectedPreviewBitmap?.height ?: 0
+        val elements = PreviewBitmapManager.getResizedBitmapElements(pbw, pbh, canvasWidth, canvasHeight)
+        val results = java.util.ArrayList<Double>()
+
+        val pwPos = elements[0].toDouble()
+        val phPos = elements[1].toDouble()
+        val pw = elements[2].toDouble()
+        val ph = elements[3].toDouble()
+
+        val widthRate = pbw / pw
+        val heightRate = pbh / ph
+
+        val partLeft = widthRate * (left - pwPos)
+        val partTop = heightRate * (top - phPos)
+        val partRight = widthRate * (right - pwPos)
+        val partBottom = heightRate * (bottom - phPos)
+
+        val partOvalLeft = widthRate * (ovalLeft - pwPos)
+        val partOvalTop = heightRate * (ovalTop - phPos)
+        val partOvalRight = widthRate * (ovalRight - pwPos)
+        val partOvalBottom = heightRate * (ovalBottom - phPos)
+
+        results.add(partLeft)
+        results.add(partTop)
+        results.add(partRight)
+        results.add(partBottom)
+
+        results.add(partOvalLeft)
+        results.add(partOvalTop)
+        results.add(partOvalRight)
+        results.add(partOvalBottom)
+
+        EzLogger.d("resizedBlurOvalToOriginalBlurOval results : $results")
+
+        return results
     }
 
 }

@@ -10,6 +10,7 @@ import android.provider.MediaStore
 import com.tistory.deque.previewmaker.R
 import com.tistory.deque.previewmaker.kotlin.base.BaseKotlinViewModel
 import com.tistory.deque.previewmaker.kotlin.db.KtDbOpenHelper
+import com.tistory.deque.previewmaker.kotlin.manager.BlurManager
 import com.tistory.deque.previewmaker.kotlin.manager.PreviewBitmapManager
 import com.tistory.deque.previewmaker.kotlin.model.Preview
 import com.tistory.deque.previewmaker.kotlin.model.PreviewListModel
@@ -37,6 +38,12 @@ class KtPreviewEditViewModel : BaseKotlinViewModel() {
 
     private val _finishLoadingPreviewToCanvas = SingleLiveEvent<Any>()
     val finishLoadingPreviewToCanvas: LiveData<Any> get() = _finishLoadingPreviewToCanvas
+
+    private val _startLoadingPreviewToBlur = SingleLiveEvent<Any>()
+    val startLoadingPreviewToBlur: LiveData<Any> get() = _startLoadingPreviewToBlur
+
+    private val _finishLoadingPreviewToBlur = SingleLiveEvent<Any>()
+    val finishLoadingPreviewToBlur: LiveData<Any> get() = _finishLoadingPreviewToBlur
 
     var previewListModel: PreviewListModel = PreviewListModel()
     private val previewListSize: Int
@@ -144,6 +151,15 @@ class KtPreviewEditViewModel : BaseKotlinViewModel() {
         dbOpenHelper?.dbUpdateStamp(id, stamp)
     }
 
+    fun makeOvalBlur(canvasWidth: Int, canvasHeight: Int) {
+        _startLoadingPreviewToBlur.call()
+        MakeBlurAsyncTask(canvasWidth, canvasHeight).execute()
+    }
+
+    fun finishBlur(){
+        _finishLoadingPreviewToBlur.call()
+    }
+
     inner class AddPreviewThumbnailAsyncTask(val context: Context) : AsyncTask<Void, Int, Int>() {
 
         private var loadingCounter = 0
@@ -207,5 +223,18 @@ class KtPreviewEditViewModel : BaseKotlinViewModel() {
             finishLoadingPreviewToCanvas(preview)
         }
     }
+
+    inner class MakeBlurAsyncTask(val canvasWidth: Int, val canvasHeight: Int): AsyncTask<Void, Void, Void>() {
+        override fun doInBackground(vararg params: Void?): Void?{
+            val partOvalElements = BlurManager.resizedBlurOvalToOriginalBlurOval(canvasWidth, canvasHeight)
+            PreviewBitmapManager.blurBitmap(partOvalElements)
+            return null
+        }
+
+        override fun onPostExecute(result: Void?) {
+            finishBlur()
+        }
+    }
+
 
 }

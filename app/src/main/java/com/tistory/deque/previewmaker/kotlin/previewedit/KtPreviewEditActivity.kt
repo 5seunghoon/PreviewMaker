@@ -123,7 +123,15 @@ class KtPreviewEditActivity : BaseKotlinActivity<KtPreviewEditViewModel>() {
         })
         viewModel.finishLoadingPreviewToCanvas.observe(this, Observer {
             preview_edit_custom_preview_canvas.run { post { invalidate() } }
-            EzLogger.d("preview_edit_custom_preview_canvas invalidate")
+            mainLoadingProgressBarStop()
+        })
+        viewModel.startLoadingPreviewToBlur.observe(this, Observer {
+            preview_edit_custom_preview_canvas.isBlurRoutine = true
+            mainLoadingProgressBarStart()
+        })
+        viewModel.finishLoadingPreviewToBlur.observe(this, Observer {
+            preview_edit_custom_preview_canvas.isBlurRoutine = false
+            preview_edit_custom_preview_canvas.run { post { invalidate() } }
             mainLoadingProgressBarStop()
         })
         viewModel.previewThumbnailAdapterNotifyDataSet.observe(this, Observer {
@@ -167,7 +175,7 @@ class KtPreviewEditActivity : BaseKotlinActivity<KtPreviewEditViewModel>() {
         viewModel.dbUpdateStamp(id, stamp)
     }
 
-    fun makeOvalBlur() {
-
+    fun makeOvalBlur(canvasWidth: Int, canvasHeight: Int) {
+        viewModel.makeOvalBlur(canvasWidth, canvasHeight)
     }
 }

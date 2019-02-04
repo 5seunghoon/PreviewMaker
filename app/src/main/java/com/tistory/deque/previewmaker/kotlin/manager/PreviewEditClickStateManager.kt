@@ -18,7 +18,7 @@ object PreviewEditClickStateManager {
         nowState = STATE_STAMP_EDIT
     }
 
-    fun setBitmapFilterState(){
+    fun setBitmapFilterState() {
         nowState = STATE_BITMAP_FILTER
     }
 
@@ -41,7 +41,7 @@ object PreviewEditClickStateManager {
     }
 
     fun clickStampZoomEnd() {
-        if(nowState == STATE_STAMP_ZOOM) {
+        if (nowState == STATE_STAMP_ZOOM) {
             nowState = STATE_STAMP_EDIT
         }
     }
@@ -53,17 +53,23 @@ object PreviewEditClickStateManager {
     fun isBlurGuide() = (nowState == STATE_BITMAP_FILTER_BLUR_GUIDE)
 
     fun clickBlur() {
-        if(nowState == STATE_BITMAP_FILTER) nowState = STATE_BITMAP_FILTER_BLUR_GUIDE
+        if (nowState == STATE_BITMAP_FILTER) nowState = STATE_BITMAP_FILTER_BLUR_GUIDE
     }
 
     fun endBlurGuild() {
         // blur guide -> blur
-        if(nowState == STATE_BITMAP_FILTER_BLUR_GUIDE) nowState = STATE_BITMAP_FILTER_BLUR
+        if (nowState == STATE_BITMAP_FILTER_BLUR_GUIDE) nowState = STATE_BITMAP_FILTER_BLUR
     }
 
     fun blurEnd() {
-        if((nowState == STATE_BITMAP_FILTER_BLUR_GUIDE) || (nowState == STATE_BITMAP_FILTER_BLUR)) {
+        if ((nowState == STATE_BITMAP_FILTER_BLUR_GUIDE) || (nowState == STATE_BITMAP_FILTER_BLUR)) {
             nowState = STATE_BITMAP_FILTER
+        }
+    }
+
+    fun restartBlur() {
+        if ((nowState == STATE_BITMAP_FILTER_BLUR_GUIDE) || (nowState == STATE_BITMAP_FILTER_BLUR)) {
+            nowState = STATE_BITMAP_FILTER_BLUR_GUIDE
         }
     }
 
