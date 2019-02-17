@@ -91,10 +91,10 @@ class CustomPreviewCanvas : View {
             val right: Int
             val bottom: Int
             try {
-                left = Math.min(BlurManager.getGuideOvalRectFLeftTop().first, BlurManager.getGuideOvalRectFRightBottom().first).roundToInt()
-                top = Math.min(BlurManager.getGuideOvalRectFLeftTop().second, BlurManager.getGuideOvalRectFRightBottom().second).roundToInt()
-                right = Math.max(BlurManager.getGuideOvalRectFLeftTop().first, BlurManager.getGuideOvalRectFRightBottom().first).roundToInt()
-                bottom = Math.max(BlurManager.getGuideOvalRectFLeftTop().second, BlurManager.getGuideOvalRectFRightBottom().second).roundToInt()
+                left = Math.min(BlurManager.guideOvalRectFLeft, BlurManager.guideOvalRectFRight).roundToInt()
+                top = Math.min(BlurManager.guideOvalRectFTop, BlurManager.guideOvalRectFBottom).roundToInt()
+                right = Math.max(BlurManager.guideOvalRectFLeft, BlurManager.guideOvalRectFRight).roundToInt()
+                bottom = Math.max(BlurManager.guideOvalRectFTop, BlurManager.guideOvalRectFBottom).roundToInt()
             } catch (e: IllegalArgumentException) {
                 e.printStackTrace()
                 return
@@ -156,6 +156,11 @@ class CustomPreviewCanvas : View {
         PreviewEditClickStateManager.setStampEditState()
         setStampComponent()
         invalidate()
+    }
+
+    fun homeSaveListener(){
+        if(isBlurRoutine) return
+        activity?.savePreview(isStampShown, PreviewEditClickStateManager.isBlur())
     }
 
     fun stampDeleteListener() {
@@ -251,6 +256,7 @@ class CustomPreviewCanvas : View {
                 changedPreviewWidth = changed[2]
                 changedPreviewHeight = changed[3]
             }
+            PreviewBitmapManager.smallRatePreviewWithCanvas = changedPreviewWidth.toDouble() / it.width.toDouble()
             val paintPreviewContrastBrightness = RetouachingPaintManager.getPaint(
                     preview.getContrastForFilter(),
                     preview.getBrightnessForFilter(),

@@ -3,15 +3,22 @@ package com.tistory.deque.previewmaker.kotlin.previewedit
 import android.arch.lifecycle.LiveData
 import android.content.Context
 import android.database.CursorIndexOutOfBoundsException
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Paint
+import android.graphics.Rect
 import android.media.ExifInterface
 import android.net.Uri
 import android.os.AsyncTask
 import android.provider.MediaStore
+import android.view.View
+import com.tistory.deque.previewmaker.Controler.RetouchingPaintController
 import com.tistory.deque.previewmaker.R
 import com.tistory.deque.previewmaker.kotlin.base.BaseKotlinViewModel
 import com.tistory.deque.previewmaker.kotlin.db.KtDbOpenHelper
 import com.tistory.deque.previewmaker.kotlin.manager.BlurManager
 import com.tistory.deque.previewmaker.kotlin.manager.PreviewBitmapManager
+import com.tistory.deque.previewmaker.kotlin.manager.RetouachingPaintManager
 import com.tistory.deque.previewmaker.kotlin.model.Preview
 import com.tistory.deque.previewmaker.kotlin.model.PreviewListModel
 import com.tistory.deque.previewmaker.kotlin.model.Stamp
@@ -19,6 +26,7 @@ import com.tistory.deque.previewmaker.kotlin.util.EzLogger
 import com.tistory.deque.previewmaker.kotlin.util.SingleLiveEvent
 import com.tistory.deque.previewmaker.kotlin.util.extension.getUri
 import java.io.File
+import kotlin.math.roundToInt
 
 class KtPreviewEditViewModel : BaseKotlinViewModel() {
     private val _startLoadingThumbnailEvent = SingleLiveEvent<Int>()
@@ -56,6 +64,8 @@ class KtPreviewEditViewModel : BaseKotlinViewModel() {
     var stamp: Stamp? = null
 
     var dbOpenHelper: KtDbOpenHelper? = null
+
+    val saveCanvas: Canvas = Canvas()
 
     fun dbOpen(context: Context) {
         EzLogger.d("main activity : db open")
@@ -156,8 +166,72 @@ class KtPreviewEditViewModel : BaseKotlinViewModel() {
         MakeBlurAsyncTask(canvasWidth, canvasHeight).execute()
     }
 
-    fun finishBlur(){
+    fun finishBlur() {
         _finishLoadingPreviewToBlur.call()
+    }
+
+    fun savePreview(stampShown: Boolean, blurShown: Boolean) {
+        if (selectedPreview == null) return
+
+        SaveAsyncTask(stampShown, blurShown).execute()
+    }
+
+    fun makeSaveCanvas(stampShown: Boolean, blurShown: Boolean) {
+        if (selectedPreview == null) return
+
+        PreviewBitmapManager.selectedPreviewBitmap?.let { previewBitmap ->
+            val previewRect = Rect(0, 0, previewBitmap.width, previewBitmap.height)
+            val filterPaint: Paint
+            selectedPreview?.let { preview ->
+                filterPaint = RetouachingPaintManager.getPaint(
+                        preview.getBrightnessForFilter(),
+                        preview.getBrightnessForFilter(),
+                        preview.getSaturationForFilter(),
+                        preview.getKelvinForFilter())
+
+                saveCanvas.drawBitmap(previewBitmap, null, previewRect, filterPaint)
+
+                if (blurShown) {
+                    val blurRect = Rect(BlurManager.ovalRectFLeftForSave.roundToInt(), BlurManager.ovalRectFTopForSave.roundToInt(),
+                            BlurManager.ovalRectFRightForSave.roundToInt(), BlurManager.ovalRectFBottomForSave.roundToInt())
+
+                    PreviewBitmapManager.blurredPreviewBitmap?.let { blurBitmap ->
+                        saveCanvas.drawBitmap(blurBitmap, null, blurRect, filterPaint)
+                    }
+                }
+
+                if (stampShown) {
+                    stamp?.let { stamp ->
+                        val anchorInt = stamp.positionAnchorEnum.value
+                        val widthAnchor: Int = anchorInt % 3
+                        val heightAnchor: Int
+                        heightAnchor = if (anchorInt == 0) 0
+                        else anchorInt / 3
+
+                        val rate = PreviewBitmapManager.smallRatePreviewWithCanvas
+
+                        val stampWidth = stamp.width * rate
+                        val stampHeight = stamp.height * rate
+
+                        val stampPaint = RetouchingPaintController.getPaint(
+                                1f,
+                                stamp.getAbsoluteBrightness().toFloat(),
+                                1f,
+                                1f)
+
+                        val stampWidthPos = stampWidth * (stamp.positionWidthPer.toDouble() / 100000.0)
+                        val stampHeightPos = stampHeight * (stamp.positionHeightPer.toDouble() / 100000.0)
+
+                        val stampRect = Rect(stampWidthPos.roundToInt(), stampHeightPos.roundToInt(),
+                                (stampWidthPos + stampWidth).roundToInt(),
+                                (stampHeightPos + stampHeight).roundToInt())
+                        PreviewBitmapManager.selectedStampBitmap?.let { stampBitmap ->
+                            saveCanvas.drawBitmap(stampBitmap, null, stampRect, stampPaint)
+                        }
+                    }
+                }
+            } ?: return
+        }
     }
 
     inner class AddPreviewThumbnailAsyncTask(val context: Context) : AsyncTask<Void, Int, Int>() {
@@ -209,7 +283,7 @@ class KtPreviewEditViewModel : BaseKotlinViewModel() {
         override fun doInBackground(vararg params: Void?): Preview {
             EzLogger.d("LoadingPreviewToCanvas doInBackground")
             PreviewBitmapManager.selectedPreviewBitmap = preview.getBitmap(context)
-            if(PreviewBitmapManager.selectedStampBitmap == null){
+            if (PreviewBitmapManager.selectedStampBitmap == null) {
                 stamp?.imageUri?.let { url ->
                     PreviewBitmapManager.selectedStampBitmap =
                             PreviewBitmapManager.stampImageUriToBitmap(url, context)
@@ -224,8 +298,8 @@ class KtPreviewEditViewModel : BaseKotlinViewModel() {
         }
     }
 
-    inner class MakeBlurAsyncTask(val canvasWidth: Int, val canvasHeight: Int): AsyncTask<Void, Void, Void>() {
-        override fun doInBackground(vararg params: Void?): Void?{
+    inner class MakeBlurAsyncTask(val canvasWidth: Int, val canvasHeight: Int) : AsyncTask<Void, Void, Void>() {
+        override fun doInBackground(vararg params: Void?): Void? {
             val partOvalElements = BlurManager.resizedBlurOvalToOriginalBlurOval(canvasWidth, canvasHeight)
             PreviewBitmapManager.blurBitmap(partOvalElements)
             return null
@@ -233,6 +307,30 @@ class KtPreviewEditViewModel : BaseKotlinViewModel() {
 
         override fun onPostExecute(result: Void?) {
             finishBlur()
+        }
+    }
+
+    inner class SaveAsyncTask(val stampShown: Boolean, val blurShown: Boolean) : AsyncTask<Void, Void, Void>() {
+        override fun doInBackground(vararg params: Void?): Void? {
+            makeSaveCanvas(stampShown, blurShown)
+            PreviewBitmapManager.selectedPreviewBitmap?.let {
+                val screenshot: Bitmap = Bitmap.createBitmap(
+                        it.width, it.height,
+                        Bitmap.Config.ARGB_8888)
+                val v = SaveView()
+                val c = Canvas(screenshot)
+                (saveCanvas as? View)?.draw(c)
+
+            }
+            return null
+        }
+    }
+
+    class SaveView:View{
+        constructor(context: Context) : super(context)
+
+        override fun onDraw(canvas: Canvas?) {
+                super.onDraw(canvas)
         }
     }
 

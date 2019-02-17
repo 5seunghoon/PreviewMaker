@@ -77,6 +77,7 @@ class CustomPreviewEditGroup : LinearLayout {
             layoutChange()
         }
         custom_edit_group_home_save.setOnClickListener {
+            customPreviewCanvas?.homeSaveListener()
             homeSaveListener()
         }
 

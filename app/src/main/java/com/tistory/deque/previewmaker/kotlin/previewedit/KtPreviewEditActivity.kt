@@ -178,4 +178,8 @@ class KtPreviewEditActivity : BaseKotlinActivity<KtPreviewEditViewModel>() {
     fun makeOvalBlur(canvasWidth: Int, canvasHeight: Int) {
         viewModel.makeOvalBlur(canvasWidth, canvasHeight)
     }
+
+    fun savePreview(stampShown: Boolean, blurShown: Boolean) {
+        viewModel.savePreview(stampShown, blurShown)
+    }
 }
