@@ -1,10 +1,10 @@
 package com.tistory.deque.previewmaker.kotlin.model
 
-class PreviewListModel(){
+class PreviewListModel() {
 
     var previewArrayList: ArrayList<Preview> = ArrayList()
 
-    val size : Int
+    val size: Int
         get() = previewArrayList.size
 
     fun getPreview(position: Int): Preview = previewArrayList[position]
@@ -12,8 +12,12 @@ class PreviewListModel(){
         previewArrayList.add(preview)
     }
 
-    fun initPreviewList(){
+    fun initPreviewList() {
         previewArrayList = ArrayList()
+    }
+
+    fun delete(position: Int) {
+        previewArrayList.removeAt(position)
     }
 
 }

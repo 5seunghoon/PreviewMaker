@@ -156,9 +156,32 @@ class KtPreviewEditViewModel : BaseKotlinViewModel() {
         }
     }
 
-    fun refreshCanvas(context: Context){
+    fun refreshCanvas(context: Context) {
         val loadingPreviewToCanvas = LoadingPreviewToCanvas(context, selectedPreview ?: return)
         loadingPreviewToCanvas.execute()
+    }
+
+    fun deleteSelectedPreview(context: Context) {
+        if (previewListModel.size <= 1) return
+        selectedPreviewPosition?.let {
+            previewListModel.delete(it)
+            previewPathList.removeAt(it)
+            //_previewThumbnailAdapterRemovePosition.value = it
+            _previewThumbnailAdapterNotifyDataSet.call()
+
+            // 보여줄 프리뷰 포지션 변경
+            selectedPreviewPosition = if (it == previewListModel.size) { //맨 끝이면 이전꺼 선택
+                it - 1
+            } else {
+                it
+            }
+
+            selectedPreview = previewListModel.getPreview(selectedPreviewPosition ?: return)
+
+            _startLoadingPreviewToCanvas.call()
+            val loadingPreviewToCanvas = LoadingPreviewToCanvas(context, selectedPreview ?: return)
+            loadingPreviewToCanvas.execute()
+        }
     }
 
     fun dbUpdateStamp(id: Int, stamp: Stamp) {

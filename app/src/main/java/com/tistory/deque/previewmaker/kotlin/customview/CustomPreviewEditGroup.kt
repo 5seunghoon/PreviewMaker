@@ -62,32 +62,47 @@ class CustomPreviewEditGroup : LinearLayout {
     private fun setClickListener() {
         //1. home
         custom_edit_group_home_delete.setOnClickListener {
+            if(customPreviewCanvas?.isPreviewNotSelected() != false) return@setOnClickListener
+
+            customPreviewCanvas?.homeDeleteListener()
         }
         custom_edit_group_home_crop.setOnClickListener {
+            if(customPreviewCanvas?.isPreviewNotSelected() != false) return@setOnClickListener
+
             homeCropListener()
         }
         custom_edit_group_home_stamp.setOnClickListener {
+            if(customPreviewCanvas?.isPreviewNotSelected() != false) return@setOnClickListener
+
             PreviewEditButtonViewStateManager.setStampState()
             customPreviewCanvas?.homeStampListener()
             layoutChange()
         }
         custom_edit_group_home_filter.setOnClickListener {
+            if(customPreviewCanvas?.isPreviewNotSelected() != false) return@setOnClickListener
+
             PreviewEditButtonViewStateManager.setFilterState()
             customPreviewCanvas?.homeFilterListener()
             layoutChange()
         }
         custom_edit_group_home_save.setOnClickListener {
+            if(customPreviewCanvas?.isPreviewNotSelected() != false) return@setOnClickListener
+
             customPreviewCanvas?.homeSaveListener()
             homeSaveListener()
         }
 
         //2. stamp
         custom_edit_group_stamp_delete.setOnClickListener {
+            if(customPreviewCanvas?.isPreviewNotSelected() != false) return@setOnClickListener
+
             PreviewEditButtonViewStateManager.finishEdit()
             customPreviewCanvas?.stampDeleteListener()
             layoutChange()
         }
         custom_edit_group_stamp_brightness.setOnClickListener {
+            if(customPreviewCanvas?.isPreviewNotSelected() != false) return@setOnClickListener
+
             PreviewEditButtonViewStateManager.clickStampBrightness()
 
             custom_edit_group_seek_bar_first.run {
@@ -101,9 +116,13 @@ class CustomPreviewEditGroup : LinearLayout {
             layoutChange()
         }
         custom_edit_group_stamp_reset.setOnClickListener {
+            if(customPreviewCanvas?.isPreviewNotSelected() != false) return@setOnClickListener
+
             customPreviewCanvas?.stampResetListener()
         }
         custom_edit_group_stamp_finish.setOnClickListener {
+            if(customPreviewCanvas?.isPreviewNotSelected() != false) return@setOnClickListener
+
             PreviewEditButtonViewStateManager.finishEdit()
             customPreviewCanvas?.stampFinishListener()
             layoutChange()
@@ -111,6 +130,8 @@ class CustomPreviewEditGroup : LinearLayout {
 
         // 3. filter
         custom_edit_group_filter_bright_contra.setOnClickListener {
+            if(customPreviewCanvas?.isPreviewNotSelected() != false) return@setOnClickListener
+
             PreviewEditButtonViewStateManager.clickFilterBrightContra()
 
             custom_edit_group_seek_bar_first.run {
@@ -132,6 +153,8 @@ class CustomPreviewEditGroup : LinearLayout {
             layoutChange()
         }
         custom_edit_group_filter_kelvin_satu.setOnClickListener {
+            if(customPreviewCanvas?.isPreviewNotSelected() != false) return@setOnClickListener
+
             PreviewEditButtonViewStateManager.clickFilterKelvinSatu()
 
             custom_edit_group_seek_bar_first.run {
@@ -153,14 +176,20 @@ class CustomPreviewEditGroup : LinearLayout {
             layoutChange()
         }
         custom_edit_group_filter_blur.setOnClickListener {
+            if(customPreviewCanvas?.isPreviewNotSelected() != false) return@setOnClickListener
+
             PreviewEditButtonViewStateManager.clickFilterBlur()
             customPreviewCanvas?.filterBlurListener()
             layoutChange()
         }
         custom_edit_group_filter_reset.setOnClickListener {
+            if(customPreviewCanvas?.isPreviewNotSelected() != false) return@setOnClickListener
+
             customPreviewCanvas?.filterResetListener()
         }
         custom_edit_group_filter_finish.setOnClickListener {
+            if(customPreviewCanvas?.isPreviewNotSelected() != false) return@setOnClickListener
+
             PreviewEditButtonViewStateManager.finishEdit()
             customPreviewCanvas?.filterFinishListener()
             layoutChange()
@@ -168,6 +197,8 @@ class CustomPreviewEditGroup : LinearLayout {
 
         // 4.
         custom_edit_group_handler_finish.setOnClickListener {
+            if(customPreviewCanvas?.isPreviewNotSelected() != false) return@setOnClickListener
+
             PreviewEditButtonViewStateManager.finishEdit()
             if(PreviewEditClickStateManager.isBlur() || PreviewEditClickStateManager.isBlurGuide()) {
                 customPreviewCanvas?.filterBlurOkListener()
@@ -175,6 +206,8 @@ class CustomPreviewEditGroup : LinearLayout {
             layoutChange()
         }
         custom_edit_group_handler_cancel.setOnClickListener {
+            if(customPreviewCanvas?.isPreviewNotSelected() != false) return@setOnClickListener
+
             PreviewEditButtonViewStateManager.finishEdit()
             if(PreviewEditClickStateManager.isBlur() || PreviewEditClickStateManager.isBlurGuide()) {
                 customPreviewCanvas?.filterBlurCancelListener()

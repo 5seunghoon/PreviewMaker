@@ -66,13 +66,13 @@ class KtPreviewEditActivity : BaseKotlinActivity<KtPreviewEditViewModel>() {
         }
     }
 
-    private fun setCustomPreviewCanvas(){
+    private fun setCustomPreviewCanvas() {
         preview_edit_custom_preview_canvas.run {
             setComponent(this@KtPreviewEditActivity)
         }
     }
 
-    private fun setCustomEditGroup(){
+    private fun setCustomEditGroup() {
         preview_edit_custom_edit_group.run {
             customPreviewCanvas = preview_edit_custom_preview_canvas
             homeSaveListener = this@KtPreviewEditActivity::homeSaveListener
@@ -80,19 +80,19 @@ class KtPreviewEditActivity : BaseKotlinActivity<KtPreviewEditViewModel>() {
         }
     }
 
-    private fun homeSaveListener(){
+    private fun homeSaveListener() {
         return
     }
 
-    private fun homeCropListener(){
+    private fun homeCropListener() {
         return
     }
 
-    private fun previewThumbnailHelpClickListener(){
+    private fun previewThumbnailHelpClickListener() {
         startActivity(Intent(applicationContext, KtHelpPreviewEditActivity::class.java))
     }
 
-    private fun previewThumbnailClickListener(preview: Preview, position:Int) {
+    private fun previewThumbnailClickListener(preview: Preview, position: Int) {
         EzLogger.d("previewThumbnailAdapter previewThumbnailClickListener")
         viewModel.previewThumbnailClickListener(applicationContext, preview, position)
     }
@@ -154,6 +154,7 @@ class KtPreviewEditActivity : BaseKotlinActivity<KtPreviewEditViewModel>() {
             backPressedTime = System.currentTimeMillis()
         }
     }
+
     private fun mainLoadingProgressBarStart() {
         preview_edit_loading_progress_bar_layout.fadeIn()
     }
@@ -185,5 +186,9 @@ class KtPreviewEditActivity : BaseKotlinActivity<KtPreviewEditViewModel>() {
 
     fun savePreviewEnd() {
         viewModel.refreshCanvas(this)
+    }
+
+    fun deleteSelectedPreview() {
+        viewModel.deleteSelectedPreview(this)
     }
 }

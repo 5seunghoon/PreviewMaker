@@ -305,6 +305,10 @@ class CustomPreviewCanvas : View {
         isStampShown = false
     }
 
+    fun homeDeleteListener() {
+        activity?.deleteSelectedPreview()
+    }
+
     fun homeStampListener() {
         showStamp()
         PreviewEditClickStateManager.setStampEditState()
@@ -769,5 +773,7 @@ class CustomPreviewCanvas : View {
     private fun previewFilterReset() {
         preview?.resetFilterValue()
     }
+
+    fun isPreviewNotSelected() = (preview == null)
 
 }
