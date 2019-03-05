@@ -10,6 +10,8 @@ import com.tistory.deque.previewmaker.kotlin.util.EzLogger
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
+import com.tistory.deque.previewmaker.Activity.MainActivity
+
 
 data class Preview(
         var originalImageUri: Uri,
@@ -91,22 +93,22 @@ data class Preview(
 
     fun getBrightnessForFilter(): Float {
         //실제 필터를 적용할 때 이용. -256~+256을 -64 ~ +64로 바꿔서 리턴
-        return _brightness / 4.0f
+        return if(_brightness == 0) 0f else _brightness / 4.0f
     }
 
     fun getContrastForFilter(): Float {
         //실제 필터를 적용할 때 이용. 0.5~1.5를 리턴
-        return _contrast.toFloat() / 512.0f + 1.0f
+        return if(_contrast == 0) 1f else _contrast.toFloat() / 512.0f + 1.0f
     }
 
     fun getSaturationForFilter(): Float {
         //0.875~1.125를 리턴
-        return _saturation.toFloat() / 2048.0f + 1.0f
+        return if(_saturation == 0) 1f else _saturation.toFloat() / 2048.0f + 1.0f
     }
 
     fun getKelvinForFilter(): Float {
         //0.875~1.125를 리턴
-        return _kelvin.toFloat() / 1024.0f + 1.0f
+        return if(_kelvin == 0) 1f else _kelvin.toFloat() / 1024.0f + 1.0f
     }
 
     fun resetFilterValue() {
@@ -115,4 +117,5 @@ data class Preview(
         this._kelvin = 0
         this._saturation = 0
     }
+
 }

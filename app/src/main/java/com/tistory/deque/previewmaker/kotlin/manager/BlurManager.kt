@@ -132,9 +132,9 @@ object BlurManager {
      */
     fun resizedBlurOvalToOriginalBlurOval(canvasWidth: Int, canvasHeight: Int): java.util.ArrayList<Double> {
         val left = Math.min(BlurManager.guideOvalRectFLeft, BlurManager.guideOvalRectFRight)
-        val top = Math.min(BlurManager.guideOvalRectFLeft, BlurManager.guideOvalRectFBottom)
+        val top = Math.min(BlurManager.guideOvalRectFTop, BlurManager.guideOvalRectFBottom)
         val right = Math.max(BlurManager.guideOvalRectFLeft, BlurManager.guideOvalRectFRight)
-        val bottom = Math.max(BlurManager.guideOvalRectFLeft, BlurManager.guideOvalRectFBottom)
+        val bottom = Math.max(BlurManager.guideOvalRectFTop, BlurManager.guideOvalRectFBottom)
 
         val ovalLeft = Math.min(BlurManager.getGuideOvalRectFOrig()[0], BlurManager.getGuideOvalRectFOrig()[2])
         val ovalTop = Math.min(BlurManager.getGuideOvalRectFOrig()[1], BlurManager.getGuideOvalRectFOrig()[3])

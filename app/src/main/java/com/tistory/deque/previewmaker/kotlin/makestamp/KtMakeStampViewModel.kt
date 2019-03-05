@@ -38,7 +38,7 @@ class KtMakeStampViewModel : BaseKotlinViewModel() {
         data.data?.let { sourceUri ->
             makeStampFile(context, sourceUri) ?.let { outFile ->
                 _stampUriLiveData.value = Uri.fromFile(outFile)
-            } ?: showSnackbar("낙관 생성 실패. 다시 시도해주세요")
+            } ?: showSnackbar("낙관 생성 실패. 장축이 2천px 이상일경우 낙관을 만들 수 없습니다. 다시 시도해주세요")
         }
     }
 

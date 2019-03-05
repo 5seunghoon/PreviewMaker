@@ -23,10 +23,6 @@ object PreviewBitmapManager {
     var blurredPreviewBitmap: Bitmap? = null
 
     var smallRatePreviewWithCanvas : Double = 1.0 // 캔버스에 프리뷰를 그릴 때 얼마나 축소하는지
-        set(value) {
-            field = if(value < 1) 1.0
-            else value
-        }
 
     fun resetManager() {
         selectedPreviewBitmap = null

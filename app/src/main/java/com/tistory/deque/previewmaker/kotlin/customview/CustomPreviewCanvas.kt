@@ -2,14 +2,12 @@ package com.tistory.deque.previewmaker.kotlin.customview
 
 import android.content.Context
 import android.graphics.*
-import android.net.Uri
-import android.provider.MediaStore
+import android.os.AsyncTask
 import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import com.tistory.deque.previewmaker.Controler.RetouchingPaintController
-import com.tistory.deque.previewmaker.R
 import com.tistory.deque.previewmaker.kotlin.manager.*
 import com.tistory.deque.previewmaker.kotlin.model.Preview
 import com.tistory.deque.previewmaker.kotlin.model.Stamp
@@ -17,10 +15,17 @@ import com.tistory.deque.previewmaker.kotlin.model.enums.PreviewEditClickStateEn
 import com.tistory.deque.previewmaker.kotlin.model.enums.StampAnchorEnum
 import com.tistory.deque.previewmaker.kotlin.previewedit.KtPreviewEditActivity
 import com.tistory.deque.previewmaker.kotlin.util.EzLogger
-import java.io.IOException
 import java.lang.IllegalArgumentException
-import java.util.ArrayList
 import kotlin.math.roundToInt
+import android.graphics.Bitmap
+import com.tistory.deque.previewmaker.kotlin.util.extension.getRealPath
+import com.tistory.deque.previewmaker.Model_PreviewData.PreviewItem
+import android.content.Intent
+import com.tistory.deque.previewmaker.R
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
+
 
 class CustomPreviewCanvas : View {
     init {
@@ -51,14 +56,17 @@ class CustomPreviewCanvas : View {
     var isStampShown: Boolean = false
         private set
     var isBlurRoutine: Boolean = false
+    var isSaveWithBlur: Boolean = false // 블러 상태에서 확인을 눌렸을 때 저장이 되는데, 그때만 true
+    var isSaveRoutine: Boolean = false
+    var isSaveReady: Boolean = false
+
+    var saveStartTime: Long = 0
 
     constructor(context: Context) : super(context)
     constructor(ctx: Context, attrs: AttributeSet) : super(ctx, attrs)
     constructor(ctx: Context, attrs: AttributeSet, defStyleAttr: Int) : super(ctx, attrs, defStyleAttr)
 
-    private fun initView() {
-
-    }
+    private fun initView() {}
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
@@ -66,22 +74,150 @@ class CustomPreviewCanvas : View {
 
         setBackgroundColor(ContextCompat.getColor(context, R.color.backgroundGray))
         preview?.let {
-            drawBaseBitmap(it)
+            if (isSaveRoutine) {
+                drawSaveBitmap(it)
+                isSaveReady = true
+            } else {
+                drawBaseBitmap(it)
 
-            if (PreviewEditClickStateManager.isBlurGuide()) {
-                drawBlurGuide()
-            }
-            if (PreviewEditClickStateManager.isBlur()) {
-                if (isBlurRoutine) drawBlurGuide()
-                else drawBlur()
-            }
-            if (isStampShown) {
-                drawStamp()
-                if (PreviewEditClickStateManager.isShowGuildLine()) {
-                    drawStampGuideLine()
+                if (PreviewEditClickStateManager.isBlurGuide()) {
+                    drawBlurGuide()
+                }
+                if (PreviewEditClickStateManager.isBlur()) {
+                    if (isBlurRoutine) drawBlurGuide()
+                    else drawBlur()
+                }
+                if (isStampShown) {
+                    drawStamp()
+                    if (PreviewEditClickStateManager.isShowGuildLine()) {
+                        drawStampGuideLine()
+                    }
                 }
             }
         } ?: setBackgroundColor(Color.WHITE)
+    }
+
+    private fun drawSaveBitmap(preview: Preview) {
+        PreviewBitmapManager.selectedPreviewBitmap?.let { previewBitmap ->
+            val previewRect = Rect(0, 0, previewBitmap.width, previewBitmap.height)
+            EzLogger.d("previewBitmap.width : ${previewBitmap.width}, previewBitmap.height : ${previewBitmap.height}")
+            val filterPaint: Paint = RetouachingPaintManager.getPaint(
+                    preview.getContrastForFilter(),
+                    preview.getBrightnessForFilter(),
+                    preview.getSaturationForFilter(),
+                    preview.getKelvinForFilter())
+
+            canvas?.drawBitmap(previewBitmap, null, previewRect, filterPaint) ?: run {
+                EzLogger.d("canvas null, draw preview bitmap fail")
+                return
+            }
+
+            if (isSaveWithBlur) {
+                val blurRect = Rect(BlurManager.ovalRectFLeftForSave.roundToInt(), BlurManager.ovalRectFTopForSave.roundToInt(),
+                        BlurManager.ovalRectFRightForSave.roundToInt(), BlurManager.ovalRectFBottomForSave.roundToInt())
+
+                PreviewBitmapManager.blurredPreviewBitmap?.let { blurBitmap ->
+                    canvas?.drawBitmap(blurBitmap, null, blurRect, filterPaint)
+                }
+            }
+
+            if (isStampShown && !isSaveWithBlur) { //블러를 저장하는 단계일때는 스탬프를 같이 저장하면 안된다.
+                stamp?.let { stamp ->
+                    val rate = 1.0 / PreviewBitmapManager.smallRatePreviewWithCanvas
+                    EzLogger.d("rate : $rate, smallRatePreviewWithCanvas : ${PreviewBitmapManager.smallRatePreviewWithCanvas}")
+
+                    val stampWidth = stamp.width * rate
+                    val stampHeight = stamp.height * rate
+
+                    val anchorEnum = stamp.positionAnchorEnum
+                    val widthAnchorNum = anchorEnum.value % 3 // 왼쪽이면 0, 중간이면 1, 오른쪽이면 2
+                    val heightAnchorNum = anchorEnum.value / 3 // 상단이면 0, 중간이면 1, 하단이면 2
+
+                    val stampPaint = RetouchingPaintController.getPaint(
+                            1f,
+                            stamp.getAbsoluteBrightness().toFloat(),
+                            1f,
+                            1f)
+
+                    val stampWidthPos = previewBitmap.width * (stamp.positionWidthPer.toDouble() / 100000.0) - (stampWidth / 2.0) * widthAnchorNum
+                    val stampHeightPos = previewBitmap.height * (stamp.positionHeightPer.toDouble() / 100000.0) - (stampHeight / 2.0) * heightAnchorNum
+                    EzLogger.d("stamp.positionWidthPer : ${stamp.positionWidthPer}, stamp.positionHeightPer : ${stamp.positionHeightPer}")
+                    EzLogger.d("stampWidthPos : $stampWidthPos, stampHeightPos : $stampHeightPos")
+
+                    val stampRect = Rect(stampWidthPos.roundToInt(),
+                            stampHeightPos.roundToInt(),
+                            (stampWidthPos + stampWidth).roundToInt(),
+                            (stampHeightPos + stampHeight).roundToInt())
+                    PreviewBitmapManager.selectedStampBitmap?.let { stampBitmap ->
+                        canvas?.drawBitmap(stampBitmap, null, stampRect, stampPaint)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun saveCanvas() {
+        saveStartTime = System.currentTimeMillis()
+        SaveCanvasAsyncTask().execute()
+    }
+
+    inner class SaveCanvasAsyncTask : AsyncTask<Void, Void, String>() {
+        val ERROR_IO_EXCEPTION = "ERROR_IO_EXCEPTION"
+        val ERROR_TIME_OUT = "ERROR_TIME_OUT"
+        val ERROR_PREVIEW_NULL = "ERROR_PREVIEW_NULL"
+
+        override fun doInBackground(vararg params: Void?): String? {
+            while (!isSaveReady) {
+                //spin ready to save
+                //캔버스에 오리지널 크기로 비트맵을 다 그리고 나면 save ready가 true가 됨
+                //10초 동안 돌면 그냥 break
+                if (saveStartTime + 10000 < System.currentTimeMillis()) {
+                    return ERROR_TIME_OUT
+                }
+            }
+            PreviewBitmapManager.selectedPreviewBitmap?.let { previewBitmap ->
+
+                val screenshot = Bitmap.createBitmap(
+                        previewBitmap.width,
+                        previewBitmap.height,
+                        Bitmap.Config.ARGB_8888)
+
+                val canvas = Canvas(screenshot)
+                this@CustomPreviewCanvas.draw(canvas)
+                val resultUri = preview?.resultImageUri ?: return ERROR_PREVIEW_NULL
+                EzLogger.d("save routine async task, preivew : $preview")
+                EzLogger.d("save routine async task, resultUri : $resultUri")
+                val resultFilePath = resultUri.path
+                EzLogger.d("save routine async task, resultFilePath : $resultFilePath")
+
+                val resultFile = File(resultFilePath)
+                val fos: FileOutputStream
+                try {
+                    fos = FileOutputStream(resultFile)
+                    screenshot.compress(Bitmap.CompressFormat.JPEG, 100, fos)
+                    fos.close()
+                    EzLogger.d("Media scan uri : $resultUri")
+                    EzLogger.d("Media scan path : $resultFilePath")
+                    val mediaScanIntent = Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE)
+                    mediaScanIntent.data = resultUri
+                    activity?.sendBroadcast(mediaScanIntent)
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                    return ERROR_IO_EXCEPTION
+                }
+                preview?.originalImageUri = resultUri
+                preview?.saved()
+
+                return resultFilePath
+            }
+
+            return null
+        }
+
+        override fun onPostExecute(result: String?) {
+            saveEnd()
+            super.onPostExecute(result)
+        }
     }
 
     private fun drawBlur() {
@@ -113,6 +249,24 @@ class CustomPreviewCanvas : View {
                 EzLogger.d("$left, $top, $right, $bottom")
             }
         }
+    }
+
+    private fun saveStart() {
+        if (isBlurRoutine) return
+        isSaveRoutine = true
+        isSaveReady = false
+        activity?.savePreviewStart()
+        invalidate()
+        saveCanvas()
+    }
+
+    private fun saveEnd() {
+        isSaveRoutine = false
+        if(!isSaveWithBlur) isStampShown = false // 블러를 저장하는 경우가 아닐 때만 스탬프를 안보이게 함
+        isSaveWithBlur = false
+        preview?.resetFilterValue()
+        invalidate()
+        activity?.savePreviewEnd()
     }
 
     /**
@@ -158,9 +312,8 @@ class CustomPreviewCanvas : View {
         invalidate()
     }
 
-    fun homeSaveListener(){
-        if(isBlurRoutine) return
-        activity?.savePreview(isStampShown, PreviewEditClickStateManager.isBlur())
+    fun homeSaveListener() {
+        saveStart()
     }
 
     fun stampDeleteListener() {
@@ -205,6 +358,8 @@ class CustomPreviewCanvas : View {
 
     fun filterBlurOkListener() {
         PreviewEditClickStateManager.blurEnd()
+        isSaveWithBlur = true
+        saveStart()
         invalidate()
     }
 
