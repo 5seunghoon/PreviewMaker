@@ -1,7 +1,9 @@
 package com.tistory.deque.previewmaker.kotlin.previewedit
 
+import android.app.AlertDialog
 import android.arch.lifecycle.LiveData
 import android.content.Context
+import android.content.DialogInterface
 import android.database.CursorIndexOutOfBoundsException
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -20,6 +22,7 @@ import com.tistory.deque.previewmaker.kotlin.base.BaseKotlinViewModel
 import com.tistory.deque.previewmaker.kotlin.db.KtDbOpenHelper
 import com.tistory.deque.previewmaker.kotlin.manager.BlurManager
 import com.tistory.deque.previewmaker.kotlin.manager.PreviewBitmapManager
+import com.tistory.deque.previewmaker.kotlin.manager.PreviewEditButtonViewStateManager
 import com.tistory.deque.previewmaker.kotlin.manager.RetouachingPaintManager
 import com.tistory.deque.previewmaker.kotlin.model.Preview
 import com.tistory.deque.previewmaker.kotlin.model.PreviewListModel
@@ -53,11 +56,17 @@ class KtPreviewEditViewModel : BaseKotlinViewModel() {
     private val _finishLoadingPreviewToCanvas = SingleLiveEvent<Any>()
     val finishLoadingPreviewToCanvas: LiveData<Any> get() = _finishLoadingPreviewToCanvas
 
+    private val _initCanvasAndPreviewEvent = SingleLiveEvent<Any>()
+    val initCanvasAndPreviewEvent: LiveData<Any> get() = _initCanvasAndPreviewEvent
+
     private val _startLoadingPreviewToBlur = SingleLiveEvent<Any>()
     val startLoadingPreviewToBlur: LiveData<Any> get() = _startLoadingPreviewToBlur
 
     private val _finishLoadingPreviewToBlur = SingleLiveEvent<Any>()
     val finishLoadingPreviewToBlur: LiveData<Any> get() = _finishLoadingPreviewToBlur
+
+    private val _startSavePreviewEvent = SingleLiveEvent<Any>()
+    val startSavePreviewEvent: LiveData<Any> get() = _startSavePreviewEvent
 
     var previewListModel: PreviewListModel = PreviewListModel()
     private val previewListSize: Int
@@ -147,17 +156,47 @@ class KtPreviewEditViewModel : BaseKotlinViewModel() {
         _finishLoadingThumbnailEvent.value = allThumbnailSize
     }
 
+    private fun initCanvasAndPreview(preview: Preview) {
+        _initCanvasAndPreviewEvent.call()
+    }
+
     private fun finishLoadingPreviewToCanvas(preview: Preview) {
         selectedPreview = preview
         _finishLoadingPreviewToCanvas.call()
     }
 
-    fun previewThumbnailClickListener(context: Context, preview: Preview, position: Int) {
-        if (selectedPreviewPosition == null || selectedPreviewPosition != position) {
+    fun previewThumbnailClickListener(activity: KtPreviewEditActivity, preview: Preview, position: Int) {
+
+        fun changePreview() {
             selectedPreviewPosition = position
             _startLoadingPreviewToCanvas.call()
-            val loadingPreviewToCanvas = LoadingPreviewToCanvas(context, preview)
+            val loadingPreviewToCanvas = LoadingPreviewToCanvas(activity, preview)
             loadingPreviewToCanvas.execute()
+        }
+
+        if (selectedPreviewPosition == null || selectedPreviewPosition != position &&
+                PreviewEditButtonViewStateManager.isHomeState()) { // 홈 스테이트 상태에서만 프리뷰 변경 가능
+
+            selectedPreview?.let {
+                if (!it.isSaved) {
+                    AlertDialog.Builder(activity).apply {
+                        setMessage(R.string.snackbar_preview_edit_acti_clk_new_preview)
+                        setPositiveButton("YES") { _, _ -> _startSavePreviewEvent.call() }
+                        setNegativeButton("NO") { _, _ ->
+                            it.saved()
+                            it.resetFilterValue()
+                            changePreview()
+                        }
+                        setNeutralButton("CANCLE") { _, _ -> }
+                    }.create().apply {
+                        setCanceledOnTouchOutside(false)
+                    }.show()
+                } else {
+                    changePreview()
+                }
+            } ?: run {
+                changePreview() // 프리뷰가 null이란 말은 아무것도 클릭 안한 초기 상태라는 뜻.
+            }
         }
     }
 
@@ -307,6 +346,7 @@ class KtPreviewEditViewModel : BaseKotlinViewModel() {
 
         override fun onPostExecute(preview: Preview) {
             super.onPostExecute(preview)
+            initCanvasAndPreview(preview)
             finishLoadingPreviewToCanvas(preview)
         }
     }

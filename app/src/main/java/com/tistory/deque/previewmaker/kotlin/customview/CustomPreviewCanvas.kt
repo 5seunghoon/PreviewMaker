@@ -190,7 +190,7 @@ class CustomPreviewCanvas : View {
         }
     }
 
-    private fun saveStart() {
+    fun saveStart() {
         if (isBlurRoutine) return
         isSaveRoutine = true
         isSaveReady = false
@@ -253,6 +253,7 @@ class CustomPreviewCanvas : View {
     }
 
     fun homeStampListener() {
+        preview?.editted()
         showStamp()
         PreviewEditClickStateManager.setStampEditState()
         setStampComponent()
@@ -261,6 +262,12 @@ class CustomPreviewCanvas : View {
 
     fun homeSaveListener() {
         saveStart()
+    }
+
+    fun homeFilterListener() {
+        preview?.editted()
+        PreviewEditClickStateManager.setBitmapFilterState()
+        invalidate()
     }
 
     fun stampDeleteListener() {
@@ -276,11 +283,6 @@ class CustomPreviewCanvas : View {
     fun stampFinishListener() {
         PreviewEditClickStateManager.setNoneClickState()
         finishStampEdit()
-        invalidate()
-    }
-
-    fun homeFilterListener() {
-        PreviewEditClickStateManager.setBitmapFilterState()
         invalidate()
     }
 
@@ -308,6 +310,11 @@ class CustomPreviewCanvas : View {
         isSaveWithBlur = true
         saveStart()
         invalidate()
+    }
+
+    fun initCanvasAndPreview() {
+        isStampShown = false
+        preview?.resetFilterValue()
     }
 
     private fun setStampComponent() {

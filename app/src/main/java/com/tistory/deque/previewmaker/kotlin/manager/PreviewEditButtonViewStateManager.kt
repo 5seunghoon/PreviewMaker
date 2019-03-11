@@ -17,6 +17,8 @@ object PreviewEditButtonViewStateManager {
         prevState = null
     }
 
+    fun isHomeState() = nowState == HOME
+
     fun setStampState(): Boolean {
         return when (nowState) {
             HOME -> run {

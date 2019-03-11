@@ -85,7 +85,7 @@ class KtPreviewEditActivity : BaseKotlinActivity<KtPreviewEditViewModel>() {
 
     private fun previewThumbnailClickListener(preview: Preview, position: Int) {
         EzLogger.d("previewThumbnailAdapter previewThumbnailClickListener")
-        viewModel.previewThumbnailClickListener(applicationContext, preview, position)
+        viewModel.previewThumbnailClickListener(this, preview, position)
     }
 
     override fun initDataBinding() {
@@ -116,6 +116,9 @@ class KtPreviewEditActivity : BaseKotlinActivity<KtPreviewEditViewModel>() {
             preview_edit_custom_preview_canvas.run { post { invalidate() } }
             mainLoadingProgressBarStop()
         })
+        viewModel.initCanvasAndPreviewEvent.observe(this, Observer {
+            preview_edit_custom_preview_canvas.initCanvasAndPreview()
+        })
         viewModel.startLoadingPreviewToBlur.observe(this, Observer {
             preview_edit_custom_preview_canvas.isBlurRoutine = true
             mainLoadingProgressBarStart()
@@ -127,6 +130,9 @@ class KtPreviewEditActivity : BaseKotlinActivity<KtPreviewEditViewModel>() {
         })
         viewModel.previewThumbnailAdapterNotifyDataSet.observe(this, Observer {
             previewThumbnailAdapter.notifyDataSetChanged()
+        })
+        viewModel.startSavePreviewEvent.observe(this, Observer {
+            preview_edit_custom_preview_canvas.saveStart()
         })
     }
 
