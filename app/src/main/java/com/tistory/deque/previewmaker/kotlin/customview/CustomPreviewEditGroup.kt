@@ -28,9 +28,6 @@ class CustomPreviewEditGroup : LinearLayout {
     constructor(ctx: Context, attrs: AttributeSet) : super(ctx, attrs)
     constructor(ctx: Context, attrs: AttributeSet, defStyleAttr: Int) : super(ctx, attrs, defStyleAttr)
 
-    var homeCropListener: () -> Unit = {}
-    var homeSaveListener: () -> Unit = {}
-
     var customPreviewCanvas: CustomPreviewCanvas? = null
 
     val stampBrightnessSeekBarListener = SeekBarListener(SeekBarStateEnum.STATE_STAMP_BRIGHTNESS)
@@ -69,7 +66,7 @@ class CustomPreviewEditGroup : LinearLayout {
         custom_edit_group_home_crop.setOnClickListener {
             if(customPreviewCanvas?.isPreviewNotSelected() != false) return@setOnClickListener
 
-            homeCropListener()
+            customPreviewCanvas?.homeCropListener()
         }
         custom_edit_group_home_stamp.setOnClickListener {
             if(customPreviewCanvas?.isPreviewNotSelected() != false) return@setOnClickListener
@@ -89,7 +86,6 @@ class CustomPreviewEditGroup : LinearLayout {
             if(customPreviewCanvas?.isPreviewNotSelected() != false) return@setOnClickListener
 
             customPreviewCanvas?.homeSaveListener()
-            homeSaveListener()
         }
 
         //2. stamp

@@ -20,6 +20,9 @@ import com.tistory.deque.previewmaker.kotlin.util.extension.fadeOut
 import kotlinx.android.synthetic.main.activity_kt_preview_edit.*
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
+import com.yalantis.ucrop.UCrop
+
+
 
 class KtPreviewEditActivity : BaseKotlinActivity<KtPreviewEditViewModel>() {
 
@@ -73,19 +76,7 @@ class KtPreviewEditActivity : BaseKotlinActivity<KtPreviewEditViewModel>() {
     }
 
     private fun setCustomEditGroup() {
-        preview_edit_custom_edit_group.run {
-            customPreviewCanvas = preview_edit_custom_preview_canvas
-            homeSaveListener = this@KtPreviewEditActivity::homeSaveListener
-            homeCropListener = this@KtPreviewEditActivity::homeCropListener
-        }
-    }
-
-    private fun homeSaveListener() {
-        return
-    }
-
-    private fun homeCropListener() {
-        return
+        preview_edit_custom_edit_group.customPreviewCanvas = preview_edit_custom_preview_canvas
     }
 
     private fun previewThumbnailHelpClickListener() {
@@ -155,6 +146,26 @@ class KtPreviewEditActivity : BaseKotlinActivity<KtPreviewEditViewModel>() {
         }
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (resultCode == RESULT_OK && requestCode == UCrop.REQUEST_CROP) {
+            data?.let {
+                val resultUri = UCrop.getOutput(it) ?: return@let
+
+                val mediaScanIntent = Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE)
+                mediaScanIntent.data = resultUri
+                sendBroadcast(mediaScanIntent)
+
+                viewModel.cropSelectedPreviewEnd(resultUri, this)
+            }
+            EzLogger.d("cropFail : data null")
+        } else if (resultCode == UCrop.RESULT_ERROR) {
+            val cropError = UCrop.getError(data ?: return)
+            EzLogger.d("cropError : $cropError")
+        } else {
+            EzLogger.d("cropCancel")
+        }
+    }
+
     private fun mainLoadingProgressBarStart() {
         preview_edit_loading_progress_bar_layout.fadeIn()
     }
@@ -190,5 +201,9 @@ class KtPreviewEditActivity : BaseKotlinActivity<KtPreviewEditViewModel>() {
 
     fun deleteSelectedPreview() {
         viewModel.deleteSelectedPreview(this)
+    }
+
+    fun cropSelectedPreview() {
+        viewModel.cropSelectedPreview(this)
     }
 }

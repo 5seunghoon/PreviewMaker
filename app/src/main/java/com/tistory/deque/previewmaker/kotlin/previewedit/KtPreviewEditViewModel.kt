@@ -11,6 +11,7 @@ import android.media.ExifInterface
 import android.net.Uri
 import android.os.AsyncTask
 import android.provider.MediaStore
+import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
 import android.view.View
 import com.tistory.deque.previewmaker.Controler.RetouchingPaintController
@@ -26,6 +27,9 @@ import com.tistory.deque.previewmaker.kotlin.model.Stamp
 import com.tistory.deque.previewmaker.kotlin.util.EzLogger
 import com.tistory.deque.previewmaker.kotlin.util.SingleLiveEvent
 import com.tistory.deque.previewmaker.kotlin.util.extension.getUri
+import com.yalantis.ucrop.UCrop
+import com.yalantis.ucrop.model.AspectRatio
+import com.yalantis.ucrop.view.CropImageView
 import java.io.File
 import kotlin.math.roundToInt
 
@@ -182,6 +186,47 @@ class KtPreviewEditViewModel : BaseKotlinViewModel() {
             val loadingPreviewToCanvas = LoadingPreviewToCanvas(context, selectedPreview ?: return)
             loadingPreviewToCanvas.execute()
         }
+    }
+
+    fun cropSelectedPreviewEnd(resultUri: Uri, context:Context) {
+        selectedPreview?.let {
+            it.originalImageUri = resultUri
+            it.saved()
+            _startLoadingPreviewToCanvas.call()
+            refreshCanvas(context)
+        }
+    }
+
+    fun cropSelectedPreview(activity: KtPreviewEditActivity) {
+        selectedPreview?.let {
+            val options: UCrop.Options = setCropViewOption(activity)
+
+            UCrop.of(it.originalImageUri, it.resultImageUri)
+                    .withOptions(options)
+                    .start(activity)
+
+            EzLogger.d("ucrop start, originalImageUri : ${it.originalImageUri}, resultImageUri: ${it.resultImageUri}")
+        }
+    }
+
+    private fun setCropViewOption(context: Context): UCrop.Options {
+        val options = UCrop.Options()
+        options.setToolbarColor(ContextCompat.getColor(context, R.color.colorPrimary))
+        options.setActiveWidgetColor(ContextCompat.getColor(context, R.color.colorAccent))
+        options.setToolbarWidgetColor(ContextCompat.getColor(context, R.color.black))
+        options.setStatusBarColor(ContextCompat.getColor(context, R.color.colorPrimaryDark))
+        options.setFreeStyleCropEnabled(true)
+
+        options.setAspectRatioOptions(1,
+                AspectRatio("16:9", 16f, 9f),
+                AspectRatio("3:2", 3f, 2f),
+                AspectRatio("ORIGINAL", CropImageView.DEFAULT_ASPECT_RATIO, CropImageView.DEFAULT_ASPECT_RATIO),
+                AspectRatio("1:1", 1f, 1f),
+                AspectRatio("2:3", 2f, 3f),
+                AspectRatio("9:16", 9f, 16f)
+        )
+
+        return options
     }
 
     fun dbUpdateStamp(id: Int, stamp: Stamp) {

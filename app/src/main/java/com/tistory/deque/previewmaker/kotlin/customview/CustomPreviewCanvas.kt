@@ -18,8 +18,6 @@ import com.tistory.deque.previewmaker.kotlin.util.EzLogger
 import java.lang.IllegalArgumentException
 import kotlin.math.roundToInt
 import android.graphics.Bitmap
-import com.tistory.deque.previewmaker.kotlin.util.extension.getRealPath
-import com.tistory.deque.previewmaker.Model_PreviewData.PreviewItem
 import android.content.Intent
 import com.tistory.deque.previewmaker.R
 import java.io.File
@@ -262,7 +260,7 @@ class CustomPreviewCanvas : View {
 
     private fun saveEnd() {
         isSaveRoutine = false
-        if(!isSaveWithBlur) isStampShown = false // 블러를 저장하는 경우가 아닐 때만 스탬프를 안보이게 함
+        if (!isSaveWithBlur) isStampShown = false // 블러를 저장하는 경우가 아닐 때만 스탬프를 안보이게 함
         isSaveWithBlur = false
         preview?.resetFilterValue()
         invalidate()
@@ -303,6 +301,10 @@ class CustomPreviewCanvas : View {
 
     fun hideStamp() {
         isStampShown = false
+    }
+
+    fun homeCropListener() {
+        activity?.cropSelectedPreview()
     }
 
     fun homeDeleteListener() {
