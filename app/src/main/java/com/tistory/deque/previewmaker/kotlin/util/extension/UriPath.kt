@@ -14,6 +14,9 @@ import com.tistory.deque.previewmaker.kotlin.util.EzLogger
  *
  * 만약 path로 부터 file:///storage/emulated/0/Pictures/Preview%20Maker/PREVIEW_20190201151124479.png 과 같은 Uri를 얻어오고 싶을 때 -> Uri.fromFile(File(path))
  * 만약 paht로 부터 content:///media/external/images/media/24323.. 과 같은 Uri를 얻고 싶을 때 -> path.getUri(contentResolver)
+ *
+ * 만약 Uri가 file://로 시작하는 uri일때 path를 얻고 싶으면 -> Uri.path
+ * 만약 Uri가 content://로 시작하는 Uri일때 path를 얻고 싶으면 -> Uri.getRealPath()
  */
 
 fun Uri.getRealPath(contentResolver: ContentResolver): String? {

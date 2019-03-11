@@ -244,7 +244,7 @@ class KtPreviewEditViewModel : BaseKotlinViewModel() {
     }
 
     fun showSaveEndSnackbar(fileName: String) {
-        showSnackbar("저장 완료\n저장 경로 : ${EtcConstant.MAIN_DIRECTORY}/${EtcConstant.PREVIEW_SAVED_DIRECTORY}\n파일 이름 : $fileName")
+        showSnackbar("저장 완료\n저장 경로:${EtcConstant.PREVIEW_SAVED_DIRECTORY}/$fileName")
     }
 
     inner class AddPreviewThumbnailAsyncTask(val context: Context) : AsyncTask<Void, Int, Int>() {

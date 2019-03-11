@@ -1,6 +1,8 @@
 package com.tistory.deque.previewmaker.kotlin.model
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.media.ExifInterface
 import android.net.Uri
 import android.os.Environment
 import com.tistory.deque.previewmaker.Model_Global.SeekBarListener
@@ -11,12 +13,13 @@ import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 import com.tistory.deque.previewmaker.Activity.MainActivity
+import com.tistory.deque.previewmaker.kotlin.util.extension.getRealPath
 
 
 data class Preview(
-        var originalImageUri: Uri,
+        var originalImageUri: Uri, // 원래 이미지의 Uri. 그런데 저장이나 crop을 하면 바뀐 저장이 된 파일의 uri로 바뀜
         var thumbnailImageUri: Uri,
-        var resultImageUri: Uri,
+        var resultImageUri: Uri, // 저장 할 이미지의 Uri. 저장이나 crop을 최소 한번이라도 하면 쓸모 없어짐. 즉, 최초 저장할때만 쓸모있음.
         var isSaved: Boolean,
 
         var _brightness: Int,
@@ -53,7 +56,13 @@ data class Preview(
         this.rotation = rotation
     }
 
-    fun getBitmap(context: Context) = PreviewBitmapManager.previewImageUriToBitmap(this.originalImageUri, context, this.rotation)
+    fun getBitmap(context: Context): Bitmap? {
+        val path = originalImageUri.path
+        EzLogger.d("Preview.kt, getBitmap(), originalImageUri : $originalImageUri, path : $path")
+        val rotation = ExifInterface(path)
+                .getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED)
+        return PreviewBitmapManager.previewImageUriToBitmap(this.originalImageUri, context, rotation)
+    }
 
     var rotation: Int? = null
 
