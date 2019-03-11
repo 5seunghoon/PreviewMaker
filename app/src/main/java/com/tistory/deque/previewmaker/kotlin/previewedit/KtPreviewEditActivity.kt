@@ -195,8 +195,9 @@ class KtPreviewEditActivity : BaseKotlinActivity<KtPreviewEditViewModel>() {
         mainLoadingProgressBarStart()
     }
 
-    fun savePreviewEnd() {
+    fun savePreviewEnd(fileName: String) {
         viewModel.refreshCanvas(this)
+        viewModel.showSaveEndSnackbar(fileName)
     }
 
     fun deleteSelectedPreview() {

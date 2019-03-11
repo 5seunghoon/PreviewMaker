@@ -24,6 +24,7 @@ import com.tistory.deque.previewmaker.kotlin.manager.RetouachingPaintManager
 import com.tistory.deque.previewmaker.kotlin.model.Preview
 import com.tistory.deque.previewmaker.kotlin.model.PreviewListModel
 import com.tistory.deque.previewmaker.kotlin.model.Stamp
+import com.tistory.deque.previewmaker.kotlin.util.EtcConstant
 import com.tistory.deque.previewmaker.kotlin.util.EzLogger
 import com.tistory.deque.previewmaker.kotlin.util.SingleLiveEvent
 import com.tistory.deque.previewmaker.kotlin.util.extension.getUri
@@ -188,7 +189,7 @@ class KtPreviewEditViewModel : BaseKotlinViewModel() {
         }
     }
 
-    fun cropSelectedPreviewEnd(resultUri: Uri, context:Context) {
+    fun cropSelectedPreviewEnd(resultUri: Uri, context: Context) {
         selectedPreview?.let {
             it.originalImageUri = resultUri
             it.saved()
@@ -240,6 +241,10 @@ class KtPreviewEditViewModel : BaseKotlinViewModel() {
 
     fun finishBlur() {
         _finishLoadingPreviewToBlur.call()
+    }
+
+    fun showSaveEndSnackbar(fileName: String) {
+        showSnackbar("저장 완료\n저장 경로 : ${EtcConstant.MAIN_DIRECTORY}/${EtcConstant.PREVIEW_SAVED_DIRECTORY}\n파일 이름 : $fileName")
     }
 
     inner class AddPreviewThumbnailAsyncTask(val context: Context) : AsyncTask<Void, Int, Int>() {

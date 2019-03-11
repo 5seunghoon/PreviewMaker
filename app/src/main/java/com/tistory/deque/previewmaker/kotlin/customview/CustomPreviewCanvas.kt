@@ -159,65 +159,6 @@ class CustomPreviewCanvas : View {
         SaveCanvasAsyncTask().execute()
     }
 
-    inner class SaveCanvasAsyncTask : AsyncTask<Void, Void, String>() {
-        val ERROR_IO_EXCEPTION = "ERROR_IO_EXCEPTION"
-        val ERROR_TIME_OUT = "ERROR_TIME_OUT"
-        val ERROR_PREVIEW_NULL = "ERROR_PREVIEW_NULL"
-
-        override fun doInBackground(vararg params: Void?): String? {
-            while (!isSaveReady) {
-                //spin ready to save
-                //캔버스에 오리지널 크기로 비트맵을 다 그리고 나면 save ready가 true가 됨
-                //10초 동안 돌면 그냥 break
-                if (saveStartTime + 10000 < System.currentTimeMillis()) {
-                    return ERROR_TIME_OUT
-                }
-            }
-            PreviewBitmapManager.selectedPreviewBitmap?.let { previewBitmap ->
-
-                val screenshot = Bitmap.createBitmap(
-                        previewBitmap.width,
-                        previewBitmap.height,
-                        Bitmap.Config.ARGB_8888)
-
-                val canvas = Canvas(screenshot)
-                this@CustomPreviewCanvas.draw(canvas)
-                val resultUri = preview?.resultImageUri ?: return ERROR_PREVIEW_NULL
-                EzLogger.d("save routine async task, preivew : $preview")
-                EzLogger.d("save routine async task, resultUri : $resultUri")
-                val resultFilePath = resultUri.path
-                EzLogger.d("save routine async task, resultFilePath : $resultFilePath")
-
-                val resultFile = File(resultFilePath)
-                val fos: FileOutputStream
-                try {
-                    fos = FileOutputStream(resultFile)
-                    screenshot.compress(Bitmap.CompressFormat.JPEG, 100, fos)
-                    fos.close()
-                    EzLogger.d("Media scan uri : $resultUri")
-                    EzLogger.d("Media scan path : $resultFilePath")
-                    val mediaScanIntent = Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE)
-                    mediaScanIntent.data = resultUri
-                    activity?.sendBroadcast(mediaScanIntent)
-                } catch (e: IOException) {
-                    e.printStackTrace()
-                    return ERROR_IO_EXCEPTION
-                }
-                preview?.originalImageUri = resultUri
-                preview?.saved()
-
-                return resultFilePath
-            }
-
-            return null
-        }
-
-        override fun onPostExecute(result: String?) {
-            saveEnd()
-            super.onPostExecute(result)
-        }
-    }
-
     private fun drawBlur() {
         PreviewBitmapManager.blurredPreviewBitmap?.let {
             val left: Int
@@ -258,13 +199,13 @@ class CustomPreviewCanvas : View {
         saveCanvas()
     }
 
-    private fun saveEnd() {
+    private fun saveEnd(fileName: String) {
         isSaveRoutine = false
         if (!isSaveWithBlur) isStampShown = false // 블러를 저장하는 경우가 아닐 때만 스탬프를 안보이게 함
         isSaveWithBlur = false
         preview?.resetFilterValue()
         invalidate()
-        activity?.savePreviewEnd()
+        activity?.savePreviewEnd(fileName)
     }
 
     /**
@@ -777,5 +718,64 @@ class CustomPreviewCanvas : View {
     }
 
     fun isPreviewNotSelected() = (preview == null)
+
+    inner class SaveCanvasAsyncTask : AsyncTask<Void, Void, String>() {
+        val ERROR_IO_EXCEPTION = "ERROR_IO_EXCEPTION"
+        val ERROR_TIME_OUT = "ERROR_TIME_OUT"
+        val ERROR_PREVIEW_NULL = "ERROR_PREVIEW_NULL"
+
+        override fun doInBackground(vararg params: Void?): String? {
+            while (!isSaveReady) {
+                //spin ready to save
+                //캔버스에 오리지널 크기로 비트맵을 다 그리고 나면 save ready가 true가 됨
+                //10초 동안 돌면 그냥 break
+                if (saveStartTime + 10000 < System.currentTimeMillis()) {
+                    return ERROR_TIME_OUT
+                }
+            }
+            PreviewBitmapManager.selectedPreviewBitmap?.let { previewBitmap ->
+
+                val screenshot = Bitmap.createBitmap(
+                        previewBitmap.width,
+                        previewBitmap.height,
+                        Bitmap.Config.ARGB_8888)
+
+                val canvas = Canvas(screenshot)
+                this@CustomPreviewCanvas.draw(canvas)
+                val resultUri = preview?.resultImageUri ?: return ERROR_PREVIEW_NULL
+                EzLogger.d("save routine async task, preivew : $preview")
+                EzLogger.d("save routine async task, resultUri : $resultUri")
+                val resultFilePath = resultUri.path
+                EzLogger.d("save routine async task, resultFilePath : $resultFilePath")
+
+                val resultFile = File(resultFilePath)
+                val fos: FileOutputStream
+                try {
+                    fos = FileOutputStream(resultFile)
+                    screenshot.compress(Bitmap.CompressFormat.JPEG, 100, fos)
+                    fos.close()
+                    EzLogger.d("Media scan uri : $resultUri")
+                    EzLogger.d("Media scan path : $resultFilePath")
+                    val mediaScanIntent = Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE)
+                    mediaScanIntent.data = resultUri
+                    activity?.sendBroadcast(mediaScanIntent)
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                    return ERROR_IO_EXCEPTION
+                }
+                preview?.originalImageUri = resultUri
+                preview?.saved()
+
+                return resultFile.name
+            }
+
+            return null
+        }
+
+        override fun onPostExecute(result: String?) {
+            saveEnd(result ?: "")
+            super.onPostExecute(result)
+        }
+    }
 
 }
