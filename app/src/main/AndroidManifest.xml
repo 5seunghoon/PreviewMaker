@@ -24,31 +24,6 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
-        <!--
-                <activity
-                    android:name=".Activity.MainActivity"
-                    android:label="@string/app_name"
-                    android:screenOrientation="portrait">
-                    <intent-filter>
-                        <action android:name="android.intent.action.MAIN" />
-                        <action android:name="android.intent.action.VIEW" />
-
-                        <category android:name="android.intent.category.LAUNCHER" />
-                    </intent-filter>
-                </activity>
-                <activity
-                    android:name=".Activity.MakeStampActivity"
-                    android:screenOrientation="portrait" />
-                <activity
-                    android:name=".Activity.PreviewEditActivity"
-                    android:screenOrientation="portrait" />
-        -->
-        <!--
-        <activity android:name=".Activity.HelpMainActivity" />
-        <activity android:name=".Activity.HelpPreviewEditActivity" />
-        <activity android:name=".Activity.CreditActivity" />
-        <activity android:name=".Activity.OpensourceActivity" />
-        -->
         <activity
             android:name="me.nereo.multi_image_selector.MultiImageSelectorActivity"
             android:configChanges="orientation|screenSize"

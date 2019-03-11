@@ -3,27 +3,18 @@ package com.tistory.deque.previewmaker.kotlin.previewedit
 import android.app.AlertDialog
 import android.arch.lifecycle.LiveData
 import android.content.Context
-import android.content.DialogInterface
 import android.database.CursorIndexOutOfBoundsException
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.Paint
-import android.graphics.Rect
 import android.media.ExifInterface
 import android.net.Uri
 import android.os.AsyncTask
 import android.provider.MediaStore
 import android.support.v4.content.ContextCompat
-import android.util.AttributeSet
-import android.view.View
-import com.tistory.deque.previewmaker.Controler.RetouchingPaintController
 import com.tistory.deque.previewmaker.R
 import com.tistory.deque.previewmaker.kotlin.base.BaseKotlinViewModel
 import com.tistory.deque.previewmaker.kotlin.db.KtDbOpenHelper
 import com.tistory.deque.previewmaker.kotlin.manager.BlurManager
 import com.tistory.deque.previewmaker.kotlin.manager.PreviewBitmapManager
 import com.tistory.deque.previewmaker.kotlin.manager.PreviewEditButtonViewStateManager
-import com.tistory.deque.previewmaker.kotlin.manager.RetouachingPaintManager
 import com.tistory.deque.previewmaker.kotlin.model.Preview
 import com.tistory.deque.previewmaker.kotlin.model.PreviewListModel
 import com.tistory.deque.previewmaker.kotlin.model.Stamp
@@ -35,7 +26,6 @@ import com.yalantis.ucrop.UCrop
 import com.yalantis.ucrop.model.AspectRatio
 import com.yalantis.ucrop.view.CropImageView
 import java.io.File
-import kotlin.math.roundToInt
 
 class KtPreviewEditViewModel : BaseKotlinViewModel() {
     private val _startLoadingThumbnailEvent = SingleLiveEvent<Int>()

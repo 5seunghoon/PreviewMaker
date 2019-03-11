@@ -5,7 +5,6 @@ import android.graphics.Bitmap
 import android.media.ExifInterface
 import android.net.Uri
 import android.os.Environment
-import com.tistory.deque.previewmaker.Model_Global.SeekBarListener
 import com.tistory.deque.previewmaker.kotlin.manager.PreviewBitmapManager
 import com.tistory.deque.previewmaker.kotlin.util.EtcConstant
 import com.tistory.deque.previewmaker.kotlin.util.EzLogger
@@ -13,7 +12,6 @@ import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 import com.tistory.deque.previewmaker.Activity.MainActivity
-import com.tistory.deque.previewmaker.kotlin.util.extension.getRealPath
 
 
 data class Preview(

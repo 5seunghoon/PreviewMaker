@@ -6,7 +6,6 @@ import android.view.ViewGroup
 import com.tistory.deque.previewmaker.R
 import com.tistory.deque.previewmaker.kotlin.model.Stamp
 import kotlinx.android.synthetic.main.kt_stamp_list_item.view.*
-import kotlinx.android.synthetic.main.list_item.view.*
 
 class KtStampHolder(parent: ViewGroup, val clickStamp:(Stamp, Int)->Unit, val delStamp:(Stamp, Int)->Unit ) : RecyclerView.ViewHolder(
         LayoutInflater

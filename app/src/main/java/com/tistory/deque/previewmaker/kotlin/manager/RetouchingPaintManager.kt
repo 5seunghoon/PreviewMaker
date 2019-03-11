@@ -4,7 +4,7 @@ import android.graphics.ColorMatrix
 import android.graphics.ColorMatrixColorFilter
 import android.graphics.Paint
 
-object RetouachingPaintManager {
+object RetouchingPaintManager {
 
     fun getPaint(contrast: Float, brightness: Float, saturation: Float, kelvin: Float): Paint {
         //contrast : 1, brightness : 0, saturation : 1 is init value
@@ -51,11 +51,15 @@ object RetouachingPaintManager {
             }
         }
 
-        val cm = ColorMatrix(floatArrayOf(rm[0][0], rm[0][1], rm[0][2], 0f, bt, rm[1][0], rm[1][1], rm[1][2], 0f, bt, rm[2][0], rm[2][1], rm[2][2], 0f, bt, 0f, 0f, 0f, 1f, 0f))
+        val cm = ColorMatrix(floatArrayOf(
+                rm[0][0], rm[0][1], rm[0][2], 0f, bt,
+                rm[1][0], rm[1][1], rm[1][2], 0f, bt,
+                rm[2][0], rm[2][1], rm[2][2], 0f, bt,
+                0f, 0f, 0f, 1f, 0f
+        ))
 
         val paint = Paint()
         paint.colorFilter = ColorMatrixColorFilter(cm)
-
 
         return paint
     }

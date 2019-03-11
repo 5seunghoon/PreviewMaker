@@ -7,7 +7,6 @@ import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
-import com.tistory.deque.previewmaker.Controler.RetouchingPaintController
 import com.tistory.deque.previewmaker.kotlin.manager.*
 import com.tistory.deque.previewmaker.kotlin.model.Preview
 import com.tistory.deque.previewmaker.kotlin.model.Stamp
@@ -99,7 +98,7 @@ class CustomPreviewCanvas : View {
         PreviewBitmapManager.selectedPreviewBitmap?.let { previewBitmap ->
             val previewRect = Rect(0, 0, previewBitmap.width, previewBitmap.height)
             EzLogger.d("previewBitmap.width : ${previewBitmap.width}, previewBitmap.height : ${previewBitmap.height}")
-            val filterPaint: Paint = RetouachingPaintManager.getPaint(
+            val filterPaint: Paint = RetouchingPaintManager.getPaint(
                     preview.getContrastForFilter(),
                     preview.getBrightnessForFilter(),
                     preview.getSaturationForFilter(),
@@ -131,7 +130,7 @@ class CustomPreviewCanvas : View {
                     val widthAnchorNum = anchorEnum.value % 3 // 왼쪽이면 0, 중간이면 1, 오른쪽이면 2
                     val heightAnchorNum = anchorEnum.value / 3 // 상단이면 0, 중간이면 1, 하단이면 2
 
-                    val stampPaint = RetouchingPaintController.getPaint(
+                    val stampPaint = RetouchingPaintManager.getPaint(
                             1f,
                             stamp.getAbsoluteBrightness().toFloat(),
                             1f,
@@ -176,7 +175,7 @@ class CustomPreviewCanvas : View {
             }
 
             preview?.let { preview ->
-                val paint = RetouchingPaintController.getPaint(
+                val paint = RetouchingPaintManager.getPaint(
                         preview.getContrastForFilter(), preview.getBrightnessForFilter(),
                         preview.getSaturationForFilter(), preview.getKelvinForFilter()
                 )
@@ -366,7 +365,7 @@ class CustomPreviewCanvas : View {
                 changedPreviewHeight = changed[3]
             }
             PreviewBitmapManager.smallRatePreviewWithCanvas = changedPreviewWidth.toDouble() / it.width.toDouble()
-            val paintPreviewContrastBrightness = RetouachingPaintManager.getPaint(
+            val paintPreviewContrastBrightness = RetouchingPaintManager.getPaint(
                     preview.getContrastForFilter(),
                     preview.getBrightnessForFilter(),
                     preview.getSaturationForFilter(),
@@ -390,7 +389,7 @@ class CustomPreviewCanvas : View {
         EzLogger.d("custom preview canvas, draw stamp : $stamp")
         stamp?.let {
             val paintContrastBrightness =
-                    RetouachingPaintManager.getPaint(
+                    RetouchingPaintManager.getPaint(
                             1f,
                             it.getAbsoluteBrightness().toFloat(),
                             1f,
