@@ -30,7 +30,7 @@
             android:paddingBottom="200dp"
             android:text="@string/tutorial_main_activity_text"
             android:textColor="@color/colorAccent"
-            android:textSize="28sp" />
+            android:textSize="28dp" />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/main_stamp_recycler_view"

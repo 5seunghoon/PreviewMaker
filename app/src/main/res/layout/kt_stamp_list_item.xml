@@ -60,7 +60,7 @@
                         android:gravity="right|center"
                         android:paddingRight="8dp"
                         android:text="name"
-                        android:textSize="18sp" />
+                        android:textSize="18dp" />
 
                 </LinearLayout>
 

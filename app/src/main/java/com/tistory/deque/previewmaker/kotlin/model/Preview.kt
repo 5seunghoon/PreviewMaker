@@ -11,7 +11,6 @@ import com.tistory.deque.previewmaker.kotlin.util.EzLogger
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
-import com.tistory.deque.previewmaker.Activity.MainActivity
 
 
 data class Preview(
