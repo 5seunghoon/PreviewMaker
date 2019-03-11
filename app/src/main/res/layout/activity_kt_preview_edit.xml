@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/backgroundGray"
+    android:orientation="vertical"
+    tools:context=".kotlin.previewedit.KtPreviewEditActivity">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:background="@color/white"
+                android:orientation="vertical">
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/preview_edit_thumbnail_recycler_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/white"
+                    android:clipToPadding="false"
+                    android:overScrollMode="never"
+                    android:paddingStart="8dp">
+
+                </android.support.v7.widget.RecyclerView>
+
+                <ProgressBar
+                    android:id="@+id/preview_edit_thumbnail_loading_progress_bar"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="visible" />
+
+            </LinearLayout>
+
+            <com.tistory.deque.previewmaker.kotlin.customview.CustomPreviewEditGroup
+                android:id="@+id/preview_edit_custom_edit_group"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="4dp">
+
+                <LinearLayout
+                    android:id="@+id/preview_edit_canvas_parent"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/white"
+                    android:orientation="vertical"
+                    android:padding="8dp">
+
+                    <com.tistory.deque.previewmaker.kotlin.customview.CustomPreviewCanvas
+                        android:id="@+id/preview_edit_custom_preview_canvas"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/preview_edit_hint_text_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@android:color/white"
+                    android:gravity="left|center"
+                    android:inputType="textMultiLine"
+                    android:padding="16dp"
+                    android:text="@string/canvasview_hint"
+                    android:textColor="@color/colorAccent"
+                    android:textSize="18dp"
+                    android:visibility="visible" />
+
+            </FrameLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/preview_edit_loading_progress_bar_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/grayLoadingBackground"
+            android:gravity="center"
+            android:visibility="gone"
+            android:focusable="true"
+            android:clickable="true"
+            android:orientation="vertical">
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+    </FrameLayout>
+
+</LinearLayout>
