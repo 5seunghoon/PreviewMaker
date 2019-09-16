@@ -2,7 +2,7 @@
 This android application will help you, when you put watermark on a lot of photos.
 <br>
 <br>
-Play Store Link : https://play.google.com/store/apps/details?id=com.tistory.deque.previewmaker
+<a href='https://play.google.com/store/apps/details?id=com.tistory.deque.previewmaker&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='' width='300' src='https://play.google.com/intl/ko/badges/images/generic/ko_badge_web_generic.png'/></a>
 <br>
 <br>
 It is written by Kotlin and MVVM pattern.
