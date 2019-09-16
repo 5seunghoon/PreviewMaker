@@ -26,6 +26,7 @@ import com.yalantis.ucrop.UCrop
 import com.yalantis.ucrop.model.AspectRatio
 import com.yalantis.ucrop.view.CropImageView
 import java.io.File
+import java.io.FileNotFoundException
 
 class KtPreviewEditViewModel : BaseKotlinViewModel() {
     private val _startLoadingThumbnailEvent = SingleLiveEvent<Int>()
@@ -295,8 +296,12 @@ class KtPreviewEditViewModel : BaseKotlinViewModel() {
 
                 EzLogger.d("Thumbnail parsing success : $thumbnailUri")
 
-                val rotation = ExifInterface(previewPath)
-                        .getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED)
+                val rotation = try {
+                    ExifInterface(previewPath)
+                            .getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED)
+                } catch (e: FileNotFoundException) {
+                    ExifInterface.ORIENTATION_UNDEFINED
+                }
 
                 val preview = Preview(originalUri, thumbnailUri, rotation)
                 previewListModel.addPreview(preview)
