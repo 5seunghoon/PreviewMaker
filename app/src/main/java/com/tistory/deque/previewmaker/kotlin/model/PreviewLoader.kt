@@ -28,22 +28,19 @@ class PreviewLoader(private val context: Context) {
 
     companion object{
         const val THUMBNAIL_GETTER_METHOD_CALL_COUNT_MAX = 3
-        const val THUMBNAIL_LOADING_DELAY_MILLISECONDS = 70L
+        const val THUMBNAIL_LOADING_DELAY_MILLISECONDS = 30L
     }
-
-    private val compositeDisposable = CompositeDisposable()
 
     private val thumbnailBitmapSize: Int = context.resources.run {
         (getDimension(R.dimen.thumbnail_item_image_width_height) * displayMetrics.density).toInt()
     }
-
-    val previewSubject: ReplaySubject<Preview> = ReplaySubject.create()
 
     private fun makePreviewSingle(previewPath: String): Observable<Preview> {
         return Observable.fromCallable {
             var thumbnailBitmap: Bitmap? = null
             var thumbnailUri: Uri? = null
             val originalUri: Uri = Uri.fromFile(File(previewPath))
+
             if (Build.VERSION.SDK_INT  >= Build.VERSION_CODES.Q) {
                 thumbnailBitmap = getThumbnailBitmapFromOriginalUri(context, previewPath)
             } else {
@@ -59,29 +56,12 @@ class PreviewLoader(private val context: Context) {
         }
     }
 
-    fun destroy() {
-        compositeDisposable.clear()
-    }
-
-    fun startLoadPreview(previewPathList: ArrayList<String>) {
-        compositeDisposable.add(
-                Observable.zip(
+    fun loadPreview(previewPathList: ArrayList<String>): Observable<Preview> {
+        return Observable.zip(
                         previewPathList.toObservable().flatMap { makePreviewSingle(it) },
                         Observable.interval(THUMBNAIL_LOADING_DELAY_MILLISECONDS, TimeUnit.MILLISECONDS),
                         BiFunction { t1: Preview, _: Long -> t1 }
                 )
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .doFinally { previewSubject.onComplete() }
-                        .subscribeBy(
-                                onNext = {
-                                    previewSubject.onNext(it)
-                                    EzLogger.d("Thumbnail parsing success : $it")
-                                },
-                                onError = {
-                                    EzLogger.d("Load preview error : $it")
-                                }
-                        ))
     }
 
     @RequiresApi(Build.VERSION_CODES.Q)
@@ -89,8 +69,7 @@ class PreviewLoader(private val context: Context) {
         EzLogger.d("imagePath : $imagePath")
         val imageUri = imagePath.getUri(context.contentResolver) ?: return null
         EzLogger.d("original imageUri : $imageUri")
-        val contentResolver = context.contentResolver
-        return contentResolver.loadThumbnail(imageUri, Size(thumbnailBitmapSize, thumbnailBitmapSize), null)
+        return context.contentResolver.loadThumbnail(imageUri, Size(thumbnailBitmapSize, thumbnailBitmapSize), null)
     }
 
     private fun getThumbnailUriFromOriginalUri(context: Context, imagePath: String): Uri? {
