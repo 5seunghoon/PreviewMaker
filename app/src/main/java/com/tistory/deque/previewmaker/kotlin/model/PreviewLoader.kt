@@ -9,29 +9,37 @@ import android.os.Build
 import android.provider.MediaStore
 import android.util.Size
 import androidx.annotation.RequiresApi
+import com.tistory.deque.previewmaker.R
 import com.tistory.deque.previewmaker.kotlin.util.EzLogger
 import com.tistory.deque.previewmaker.kotlin.util.extension.getUri
-import io.reactivex.Single
+import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.rxkotlin.toObservable
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.ReplaySubject
 import java.io.File
 import java.io.FileNotFoundException
+import java.util.concurrent.TimeUnit
 
 class PreviewLoader(private val context: Context) {
 
     companion object{
-        const val THUMBNAIL_MAKE_METHOD_CALL_COUNT_MAX = 3
+        const val THUMBNAIL_GETTER_METHOD_CALL_COUNT_MAX = 3
+        const val THUMBNAIL_LOADING_TIMEOUT_SECONDS = 5L
     }
 
     private val compositeDisposable = CompositeDisposable()
 
+    private val thumbnailBitmapSize: Int = context.resources.run {
+        (getDimension(R.dimen.thumbnail_item_image_width_height) * displayMetrics.density).toInt() * 100
+    }
+
     val previewSubject: ReplaySubject<Preview> = ReplaySubject.create()
 
-    private fun makePreviewSingle(previewPath: String): Single<Preview> {
-        return Single.fromCallable {
+    private fun makePreviewSingle(previewPath: String): Observable<Preview> {
+        return Observable.fromCallable {
             var thumbnailBitmap: Bitmap? = null
             var thumbnailUri: Uri? = null
             val originalUri: Uri = Uri.fromFile(File(previewPath))
@@ -56,21 +64,24 @@ class PreviewLoader(private val context: Context) {
     }
 
     fun startLoadPreview(previewPathList: ArrayList<String>) {
-        previewPathList.forEach { previewPath ->
-            compositeDisposable.add(makePreviewSingle(previewPath)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribeBy (
-                            onSuccess = {
-                                previewSubject.onNext(it)
-                                EzLogger.d("Thumbnail parsing success : $it")
-                            },
-                            onError = {
-                                EzLogger.d("Load preview error : $previewPath")
-                            }
-                    ))
-        }
-        previewSubject.onComplete()
+        compositeDisposable.add(previewPathList.toObservable()
+                .flatMap {
+                    makePreviewSingle(it)
+                }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doFinally {
+                    previewSubject.onComplete()
+                }
+                .subscribeBy(
+                        onNext = {
+                            previewSubject.onNext(it)
+                            EzLogger.d("Thumbnail parsing success : $it")
+                        },
+                        onError = {
+                            EzLogger.d("Load preview error : $it")
+                        }
+                ))
     }
 
     @RequiresApi(Build.VERSION_CODES.Q)
@@ -79,7 +90,7 @@ class PreviewLoader(private val context: Context) {
         val imageUri = imagePath.getUri(context.contentResolver) ?: return null
         EzLogger.d("original imageUri : $imageUri")
         val contentResolver = context.contentResolver
-        return contentResolver.loadThumbnail(imageUri, Size(100, 100), null)
+        return contentResolver.loadThumbnail(imageUri, Size(thumbnailBitmapSize, thumbnailBitmapSize), null)
     }
 
     private fun getThumbnailUriFromOriginalUri(context: Context, imagePath: String): Uri? {
@@ -95,7 +106,7 @@ class PreviewLoader(private val context: Context) {
     }
 
     private fun imageIdToThumbnail(context: Context, imageId: Long, callCount: Int): Uri? {
-        if (callCount >= THUMBNAIL_MAKE_METHOD_CALL_COUNT_MAX) return null
+        if (callCount >= THUMBNAIL_GETTER_METHOD_CALL_COUNT_MAX) return null
 
         val projection = arrayOf(MediaStore.Images.Thumbnails.DATA)
         val contentResolver = context.contentResolver

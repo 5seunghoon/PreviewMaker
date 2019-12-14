@@ -29,6 +29,7 @@ import com.yalantis.ucrop.view.CropImageView
 import io.reactivex.rxkotlin.subscribeBy
 import java.io.File
 import java.io.FileNotFoundException
+import java.util.concurrent.TimeUnit
 
 class KtPreviewEditViewModel : BaseKotlinViewModel() {
     private val _startLoadingThumbnailEvent = SingleLiveEvent<Int>()
