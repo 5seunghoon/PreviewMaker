@@ -1,6 +1,6 @@
 package com.tistory.deque.previewmaker.kotlin.main
 
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.view.MenuItem
 import android.view.ViewGroup
 import com.tistory.deque.previewmaker.kotlin.model.Stamp

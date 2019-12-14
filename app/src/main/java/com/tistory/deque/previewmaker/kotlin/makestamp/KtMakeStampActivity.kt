@@ -1,11 +1,11 @@
 package com.tistory.deque.previewmaker.kotlin.makestamp
 
 import android.app.Activity
-import android.arch.lifecycle.Observer
+import androidx.lifecycle.Observer
 import android.content.Context
 import android.net.Uri
 import android.os.AsyncTask
-import android.support.design.widget.Snackbar
+import com.google.android.material.snackbar.Snackbar
 import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager

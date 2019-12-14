@@ -3,7 +3,7 @@ package com.tistory.deque.previewmaker.kotlin.util.extension
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import java.io.File
 
 fun AppCompatActivity.galleryAddPic(picPath:String){
