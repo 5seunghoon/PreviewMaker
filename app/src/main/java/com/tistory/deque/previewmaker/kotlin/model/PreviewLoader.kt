@@ -34,7 +34,7 @@ class PreviewLoader(private val context: Context) {
     private val compositeDisposable = CompositeDisposable()
 
     private val thumbnailBitmapSize: Int = context.resources.run {
-        (getDimension(R.dimen.thumbnail_item_image_width_height) * displayMetrics.density).toInt() * 100
+        (getDimension(R.dimen.thumbnail_item_image_width_height) * displayMetrics.density).toInt()
     }
 
     val previewSubject: ReplaySubject<Preview> = ReplaySubject.create()
