@@ -97,14 +97,12 @@ class KtPreviewEditActivity : BaseKotlinActivity<KtPreviewEditViewModel>() {
                 }
             }
         })
-        viewModel.loadingFinishEachThumbnailEvent.observe(this, Observer { position ->
-            position?.let {
-                EzLogger.d("loadingFinishEachThumbnailEvent observe position : $position")
-                previewThumbnailAdapter.notifyDataSetChanged()
-                preview_edit_thumbnail_loading_progress_bar.run { post { progress = position } }
-            }
+        viewModel.loadingFinishEachThumbnailEvent.observe(this, Observer {
+            EzLogger.d("loadingFinishEachThumbnailEvent observe")
+            previewThumbnailAdapter.notifyDataSetChanged()
+            preview_edit_thumbnail_loading_progress_bar.run { post { ++progress } }
         })
-        viewModel.finishLoadingThumbnailEvent.observe(this, Observer { size ->
+        viewModel.finishLoadingThumbnailEvent.observe(this, Observer {
             previewThumbnailAdapter.notifyDataSetChanged()
             preview_edit_thumbnail_loading_progress_bar.run { post { visibility = View.GONE } }
         })
@@ -137,7 +135,8 @@ class KtPreviewEditActivity : BaseKotlinActivity<KtPreviewEditViewModel>() {
     }
 
     override fun initViewFinal() {
-        viewModel.makePreviewThumbnail(applicationContext, previewPathList)
+        //viewModel.makePreviewThumbnail(applicationContext, previewPathList)
+        viewModel.loadPreviewThumbnail(applicationContext, previewPathList)
     }
 
     override fun onBackPressed() {
@@ -170,6 +169,7 @@ class KtPreviewEditActivity : BaseKotlinActivity<KtPreviewEditViewModel>() {
         } else {
             EzLogger.d("cropCancel")
         }
+        super.onActivityResult(requestCode, resultCode, data)
     }
 
     private fun mainLoadingProgressBarStart() {

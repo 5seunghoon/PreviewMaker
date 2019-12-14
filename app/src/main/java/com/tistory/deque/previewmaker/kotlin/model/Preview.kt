@@ -15,8 +15,9 @@ import java.util.*
 
 data class Preview(
         var originalImageUri: Uri, // 원래 이미지의 Uri. 그런데 저장이나 crop을 하면 바뀐 저장이 된 파일의 uri로 바뀜
-        var thumbnailImageUri: Uri,
+        var thumbnailImageUri: Uri? = null,
         var resultImageUri: Uri, // 저장 할 이미지의 Uri. 저장이나 crop을 최소 한번이라도 하면 쓸모 없어짐. 즉, 최초 저장할때만 쓸모있음.
+        var thumbnailBitmap: Bitmap? = null, // 썸네일용 비트맵
         var isSaved: Boolean,
 
         var _brightness: Int,
@@ -47,9 +48,9 @@ data class Preview(
         }
     }
 
-    constructor(originalImageURI: Uri, thumbnailImageURI: Uri, rotation: Int) :
-            this(originalImageURI, thumbnailImageURI, makeResultImageFile(), true,
-                    0, 0, 0, 0) {
+    constructor(originalImageUri: Uri, thumbnailImageURI: Uri?, thumbnailBitmap: Bitmap?, rotation: Int) :
+            this(originalImageUri, thumbnailImageURI, makeResultImageFile(), thumbnailBitmap,
+                    true, 0, 0, 0, 0) {
         this.rotation = rotation
     }
 

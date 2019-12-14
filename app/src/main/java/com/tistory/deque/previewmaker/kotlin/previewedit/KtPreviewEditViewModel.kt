@@ -17,6 +17,7 @@ import com.tistory.deque.previewmaker.kotlin.manager.PreviewBitmapManager
 import com.tistory.deque.previewmaker.kotlin.manager.PreviewEditButtonViewStateManager
 import com.tistory.deque.previewmaker.kotlin.model.Preview
 import com.tistory.deque.previewmaker.kotlin.model.PreviewListModel
+import com.tistory.deque.previewmaker.kotlin.model.PreviewLoader
 import com.tistory.deque.previewmaker.kotlin.model.Stamp
 import com.tistory.deque.previewmaker.kotlin.util.EtcConstant
 import com.tistory.deque.previewmaker.kotlin.util.EzLogger
@@ -25,8 +26,10 @@ import com.tistory.deque.previewmaker.kotlin.util.extension.getUri
 import com.yalantis.ucrop.UCrop
 import com.yalantis.ucrop.model.AspectRatio
 import com.yalantis.ucrop.view.CropImageView
+import io.reactivex.rxkotlin.subscribeBy
 import java.io.File
 import java.io.FileNotFoundException
+import java.util.concurrent.TimeUnit
 
 class KtPreviewEditViewModel : BaseKotlinViewModel() {
     private val _startLoadingThumbnailEvent = SingleLiveEvent<Int>()
@@ -35,11 +38,11 @@ class KtPreviewEditViewModel : BaseKotlinViewModel() {
     private val _previewThumbnailAdapterNotifyDataSet = SingleLiveEvent<Any>()
     val previewThumbnailAdapterNotifyDataSet: LiveData<Any> get() = _previewThumbnailAdapterNotifyDataSet
 
-    private val _loadingFinishEachThumbnailEvent = SingleLiveEvent<Int>()
-    val loadingFinishEachThumbnailEvent: LiveData<Int> get() = _loadingFinishEachThumbnailEvent
+    private val _loadingFinishEachThumbnailEvent = SingleLiveEvent<Unit>()
+    val loadingFinishEachThumbnailEvent: LiveData<Unit> get() = _loadingFinishEachThumbnailEvent
 
-    private val _finishLoadingThumbnailEvent = SingleLiveEvent<Int>()
-    val finishLoadingThumbnailEvent: LiveData<Int> get() = _finishLoadingThumbnailEvent
+    private val _finishLoadingThumbnailEvent = SingleLiveEvent<Unit>()
+    val finishLoadingThumbnailEvent: LiveData<Unit> get() = _finishLoadingThumbnailEvent
 
     private val _startLoadingPreviewToCanvas = SingleLiveEvent<Any>()
     val startLoadingPreviewToCanvas: LiveData<Any> get() = _startLoadingPreviewToCanvas
@@ -60,16 +63,19 @@ class KtPreviewEditViewModel : BaseKotlinViewModel() {
     val startSavePreviewEvent: LiveData<Any> get() = _startSavePreviewEvent
 
     var previewListModel: PreviewListModel = PreviewListModel()
-    private val previewListSize: Int
-        get() = previewPathList.size
-
-    var previewPathList = ArrayList<String>()
 
     var selectedPreview: Preview? = null
     var selectedPreviewPosition: Int? = null
     var stamp: Stamp? = null
 
     var dbOpenHelper: KtDbOpenHelper? = null
+
+    final var previewLoader: PreviewLoader? = null
+
+    override fun onCleared() {
+        previewLoader?.destroy()
+        super.onCleared()
+    }
 
     fun dbOpen(context: Context) {
         EzLogger.d("main activity : db open")
@@ -89,17 +95,6 @@ class KtPreviewEditViewModel : BaseKotlinViewModel() {
                 showSnackbar(R.string.snackbar_stamp_not_found)
             }
         }
-    }
-
-    fun makePreviewThumbnail(context: Context, previewPathList: ArrayList<String>) {
-        EzLogger.d("makePreviewThumbnail")
-
-        this.previewPathList = previewPathList
-
-        _startLoadingThumbnailEvent.value = previewListSize
-        val addPreviewThumbnailAsyncTask = AddPreviewThumbnailAsyncTask(context)
-        addPreviewThumbnailAsyncTask.execute()
-
     }
 
     private fun thumbnailUriFromOriginalUri(context: Context, imagePath: String): Uri? {
@@ -137,14 +132,6 @@ class KtPreviewEditViewModel : BaseKotlinViewModel() {
         } catch (e: CursorIndexOutOfBoundsException) {
             return null
         }
-    }
-
-    private fun loadingFinishEachThumbnail(position: Int) {
-        _loadingFinishEachThumbnailEvent.value = position
-    }
-
-    private fun loadingFinishAllThumbnail(allThumbnailSize: Int) {
-        _finishLoadingThumbnailEvent.value = allThumbnailSize
     }
 
     private fun initCanvasAndPreview(preview: Preview) {
@@ -200,7 +187,6 @@ class KtPreviewEditViewModel : BaseKotlinViewModel() {
         if (previewListModel.size <= 1) return
         selectedPreviewPosition?.let {
             previewListModel.delete(it)
-            previewPathList.removeAt(it)
             //_previewThumbnailAdapterRemovePosition.value = it
             _previewThumbnailAdapterNotifyDataSet.call()
 
@@ -277,53 +263,25 @@ class KtPreviewEditViewModel : BaseKotlinViewModel() {
         showSnackbar("저장 완료\n저장 경로:${EtcConstant.PREVIEW_SAVED_DIRECTORY}/$fileName")
     }
 
-    inner class AddPreviewThumbnailAsyncTask(val context: Context) : AsyncTask<Void, Int, Int>() {
+    fun loadPreviewThumbnail(applicationContext: Context, previewPathList: java.util.ArrayList<String>) {
+        _startLoadingThumbnailEvent.value = previewPathList.size
 
-        private var loadingCounter = 0
-
-        override fun onPreExecute() {
-            super.onPreExecute()
-            previewListModel.initPreviewList()
-            _previewThumbnailAdapterNotifyDataSet.call()
+        previewLoader = PreviewLoader(applicationContext)
+        previewLoader?.let { loader ->
+            addDisposable(loader.previewSubject.subscribeBy(
+                    onNext = {
+                        previewListModel.addPreview(it)
+                        _loadingFinishEachThumbnailEvent.call()
+                    },
+                    onError = {
+                        EzLogger.d("preview subject error : $it")
+                    },
+                    onComplete = {
+                        _finishLoadingThumbnailEvent.call()
+                    }
+            ))
+            loader.startLoadPreview(previewPathList)
         }
-
-        override fun doInBackground(vararg params: Void?): Int {
-            previewPathList.forEach { previewPath ->
-                EzLogger.d("doInBackground... preview path : $previewPath, make thumbnailUri...")
-                val originalUri: Uri = Uri.fromFile(File(previewPath))
-                val thumbnailUri: Uri = thumbnailUriFromOriginalUri(context, previewPath)
-                        ?: originalUri
-
-                EzLogger.d("Thumbnail parsing success : $thumbnailUri")
-
-                val rotation = try {
-                    ExifInterface(previewPath)
-                            .getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED)
-                } catch (e: FileNotFoundException) {
-                    ExifInterface.ORIENTATION_UNDEFINED
-                }
-
-                val preview = Preview(originalUri, thumbnailUri, rotation)
-                previewListModel.addPreview(preview)
-
-                publishProgress(loadingCounter)
-                loadingCounter++
-            }
-            return loadingCounter
-        }
-
-        override fun onProgressUpdate(vararg values: Int?) {
-            super.onProgressUpdate(*values)
-            values[0]?.let {
-                loadingFinishEachThumbnail(it)
-            }
-        }
-
-        override fun onPostExecute(allThumbnailSize: Int) {
-            super.onPostExecute(allThumbnailSize)
-            loadingFinishAllThumbnail(allThumbnailSize)
-        }
-
     }
 
     inner class LoadingPreviewToCanvas(val context: Context, val preview: Preview) : AsyncTask<Void, Void, Preview>() {
