@@ -4,7 +4,6 @@ import android.app.AlertDialog
 import androidx.lifecycle.LiveData
 import android.content.Context
 import android.database.CursorIndexOutOfBoundsException
-import android.media.ExifInterface
 import android.net.Uri
 import android.os.AsyncTask
 import android.provider.MediaStore
@@ -26,10 +25,9 @@ import com.tistory.deque.previewmaker.kotlin.util.extension.getUri
 import com.yalantis.ucrop.UCrop
 import com.yalantis.ucrop.model.AspectRatio
 import com.yalantis.ucrop.view.CropImageView
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
-import java.io.File
-import java.io.FileNotFoundException
-import java.util.concurrent.TimeUnit
+import io.reactivex.schedulers.Schedulers
 
 class KtPreviewEditViewModel : BaseKotlinViewModel() {
     private val _startLoadingThumbnailEvent = SingleLiveEvent<Int>()
@@ -71,11 +69,6 @@ class KtPreviewEditViewModel : BaseKotlinViewModel() {
     var dbOpenHelper: KtDbOpenHelper? = null
 
     final var previewLoader: PreviewLoader? = null
-
-    override fun onCleared() {
-        previewLoader?.destroy()
-        super.onCleared()
-    }
 
     fun dbOpen(context: Context) {
         EzLogger.d("main activity : db open")
@@ -266,22 +259,27 @@ class KtPreviewEditViewModel : BaseKotlinViewModel() {
     fun loadPreviewThumbnail(applicationContext: Context, previewPathList: java.util.ArrayList<String>) {
         _startLoadingThumbnailEvent.value = previewPathList.size
 
-        previewLoader = PreviewLoader(applicationContext)
-        previewLoader?.let { loader ->
-            addDisposable(loader.previewSubject.subscribeBy(
-                    onNext = {
-                        previewListModel.addPreview(it)
-                        _loadingFinishEachThumbnailEvent.call()
-                    },
-                    onError = {
-                        EzLogger.d("preview subject error : $it")
-                    },
-                    onComplete = {
-                        _finishLoadingThumbnailEvent.call()
-                    }
-            ))
-            loader.startLoadPreview(previewPathList)
+        previewLoader = PreviewLoader(applicationContext).apply {
+            addDisposable(
+                    loadPreview(previewPathList)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribeBy(
+                                    onNext = {
+                                        previewListModel.addPreview(it)
+                                        _loadingFinishEachThumbnailEvent.call()
+                                        EzLogger.d("Thumbnail parsing success : $it")
+                                    },
+                                    onError = {
+                                        EzLogger.d("Load preview error : $it")
+                                    },
+                                    onComplete = {
+                                        _finishLoadingThumbnailEvent.call()
+                                    }
+                            )
+            )
         }
+
     }
 
     inner class LoadingPreviewToCanvas(val context: Context, val preview: Preview) : AsyncTask<Void, Void, Preview>() {
