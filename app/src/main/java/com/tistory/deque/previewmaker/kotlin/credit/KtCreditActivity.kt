@@ -1,7 +1,7 @@
 package com.tistory.deque.previewmaker.kotlin.credit
 
 import android.content.Intent
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
 import com.tistory.deque.previewmaker.R

@@ -1,8 +1,8 @@
 package com.tistory.deque.previewmaker.kotlin.base
 
-import android.arch.lifecycle.LifecycleOwner
-import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.ViewModel
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.ViewModel
 import com.tistory.deque.previewmaker.kotlin.util.SingleLiveEvent
 import com.tistory.deque.previewmaker.kotlin.util.SnackbarMessage
 import com.tistory.deque.previewmaker.kotlin.util.SnackbarMessageString

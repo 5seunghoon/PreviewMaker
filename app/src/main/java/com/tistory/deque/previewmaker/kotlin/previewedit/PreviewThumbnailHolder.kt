@@ -1,7 +1,7 @@
 package com.tistory.deque.previewmaker.kotlin.previewedit
 
 import android.media.ExifInterface
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.tistory.deque.previewmaker.R

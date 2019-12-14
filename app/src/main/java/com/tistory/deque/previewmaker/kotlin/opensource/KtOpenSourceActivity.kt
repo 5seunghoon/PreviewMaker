@@ -1,6 +1,6 @@
 package com.tistory.deque.previewmaker.kotlin.opensource
 
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.tistory.deque.previewmaker.R
 
