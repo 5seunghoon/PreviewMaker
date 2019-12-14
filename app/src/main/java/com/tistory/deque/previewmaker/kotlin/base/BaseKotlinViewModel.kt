@@ -6,6 +6,8 @@ import androidx.lifecycle.ViewModel
 import com.tistory.deque.previewmaker.kotlin.util.SingleLiveEvent
 import com.tistory.deque.previewmaker.kotlin.util.SnackbarMessage
 import com.tistory.deque.previewmaker.kotlin.util.SnackbarMessageString
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.disposables.Disposable
 
 open class BaseKotlinViewModel : ViewModel() {
 
@@ -17,23 +19,20 @@ open class BaseKotlinViewModel : ViewModel() {
     val startLoadingDialogEvent: LiveData<Any> get() = _startLoadingDialogEvent
     private val _stopLoadingDialogEvent: SingleLiveEvent<Any> = SingleLiveEvent()
     val stopLoadingDialogEvent: LiveData<Any> get() = _stopLoadingDialogEvent
-/*
 
-    */
     /**
      * RxJava 의 observing을 위한 부분.
      * addDisposable을 이용하여 추가하기만 하면 된다
-     *//*
-
+     */
     private val compositeDisposable = CompositeDisposable()
 
     fun addDisposable(disposable: Disposable) {
         compositeDisposable.add(disposable)
     }
-*/
+
 
     override fun onCleared() {
-        //compositeDisposable.clear()
+        compositeDisposable.clear()
         super.onCleared()
     }
 

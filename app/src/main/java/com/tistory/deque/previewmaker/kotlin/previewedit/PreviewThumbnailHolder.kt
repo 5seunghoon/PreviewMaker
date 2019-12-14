@@ -15,7 +15,11 @@ class PreviewThumbnailHolder(parent:ViewGroup): RecyclerView.ViewHolder(
 ){
     fun onBind(item: Preview, position: Int, previewThumbnailClickListener: (Preview, Int) -> Unit) {
         itemView.run {
-            preview_thumbnail_item_image_view.setImageURI(item.thumbnailImageUri)
+            item.thumbnailBitmap?.let {
+                preview_thumbnail_item_image_view.setImageBitmap(it)
+            } ?: run {
+                preview_thumbnail_item_image_view.setImageURI(item.thumbnailImageUri ?: return@onBind)
+            }
             when (item.rotation) {
                 ExifInterface.ORIENTATION_ROTATE_90 -> preview_thumbnail_item_image_view.rotation = 90f
                 ExifInterface.ORIENTATION_ROTATE_180 -> preview_thumbnail_item_image_view.rotation = 180f
