@@ -15,6 +15,7 @@ import com.tistory.deque.previewmaker.kotlin.util.extension.getUri
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.rxkotlin.toObservable
 import io.reactivex.schedulers.Schedulers
@@ -27,7 +28,7 @@ class PreviewLoader(private val context: Context) {
 
     companion object{
         const val THUMBNAIL_GETTER_METHOD_CALL_COUNT_MAX = 3
-        const val THUMBNAIL_LOADING_TIMEOUT_SECONDS = 5L
+        const val THUMBNAIL_LOADING_DELAY_MILLISECONDS = 70L
     }
 
     private val compositeDisposable = CompositeDisposable()
@@ -49,8 +50,7 @@ class PreviewLoader(private val context: Context) {
                 thumbnailUri = getThumbnailUriFromOriginalUri(context, previewPath) ?: originalUri
             }
             val rotation = try {
-                ExifInterface(previewPath)
-                        .getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED)
+                ExifInterface(previewPath).getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED)
             } catch (e: FileNotFoundException) {
                 ExifInterface.ORIENTATION_UNDEFINED
             }
@@ -64,24 +64,24 @@ class PreviewLoader(private val context: Context) {
     }
 
     fun startLoadPreview(previewPathList: ArrayList<String>) {
-        compositeDisposable.add(previewPathList.toObservable()
-                .flatMap {
-                    makePreviewSingle(it)
-                }
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doFinally {
-                    previewSubject.onComplete()
-                }
-                .subscribeBy(
-                        onNext = {
-                            previewSubject.onNext(it)
-                            EzLogger.d("Thumbnail parsing success : $it")
-                        },
-                        onError = {
-                            EzLogger.d("Load preview error : $it")
-                        }
-                ))
+        compositeDisposable.add(
+                Observable.zip(
+                        previewPathList.toObservable().flatMap { makePreviewSingle(it) },
+                        Observable.interval(THUMBNAIL_LOADING_DELAY_MILLISECONDS, TimeUnit.MILLISECONDS),
+                        BiFunction { t1: Preview, _: Long -> t1 }
+                )
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .doFinally { previewSubject.onComplete() }
+                        .subscribeBy(
+                                onNext = {
+                                    previewSubject.onNext(it)
+                                    EzLogger.d("Thumbnail parsing success : $it")
+                                },
+                                onError = {
+                                    EzLogger.d("Load preview error : $it")
+                                }
+                        ))
     }
 
     @RequiresApi(Build.VERSION_CODES.Q)
