@@ -34,6 +34,24 @@ object BlurManager {
     var ovalRectFRightForSave:Double = 0.0
     var ovalRectFBottomForSave:Double = 0.0
 
+    init {
+        resetManager()
+    }
+
+    fun resetManager() {
+        guideOvalRectFLeft = 0.0f
+        guideOvalRectFTop = 0.0f
+        guideOvalRectFRight = 0.0f
+        guideOvalRectFBottom = 0.0f
+        guideOvalRectFLeftOrig = 0.0f
+        guideOvalRectFTopOrig = 0.0f
+        guideOvalRectFRightOrig = 0.0f
+        guideOvalRectFBottomOrig = 0.0f
+        ovalRectFLeftForSave = 0.0
+        ovalRectFTopForSave = 0.0
+        ovalRectFRightForSave = 0.0
+        ovalRectFBottomForSave = 0.0
+    }
 
     fun resetGuideOvalRectF(left: Float, top: Float) {
         setGuideOvalRectFLeftTop(left, top)
@@ -205,7 +223,10 @@ object BlurManager {
 
         val width = Math.round(sentBitmap.width * scale)
         val height = Math.round(sentBitmap.height * scale)
-        val bitmap = Bitmap.createScaledBitmap(sentBitmap, width, height, false)
+        val bitmap = Bitmap.createScaledBitmap(sentBitmap, width, height, false).let {
+            if (it.isMutable) it
+            else it.copy(it.config, true)
+        }
 
         val w = bitmap.width
         val h = bitmap.height

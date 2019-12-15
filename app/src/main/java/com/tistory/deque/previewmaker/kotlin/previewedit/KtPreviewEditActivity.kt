@@ -10,6 +10,7 @@ import android.view.View
 import com.tistory.deque.previewmaker.R
 import com.tistory.deque.previewmaker.kotlin.base.BaseKotlinActivity
 import com.tistory.deque.previewmaker.kotlin.helppreviewedit.KtHelpPreviewEditActivity
+import com.tistory.deque.previewmaker.kotlin.manager.BlurManager
 import com.tistory.deque.previewmaker.kotlin.manager.PreviewBitmapManager
 import com.tistory.deque.previewmaker.kotlin.model.Preview
 import com.tistory.deque.previewmaker.kotlin.model.Stamp
@@ -181,6 +182,7 @@ class KtPreviewEditActivity : BaseKotlinActivity<KtPreviewEditViewModel>() {
 
     override fun onDestroy() {
         PreviewBitmapManager.resetManager()
+        BlurManager.resetManager()
         super.onDestroy()
     }
 

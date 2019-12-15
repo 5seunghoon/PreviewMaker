@@ -251,7 +251,8 @@ class KtPreviewEditViewModel : BaseKotlinViewModel() {
                             _finishLoadingPreviewToBlur.call()
                         },
                         onError = {
-                            EzLogger.d("Blur error : $it")
+                            EzLogger.d("Blur error : ${it.printStackTrace()}")
+                            _finishLoadingPreviewToBlur.call()
                         }
                 ))
     }
