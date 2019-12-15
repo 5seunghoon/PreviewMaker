@@ -9,6 +9,7 @@ import java.io.IOException
 import android.media.ExifInterface
 import android.R.attr.orientation
 import android.graphics.*
+import io.reactivex.Single
 import java.lang.IllegalArgumentException
 import java.util.ArrayList
 import kotlin.math.roundToInt
@@ -153,6 +154,15 @@ object PreviewBitmapManager {
         return elements
     }
 
+
+    fun blurringObservable(canvasWidth: Int, canvasHeight: Int): Single<Unit> {
+        return Single.fromCallable {
+            val partOvalElements = BlurManager.resizedBlurOvalToOriginalBlurOval(canvasWidth, canvasHeight)
+            blurBitmap(partOvalElements)
+            return@fromCallable
+        }
+    }
+
     /**
      * 비트맵의 부분을 블러링, 원본 비트맵을 기준으로 블러링함
      * left < right, top < bottom 이 여야함
@@ -162,7 +172,7 @@ object PreviewBitmapManager {
      * @param right
      * @param bottom
      */
-    fun blurBitmap(partOvalElements: ArrayList<Double>) {
+    private fun blurBitmap(partOvalElements: ArrayList<Double>) {
         val left: Int
         val top: Int
         val right: Int
@@ -212,6 +222,5 @@ object PreviewBitmapManager {
 
         return outputBitmap
     }
-
 
 }

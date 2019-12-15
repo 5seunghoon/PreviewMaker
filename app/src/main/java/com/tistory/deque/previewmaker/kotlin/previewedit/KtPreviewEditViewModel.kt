@@ -3,15 +3,11 @@ package com.tistory.deque.previewmaker.kotlin.previewedit
 import android.app.AlertDialog
 import androidx.lifecycle.LiveData
 import android.content.Context
-import android.database.CursorIndexOutOfBoundsException
 import android.net.Uri
-import android.os.AsyncTask
-import android.provider.MediaStore
 import androidx.core.content.ContextCompat
 import com.tistory.deque.previewmaker.R
 import com.tistory.deque.previewmaker.kotlin.base.BaseKotlinViewModel
 import com.tistory.deque.previewmaker.kotlin.db.KtDbOpenHelper
-import com.tistory.deque.previewmaker.kotlin.manager.BlurManager
 import com.tistory.deque.previewmaker.kotlin.manager.PreviewBitmapManager
 import com.tistory.deque.previewmaker.kotlin.manager.PreviewEditButtonViewStateManager
 import com.tistory.deque.previewmaker.kotlin.model.Preview
@@ -21,7 +17,6 @@ import com.tistory.deque.previewmaker.kotlin.model.Stamp
 import com.tistory.deque.previewmaker.kotlin.util.EtcConstant
 import com.tistory.deque.previewmaker.kotlin.util.EzLogger
 import com.tistory.deque.previewmaker.kotlin.util.SingleLiveEvent
-import com.tistory.deque.previewmaker.kotlin.util.extension.getUri
 import com.yalantis.ucrop.UCrop
 import com.yalantis.ucrop.model.AspectRatio
 import com.yalantis.ucrop.view.CropImageView
@@ -86,15 +81,6 @@ class KtPreviewEditViewModel : BaseKotlinViewModel() {
                 showSnackbar(R.string.snackbar_stamp_not_found)
             }
         }
-    }
-
-    private fun initCanvasAndPreview(preview: Preview) {
-        _initCanvasAndPreviewEvent.call()
-    }
-
-    private fun finishLoadingPreviewToCanvas(preview: Preview) {
-        selectedPreview = preview
-        _finishLoadingPreviewToCanvas.call()
     }
 
     fun previewThumbnailClickListener(activity: KtPreviewEditActivity, preview: Preview, position: Int) {
@@ -206,11 +192,7 @@ class KtPreviewEditViewModel : BaseKotlinViewModel() {
 
     fun makeOvalBlur(canvasWidth: Int, canvasHeight: Int) {
         _startLoadingPreviewToBlur.call()
-        MakeBlurAsyncTask(canvasWidth, canvasHeight).execute()
-    }
-
-    fun finishBlur() {
-        _finishLoadingPreviewToBlur.call()
+        blurPreviewBitmap(canvasWidth, canvasHeight)
     }
 
     fun showSaveEndSnackbar(fileName: String) {
@@ -246,8 +228,9 @@ class KtPreviewEditViewModel : BaseKotlinViewModel() {
                 .subscribeBy(
                         onNext = { previewBitmap ->
                             PreviewBitmapManager.selectedPreviewBitmap = previewBitmap
-                            initCanvasAndPreview(preview)
-                            finishLoadingPreviewToCanvas(preview)
+                            selectedPreview = preview
+                            _initCanvasAndPreviewEvent.call()
+                            _finishLoadingPreviewToCanvas.call()
                         },
                         onError = {
                             EzLogger.d("Load preview to canvas error : $it")
@@ -255,16 +238,17 @@ class KtPreviewEditViewModel : BaseKotlinViewModel() {
                 ))
     }
 
-    inner class MakeBlurAsyncTask(val canvasWidth: Int, val canvasHeight: Int) : AsyncTask<Void, Void, Void>() {
-        override fun doInBackground(vararg params: Void?): Void? {
-            val partOvalElements = BlurManager.resizedBlurOvalToOriginalBlurOval(canvasWidth, canvasHeight)
-            PreviewBitmapManager.blurBitmap(partOvalElements)
-            return null
-        }
-
-        override fun onPostExecute(result: Void?) {
-            finishBlur()
-        }
+    private fun blurPreviewBitmap(canvasWidth: Int, canvasHeight: Int) {
+        addDisposable(PreviewBitmapManager.blurringObservable(canvasWidth, canvasHeight)
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeBy(
+                        onSuccess = {
+                            _finishLoadingPreviewToBlur.call()
+                        },
+                        onError = {
+                            EzLogger.d("Blur error : $it")
+                        }
+                ))
     }
-
 }
