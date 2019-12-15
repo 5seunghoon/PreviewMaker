@@ -60,7 +60,7 @@ class KtPreviewEditActivity : BaseKotlinActivity<KtPreviewEditViewModel>() {
     private fun setPreviewThumbnailRecyclerView() {
         preview_edit_thumbnail_recycler_view.run {
             adapter = previewThumbnailAdapter.apply {
-                previewListModel = viewModel.previewListModel
+                previewAdapterModel = viewModel.previewAdapterModel
                 previewThumbnailClickListener = this@KtPreviewEditActivity::previewThumbnailClickListener
                 previewThumbnailHelpClickListener = this@KtPreviewEditActivity::previewThumbnailHelpClickListener
             }
