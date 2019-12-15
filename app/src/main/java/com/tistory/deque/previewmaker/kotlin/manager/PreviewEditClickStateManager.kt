@@ -56,7 +56,7 @@ object PreviewEditClickStateManager {
         if (nowState == STATE_BITMAP_FILTER) nowState = STATE_BITMAP_FILTER_BLUR_GUIDE
     }
 
-    fun endBlurGuild() {
+    fun endBlurGuide() {
         // blur guide -> blur
         if (nowState == STATE_BITMAP_FILTER_BLUR_GUIDE) nowState = STATE_BITMAP_FILTER_BLUR
     }

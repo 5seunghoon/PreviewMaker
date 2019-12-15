@@ -46,6 +46,7 @@ class KtMainActivity : BaseKotlinActivity<KtMainViewModel>() {
         title = "심플 프리뷰 메이커"
         viewModel.dbOpen(applicationContext)
         viewModel.getAllStampFromDb()
+        supportActionBar?.elevation = 0f
         setRecyclerView()
         return
     }
