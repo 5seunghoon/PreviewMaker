@@ -59,7 +59,7 @@ data class Preview(
     fun getBitmap(context: Context): Bitmap? {
         val path = originalImageUri.path
         EzLogger.d("Preview.kt, getBitmap(), originalImageUri : $originalImageUri, path : $path")
-        val rotation = ExifInterface(path)
+        val rotation = ExifInterface(path ?: return null)
                 .getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED)
         return PreviewBitmapManager.previewImageUriToBitmap(this.originalImageUri, context, rotation)
     }
