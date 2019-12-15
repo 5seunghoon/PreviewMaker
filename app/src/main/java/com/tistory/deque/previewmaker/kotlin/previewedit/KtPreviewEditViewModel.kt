@@ -68,8 +68,6 @@ class KtPreviewEditViewModel : BaseKotlinViewModel() {
 
     var dbOpenHelper: KtDbOpenHelper? = null
 
-    final var previewLoader: PreviewLoader? = null
-
     fun dbOpen(context: Context) {
         EzLogger.d("main activity : db open")
         dbOpenHelper = KtDbOpenHelper.getDbOpenHelper(context,
@@ -104,8 +102,10 @@ class KtPreviewEditViewModel : BaseKotlinViewModel() {
         fun changePreview() {
             selectedPreviewPosition = position
             _startLoadingPreviewToCanvas.call()
+            loadPreviewToCanvas(activity, preview)
+            /*
             val loadingPreviewToCanvas = LoadingPreviewToCanvas(activity, preview)
-            loadingPreviewToCanvas.execute()
+            loadingPreviewToCanvas.execute()*/
         }
 
         if (selectedPreviewPosition == null || selectedPreviewPosition != position &&
@@ -135,8 +135,7 @@ class KtPreviewEditViewModel : BaseKotlinViewModel() {
     }
 
     fun refreshCanvas(context: Context) {
-        val loadingPreviewToCanvas = LoadingPreviewToCanvas(context, selectedPreview ?: return)
-        loadingPreviewToCanvas.execute()
+        loadPreviewToCanvas(context, selectedPreview ?: return)
     }
 
     fun deleteSelectedPreview(context: Context) {
@@ -156,8 +155,7 @@ class KtPreviewEditViewModel : BaseKotlinViewModel() {
             selectedPreview = previewAdapterModel.getPreview(selectedPreviewPosition ?: return)
 
             _startLoadingPreviewToCanvas.call()
-            val loadingPreviewToCanvas = LoadingPreviewToCanvas(context, selectedPreview ?: return)
-            loadingPreviewToCanvas.execute()
+            loadPreviewToCanvas(context, selectedPreview ?: return)
         }
     }
 
@@ -222,45 +220,39 @@ class KtPreviewEditViewModel : BaseKotlinViewModel() {
     fun loadPreviewThumbnail(applicationContext: Context, previewPathList: java.util.ArrayList<String>) {
         _startLoadingThumbnailEvent.value = previewPathList.size
 
-        previewLoader = PreviewLoader(applicationContext).apply {
-            addDisposable(loadPreview(previewPathList)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribeBy(
-                            onNext = {
-                                previewAdapterModel.addPreview(it)
-                                _loadingFinishEachThumbnailEvent.call()
-                                EzLogger.d("Thumbnail parsing success : $it")
-                            },
-                            onError = {
-                                EzLogger.d("Load preview error : $it")
-                            },
-                            onComplete = {
-                                _finishLoadingThumbnailEvent.call()
-                            }
-                    )
-            )
-        }
+        addDisposable(PreviewLoader.loadPreview(applicationContext, previewPathList)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeBy(
+                        onNext = {
+                            previewAdapterModel.addPreview(it)
+                            _loadingFinishEachThumbnailEvent.call()
+                            EzLogger.d("Thumbnail parsing success : $it")
+                        },
+                        onError = {
+                            EzLogger.d("Load preview error : $it")
+                        },
+                        onComplete = {
+                            _finishLoadingThumbnailEvent.call()
+                        }
+                )
+        )
     }
 
-    inner class LoadingPreviewToCanvas(val context: Context, val preview: Preview) : AsyncTask<Void, Void, Preview>() {
-        override fun doInBackground(vararg params: Void?): Preview {
-            EzLogger.d("LoadingPreviewToCanvas doInBackground")
-            PreviewBitmapManager.selectedPreviewBitmap = preview.getBitmap(context)
-            if (PreviewBitmapManager.selectedStampBitmap == null) {
-                stamp?.imageUri?.let { url ->
-                    PreviewBitmapManager.selectedStampBitmap =
-                            PreviewBitmapManager.stampImageUriToBitmap(url, context)
-                }
-            }
-            return preview
-        }
-
-        override fun onPostExecute(preview: Preview) {
-            super.onPostExecute(preview)
-            initCanvasAndPreview(preview)
-            finishLoadingPreviewToCanvas(preview)
-        }
+    private fun loadPreviewToCanvas(applicationContext: Context, preview: Preview) {
+        addDisposable(PreviewLoader.loadPreviewBitmap(applicationContext, preview, stamp)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeBy(
+                        onNext = { previewBitmap ->
+                            PreviewBitmapManager.selectedPreviewBitmap = previewBitmap
+                            initCanvasAndPreview(preview)
+                            finishLoadingPreviewToCanvas(preview)
+                        },
+                        onError = {
+                            EzLogger.d("Load preview to canvas error : $it")
+                        }
+                ))
     }
 
     inner class MakeBlurAsyncTask(val canvasWidth: Int, val canvasHeight: Int) : AsyncTask<Void, Void, Void>() {
