@@ -15,9 +15,9 @@ import java.util.*
 
 data class Preview(
         var originalImageUri: Uri, // 원래 이미지의 Uri. 그런데 저장이나 crop을 하면 바뀐 저장이 된 파일의 uri로 바뀜
-        var thumbnailImageUri: Uri? = null,
         var resultImageUri: Uri, // 저장 할 이미지의 Uri. 저장이나 crop을 최소 한번이라도 하면 쓸모 없어짐. 즉, 최초 저장할때만 쓸모있음.
-        var thumbnailBitmap: Bitmap? = null, // 썸네일용 비트맵, Android Q(10) 이상에서만 사용
+        var contentsUri: Uri? = null, //썸네일 비트맵을 뽑아내기 위한 contents:// Uri
+        var thumbnailBitmap: Bitmap? = null, //썸네일 비트맵
         var isSaved: Boolean,
 
         var _brightness: Int,
@@ -48,11 +48,13 @@ data class Preview(
         }
     }
 
-    constructor(originalImageUri: Uri, thumbnailImageURI: Uri?, thumbnailBitmap: Bitmap?, rotation: Int) :
-            this(originalImageUri, thumbnailImageURI, makeResultImageFile(), thumbnailBitmap,
+    constructor(originalImageUri: Uri, contentsUri: Uri? = null, thumbnailBitmap: Bitmap? = null, rotation: Int = ExifInterface.ORIENTATION_NORMAL) :
+            this(originalImageUri, makeResultImageFile(), contentsUri, thumbnailBitmap,
                     true, 0, 0, 0, 0) {
         this.rotation = rotation
     }
+
+    var rotation: Int? = null
 
     fun getBitmap(context: Context): Bitmap? {
         val path = originalImageUri.path
@@ -61,8 +63,6 @@ data class Preview(
                 .getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED)
         return PreviewBitmapManager.previewImageUriToBitmap(this.originalImageUri, context, rotation)
     }
-
-    var rotation: Int? = null
 
     var brightness: Int
         get() = _brightness + EtcConstant.SeekBarPreviewBrightnessMax / 2   //시크바에 들어갈 값이 리턴됨 (0~512) 실제 brightness 는 -255~+255
