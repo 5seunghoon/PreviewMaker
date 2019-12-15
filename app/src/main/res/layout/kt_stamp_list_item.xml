@@ -3,29 +3,31 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginStart="16dp"
-    android:layout_marginTop="16dp"
-    android:layout_marginEnd="16dp"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_marginStart="@dimen/stamp_item_start_end_margin"
+    android:layout_marginTop="@dimen/stamp_item_top_margin"
+    android:layout_marginEnd="@dimen/stamp_item_start_end_margin"
+    android:layout_marginBottom="@dimen/stamp_item_bottom_margin"
     android:layout_weight="2">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="140dp"
         android:gravity="center_vertical"
-        android:orientation="horizontal">
-
+        android:orientation="horizontal"
+        android:baselineAligned="false">
 
         <FrameLayout
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="2">
+            android:layout_weight="1">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="2"
                 android:background="@android:color/white"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:baselineAligned="false">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -43,13 +45,15 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@android:color/transparent"
-                        app:srcCompat="@drawable/ic_block_black_24dp" />
+                        app:srcCompat="@drawable/ic_block_black_24dp"
+                        android:contentDescription="@null" />
+
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginLeft="8dp"
+                    android:layout_marginStart="8dp"
                     android:layout_weight="5"
                     android:orientation="horizontal">
 
@@ -57,10 +61,12 @@
                         android:id="@+id/stamp_item_name_text_view"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:gravity="right|center"
-                        android:paddingRight="8dp"
-                        android:text="name"
-                        android:textSize="18dp" />
+                        android:gravity="end|center"
+                        android:paddingStart="8dp"
+                        android:paddingEnd="0dp"
+                        android:text=""
+                        tools:text="name name"
+                        android:textSize="14sp" />
 
                 </LinearLayout>
 
@@ -71,25 +77,27 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@drawable/ripple_effect_transparent_normal"
-                android:orientation="horizontal"></LinearLayout>
+                android:orientation="horizontal"/>
 
         </FrameLayout>
 
         <LinearLayout
             android:id="@+id/stamp_item_delete_button"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
+            android:layout_height="match_parent"
             android:background="@drawable/ripple_effect_transparent_normal"
             android:gravity="center"
             android:orientation="horizontal">
 
             <ImageView
+                android:padding="4dp"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_close_black_36dp" />
+                android:layout_height="match_parent"
+                android:src="@drawable/ic_close_black_36dp"
+                android:contentDescription="@null" />
+
         </LinearLayout>
 
     </LinearLayout>
+
 </androidx.cardview.widget.CardView>

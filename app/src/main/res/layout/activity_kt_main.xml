@@ -15,7 +15,9 @@
         android:layout_height="match_parent"
         android:background="@android:color/white"
         android:orientation="vertical"
-        android:padding="8dp">
+        android:paddingBottom="8dp"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp">
 
         <TextView
             android:id="@+id/main_hint_text_view"
@@ -30,7 +32,7 @@
             android:paddingBottom="200dp"
             android:text="@string/tutorial_main_activity_text"
             android:textColor="@color/colorAccent"
-            android:textSize="28dp" />
+            android:textSize="28sp" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/main_stamp_recycler_view"

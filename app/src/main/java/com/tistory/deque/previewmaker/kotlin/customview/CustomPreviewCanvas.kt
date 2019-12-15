@@ -554,7 +554,7 @@ class CustomPreviewCanvas : View {
     }
 
     private fun touchUpForBlurGuide(event: MotionEvent) {
-        PreviewEditClickStateManager.endBlurGuild()
+        PreviewEditClickStateManager.endBlurGuide()
         if (BlurManager.cutOval(changedPreviewWidth, changedPreviewHeight,
                         changedPreviewPosWidth, changedPreviewPosHeight)) {
             makeOvalBlur()

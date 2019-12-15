@@ -9,6 +9,7 @@ home -> stamp
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
     android:background="@color/white"
     android:orientation="vertical">
 
@@ -45,7 +46,7 @@ home -> stamp
                     android:layout_marginBottom="2dp"
                     android:text="@string/action_delete_title"
                     android:textColor="@color/black"
-                    android:textSize="12dp" />
+                    android:textSize="12sp" />
             </LinearLayout>
 
             <LinearLayout
@@ -70,7 +71,7 @@ home -> stamp
                     android:layout_marginBottom="2dp"
                     android:text="@string/action_crop_title"
                     android:textColor="@color/black"
-                    android:textSize="12dp" />
+                    android:textSize="12sp" />
             </LinearLayout>
 
             <LinearLayout
@@ -95,7 +96,7 @@ home -> stamp
                     android:layout_marginBottom="2dp"
                     android:text="@string/action_stamp_title"
                     android:textColor="@color/black"
-                    android:textSize="12dp" />
+                    android:textSize="12sp" />
             </LinearLayout>
 
             <LinearLayout
@@ -120,7 +121,7 @@ home -> stamp
                     android:layout_marginBottom="2dp"
                     android:text="@string/action_filter_title"
                     android:textColor="@color/black"
-                    android:textSize="12dp" />
+                    android:textSize="12sp" />
             </LinearLayout>
 
             <LinearLayout
@@ -145,7 +146,7 @@ home -> stamp
                     android:layout_marginBottom="2dp"
                     android:text="@string/action_saveeach_title"
                     android:textColor="@color/black"
-                    android:textSize="12dp" />
+                    android:textSize="12sp" />
             </LinearLayout>
 
         </LinearLayout>
@@ -179,7 +180,7 @@ home -> stamp
                     android:layout_marginBottom="2dp"
                     android:text="@string/action_stamp_edit_delete_title"
                     android:textColor="@color/black"
-                    android:textSize="12dp" />
+                    android:textSize="12sp" />
             </LinearLayout>
 
             <LinearLayout
@@ -204,7 +205,7 @@ home -> stamp
                     android:layout_marginBottom="2dp"
                     android:text="@string/action_stamp_edit_brightness_title"
                     android:textColor="@color/black"
-                    android:textSize="12dp" />
+                    android:textSize="12sp" />
             </LinearLayout>
 
             <LinearLayout
@@ -229,7 +230,7 @@ home -> stamp
                     android:layout_marginBottom="2dp"
                     android:text="@string/action_preview_edit_reset_title"
                     android:textColor="@color/black"
-                    android:textSize="12dp" />
+                    android:textSize="12sp" />
             </LinearLayout>
 
             <LinearLayout
@@ -254,7 +255,7 @@ home -> stamp
                     android:layout_marginBottom="2dp"
                     android:text="@string/action_stamp_edit_finish_title"
                     android:textColor="@color/black"
-                    android:textSize="12dp" />
+                    android:textSize="12sp" />
             </LinearLayout>
         </LinearLayout>
 
@@ -287,7 +288,7 @@ home -> stamp
                     android:layout_marginBottom="2dp"
                     android:text="@string/action_preview_edit_brightness_contrast_title"
                     android:textColor="@color/black"
-                    android:textSize="12dp" />
+                    android:textSize="12sp" />
             </LinearLayout>
 
             <LinearLayout
@@ -312,7 +313,7 @@ home -> stamp
                     android:layout_marginBottom="2dp"
                     android:text="@string/action_preview_edit_saturation_kelvin_title"
                     android:textColor="@color/black"
-                    android:textSize="12dp" />
+                    android:textSize="12sp" />
             </LinearLayout>
 
             <LinearLayout
@@ -337,7 +338,7 @@ home -> stamp
                     android:layout_marginBottom="2dp"
                     android:text="@string/action_preview_blur_title"
                     android:textColor="@color/black"
-                    android:textSize="12dp" />
+                    android:textSize="12sp" />
             </LinearLayout>
 
             <LinearLayout
@@ -362,7 +363,7 @@ home -> stamp
                     android:layout_marginBottom="2dp"
                     android:text="@string/action_preview_edit_reset_title"
                     android:textColor="@color/black"
-                    android:textSize="12dp" />
+                    android:textSize="12sp" />
             </LinearLayout>
 
             <LinearLayout
@@ -387,7 +388,7 @@ home -> stamp
                     android:layout_marginBottom="2dp"
                     android:text="@string/action_preview_edit_finish_title"
                     android:textColor="@color/black"
-                    android:textSize="12dp" />
+                    android:textSize="12sp" />
             </LinearLayout>
         </LinearLayout>
 
@@ -429,9 +430,9 @@ home -> stamp
                             android:layout_marginEnd="8dp"
                             android:layout_weight="1"
                             android:gravity="center"
-                            android:text="ㅇㅇ"
+                            tools:text="ㅇㅇ"
                             android:textColor="@color/colorAccent"
-                            android:textSize="12dp" />
+                            android:textSize="12sp" />
 
                         <SeekBar
                             android:id="@+id/custom_edit_group_seek_bar_first"
@@ -447,9 +448,9 @@ home -> stamp
                             android:layout_marginEnd="8dp"
                             android:layout_weight="1"
                             android:gravity="center"
-                            android:text="000%"
+                            tools:text="000%"
                             android:textColor="@color/colorAccent"
-                            android:textSize="12dp" />
+                            android:textSize="12sp" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -469,9 +470,9 @@ home -> stamp
                             android:layout_marginEnd="8dp"
                             android:layout_weight="1"
                             android:gravity="center"
-                            android:text="ㅇㅇㅇ"
+                            tools:text="ㅇㅇㅇ"
                             android:textColor="@color/colorAccent"
-                            android:textSize="12dp" />
+                            android:textSize="12sp" />
 
                         <SeekBar
                             android:id="@+id/custom_edit_group_seek_bar_second"
@@ -487,9 +488,9 @@ home -> stamp
                             android:layout_marginEnd="8dp"
                             android:layout_weight="1"
                             android:gravity="center"
-                            android:text="000%"
+                            tools:text="000%"
                             android:textColor="@color/colorAccent"
-                            android:textSize="12dp" />
+                            android:textSize="12sp" />
                     </LinearLayout>
                 </LinearLayout>
 
@@ -528,7 +529,7 @@ home -> stamp
                             android:layout_marginBottom="2dp"
                             android:text="@string/action_preview_edit_cancle_title"
                             android:textColor="@color/black"
-                            android:textSize="12dp" />
+                            android:textSize="12sp" />
                     </LinearLayout>
                 </LinearLayout>
 
@@ -557,7 +558,7 @@ home -> stamp
                     android:layout_marginBottom="2dp"
                     android:text="@string/action_preview_edit_ok_title"
                     android:textColor="@color/black"
-                    android:textSize="12dp" />
+                    android:textSize="12sp" />
             </LinearLayout>
 
         </LinearLayout>

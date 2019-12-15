@@ -31,7 +31,8 @@
                     android:background="@color/white"
                     android:clipToPadding="false"
                     android:overScrollMode="never"
-                    android:paddingStart="8dp">
+                    android:paddingStart="8dp"
+                    android:paddingEnd="0dp">
 
                 </androidx.recyclerview.widget.RecyclerView>
 
@@ -74,12 +75,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@android:color/white"
-                    android:gravity="left|center"
-                    android:inputType="textMultiLine"
+                    android:gravity="center"
                     android:padding="16dp"
                     android:text="@string/canvasview_hint"
                     android:textColor="@color/colorAccent"
-                    android:textSize="18dp"
+                    android:textSize="14sp"
                     android:visibility="visible" />
 
             </FrameLayout>
