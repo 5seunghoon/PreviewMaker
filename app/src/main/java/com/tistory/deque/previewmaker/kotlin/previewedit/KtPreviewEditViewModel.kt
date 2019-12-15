@@ -15,7 +15,7 @@ import com.tistory.deque.previewmaker.kotlin.manager.BlurManager
 import com.tistory.deque.previewmaker.kotlin.manager.PreviewBitmapManager
 import com.tistory.deque.previewmaker.kotlin.manager.PreviewEditButtonViewStateManager
 import com.tistory.deque.previewmaker.kotlin.model.Preview
-import com.tistory.deque.previewmaker.kotlin.model.PreviewListModel
+import com.tistory.deque.previewmaker.kotlin.model.PreviewAdapterModel
 import com.tistory.deque.previewmaker.kotlin.model.PreviewLoader
 import com.tistory.deque.previewmaker.kotlin.model.Stamp
 import com.tistory.deque.previewmaker.kotlin.util.EtcConstant
@@ -60,7 +60,7 @@ class KtPreviewEditViewModel : BaseKotlinViewModel() {
     private val _startSavePreviewEvent = SingleLiveEvent<Any>()
     val startSavePreviewEvent: LiveData<Any> get() = _startSavePreviewEvent
 
-    var previewListModel: PreviewListModel = PreviewListModel()
+    var previewAdapterModel: PreviewAdapterModel = PreviewAdapterModel()
 
     var selectedPreview: Preview? = null
     var selectedPreviewPosition: Int? = null
@@ -177,20 +177,20 @@ class KtPreviewEditViewModel : BaseKotlinViewModel() {
     }
 
     fun deleteSelectedPreview(context: Context) {
-        if (previewListModel.size <= 1) return
+        if (previewAdapterModel.size <= 1) return
         selectedPreviewPosition?.let {
-            previewListModel.delete(it)
+            previewAdapterModel.delete(it)
             //_previewThumbnailAdapterRemovePosition.value = it
             _previewThumbnailAdapterNotifyDataSet.call()
 
             // 보여줄 프리뷰 포지션 변경
-            selectedPreviewPosition = if (it == previewListModel.size) { //맨 끝이면 이전꺼 선택
+            selectedPreviewPosition = if (it == previewAdapterModel.size) { //맨 끝이면 이전꺼 선택
                 it - 1
             } else {
                 it
             }
 
-            selectedPreview = previewListModel.getPreview(selectedPreviewPosition ?: return)
+            selectedPreview = previewAdapterModel.getPreview(selectedPreviewPosition ?: return)
 
             _startLoadingPreviewToCanvas.call()
             val loadingPreviewToCanvas = LoadingPreviewToCanvas(context, selectedPreview ?: return)
@@ -266,7 +266,7 @@ class KtPreviewEditViewModel : BaseKotlinViewModel() {
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribeBy(
                                     onNext = {
-                                        previewListModel.addPreview(it)
+                                        previewAdapterModel.addPreview(it)
                                         _loadingFinishEachThumbnailEvent.call()
                                         EzLogger.d("Thumbnail parsing success : $it")
                                     },

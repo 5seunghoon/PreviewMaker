@@ -1,6 +1,6 @@
 package com.tistory.deque.previewmaker.kotlin.model
 
-class PreviewListModel {
+class PreviewAdapterModel {
 
     var previewArrayList: ArrayList<Preview> = ArrayList()
 
