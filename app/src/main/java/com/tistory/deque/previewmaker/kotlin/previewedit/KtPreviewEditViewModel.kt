@@ -223,26 +223,24 @@ class KtPreviewEditViewModel : BaseKotlinViewModel() {
         _startLoadingThumbnailEvent.value = previewPathList.size
 
         previewLoader = PreviewLoader(applicationContext).apply {
-            addDisposable(
-                    loadPreview(previewPathList)
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribeBy(
-                                    onNext = {
-                                        previewAdapterModel.addPreview(it)
-                                        _loadingFinishEachThumbnailEvent.call()
-                                        EzLogger.d("Thumbnail parsing success : $it")
-                                    },
-                                    onError = {
-                                        EzLogger.d("Load preview error : $it")
-                                    },
-                                    onComplete = {
-                                        _finishLoadingThumbnailEvent.call()
-                                    }
-                            )
+            addDisposable(loadPreview(previewPathList)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeBy(
+                            onNext = {
+                                previewAdapterModel.addPreview(it)
+                                _loadingFinishEachThumbnailEvent.call()
+                                EzLogger.d("Thumbnail parsing success : $it")
+                            },
+                            onError = {
+                                EzLogger.d("Load preview error : $it")
+                            },
+                            onComplete = {
+                                _finishLoadingThumbnailEvent.call()
+                            }
+                    )
             )
         }
-
     }
 
     inner class LoadingPreviewToCanvas(val context: Context, val preview: Preview) : AsyncTask<Void, Void, Preview>() {
