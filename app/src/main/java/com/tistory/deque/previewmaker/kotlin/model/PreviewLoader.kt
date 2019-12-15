@@ -13,13 +13,8 @@ import com.tistory.deque.previewmaker.R
 import com.tistory.deque.previewmaker.kotlin.util.EzLogger
 import com.tistory.deque.previewmaker.kotlin.util.extension.getUri
 import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.BiFunction
-import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.rxkotlin.toObservable
-import io.reactivex.schedulers.Schedulers
-import io.reactivex.subjects.ReplaySubject
 import java.io.File
 import java.io.FileNotFoundException
 import java.util.concurrent.TimeUnit
@@ -35,7 +30,7 @@ class PreviewLoader(private val context: Context) {
         (getDimension(R.dimen.thumbnail_item_image_width_height) * displayMetrics.density).toInt()
     }
 
-    private fun makePreviewSingle(previewPath: String): Observable<Preview> {
+    private fun getPreviewObservable(previewPath: String): Observable<Preview> {
         return Observable.fromCallable {
             var thumbnailBitmap: Bitmap? = null
             var thumbnailUri: Uri? = null
@@ -58,7 +53,7 @@ class PreviewLoader(private val context: Context) {
 
     fun loadPreview(previewPathList: ArrayList<String>): Observable<Preview> {
         return Observable.zip(
-                        previewPathList.toObservable().flatMap { makePreviewSingle(it) },
+                        previewPathList.toObservable().flatMap { getPreviewObservable(it) },
                         Observable.interval(THUMBNAIL_LOADING_DELAY_MILLISECONDS, TimeUnit.MILLISECONDS),
                         BiFunction { t1: Preview, _: Long -> t1 }
                 )

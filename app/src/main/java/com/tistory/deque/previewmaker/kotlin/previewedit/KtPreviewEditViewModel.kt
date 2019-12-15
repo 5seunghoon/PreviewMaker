@@ -90,43 +90,6 @@ class KtPreviewEditViewModel : BaseKotlinViewModel() {
         }
     }
 
-    private fun thumbnailUriFromOriginalUri(context: Context, imagePath: String): Uri? {
-        EzLogger.d("imagePath : $imagePath")
-
-        val selectedImageUri = imagePath.getUri(context.contentResolver) ?: return null
-        val rowId = (selectedImageUri.lastPathSegment) ?: return null
-        val rowIdLong: Long = rowId.toLongOrNull() ?: return null
-
-        EzLogger.d("original uri : $selectedImageUri , row ID : $rowIdLong")
-
-        return imageIdToThumbnail(context, rowIdLong)
-    }
-
-    private fun imageIdToThumbnail(context: Context, imageId: Long): Uri? {
-        val projection = arrayOf(MediaStore.Images.Thumbnails.DATA)
-        val contentResolver = context.contentResolver
-
-        try {
-            contentResolver.query(
-                    MediaStore.Images.Thumbnails.EXTERNAL_CONTENT_URI,
-                    projection,
-                    MediaStore.Images.Thumbnails.IMAGE_ID + "=?",
-                    arrayOf(imageId.toString()),
-                    null)
-                    ?.use { thumbnailCursor ->
-                        return if (thumbnailCursor.moveToFirst()) {
-                            Uri.parse(thumbnailCursor.getString(thumbnailCursor.getColumnIndex(projection[0])))
-                        } else {
-                            MediaStore.Images.Thumbnails.getThumbnail(contentResolver, imageId, MediaStore.Images.Thumbnails.MINI_KIND, null)
-                            EzLogger.d("No exist thumbnail, so make it")
-                            imageIdToThumbnail(context, imageId)
-                        }
-                    } ?: return null
-        } catch (e: CursorIndexOutOfBoundsException) {
-            return null
-        }
-    }
-
     private fun initCanvasAndPreview(preview: Preview) {
         _initCanvasAndPreviewEvent.call()
     }
