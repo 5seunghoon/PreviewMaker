@@ -9,6 +9,7 @@ import com.tistory.deque.previewmaker.kotlin.manager.PreviewBitmapManager
 import com.tistory.deque.previewmaker.kotlin.util.EtcConstant
 import com.tistory.deque.previewmaker.kotlin.util.EzLogger
 import java.io.File
+import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -59,9 +60,13 @@ data class Preview(
     fun getBitmap(context: Context): Bitmap? {
         val path = originalImageUri.path
         EzLogger.d("Preview.kt, getBitmap(), originalImageUri : $originalImageUri, path : $path")
-        val rotation = ExifInterface(path ?: return null)
-                .getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED)
-        return PreviewBitmapManager.previewImageUriToBitmap(this.originalImageUri, context, rotation)
+        return try {
+            val rotation = ExifInterface(path ?: return null)
+                    .getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED)
+            PreviewBitmapManager.previewImageUriToBitmap(this.originalImageUri, context, rotation)
+        } catch (e: IOException) {
+            throw e
+        }
     }
 
     var brightness: Int

@@ -84,7 +84,6 @@ class KtPreviewEditActivity : BaseKotlinActivity<KtPreviewEditViewModel>() {
     }
 
     private fun previewThumbnailClickListener(preview: Preview, position: Int) {
-        EzLogger.d("previewThumbnailAdapter previewThumbnailClickListener")
         viewModel.previewThumbnailClickListener(this, preview, position)
     }
 
