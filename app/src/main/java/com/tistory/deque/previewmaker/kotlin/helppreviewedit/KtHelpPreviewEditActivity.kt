@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
 import com.tistory.deque.previewmaker.R
+import com.tistory.deque.previewmaker.kotlin.util.extension.setStatusBarColor
 
 class KtHelpPreviewEditActivity : AppCompatActivity() {
 
@@ -12,6 +13,7 @@ class KtHelpPreviewEditActivity : AppCompatActivity() {
         title = getString(R.string.title_help_activity)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         setContentView(R.layout.activity_kt_help_preview_edit)
+        setStatusBarColor()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
