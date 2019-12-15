@@ -6,7 +6,6 @@ import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.os.AsyncTask
 import android.os.Environment
 import android.provider.MediaStore
 import com.tistory.deque.previewmaker.R
@@ -15,12 +14,10 @@ import com.tistory.deque.previewmaker.kotlin.util.EtcConstant
 import com.tistory.deque.previewmaker.kotlin.util.EzLogger
 import com.tistory.deque.previewmaker.kotlin.util.SingleLiveEvent
 import com.tistory.deque.previewmaker.kotlin.util.extension.getRealPath
-import kotlinx.coroutines.*
 import java.io.*
 import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.*
-import io.reactivex.ObservableSource
 
 
 class KtMakeStampViewModel : BaseKotlinViewModel() {

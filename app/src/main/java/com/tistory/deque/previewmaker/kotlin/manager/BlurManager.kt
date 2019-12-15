@@ -6,6 +6,7 @@ import android.graphics.Paint
 import android.graphics.RectF
 import android.util.Pair
 import com.tistory.deque.previewmaker.kotlin.util.EzLogger
+import io.reactivex.Single
 import java.util.ArrayList
 
 object BlurManager {
@@ -131,15 +132,15 @@ object BlurManager {
      * 잘린 사각형의 좌상 좌표, 우하 좌표, 잘리기 전 타원의 원본 사이즈의 좌상 좌표, 우하 좌표
      */
     fun resizedBlurOvalToOriginalBlurOval(canvasWidth: Int, canvasHeight: Int): java.util.ArrayList<Double> {
-        val left = Math.min(BlurManager.guideOvalRectFLeft, BlurManager.guideOvalRectFRight)
-        val top = Math.min(BlurManager.guideOvalRectFTop, BlurManager.guideOvalRectFBottom)
-        val right = Math.max(BlurManager.guideOvalRectFLeft, BlurManager.guideOvalRectFRight)
-        val bottom = Math.max(BlurManager.guideOvalRectFTop, BlurManager.guideOvalRectFBottom)
+        val left = Math.min(guideOvalRectFLeft, guideOvalRectFRight)
+        val top = Math.min(guideOvalRectFTop, guideOvalRectFBottom)
+        val right = Math.max(guideOvalRectFLeft, guideOvalRectFRight)
+        val bottom = Math.max(guideOvalRectFTop, guideOvalRectFBottom)
 
-        val ovalLeft = Math.min(BlurManager.getGuideOvalRectFOrig()[0], BlurManager.getGuideOvalRectFOrig()[2])
-        val ovalTop = Math.min(BlurManager.getGuideOvalRectFOrig()[1], BlurManager.getGuideOvalRectFOrig()[3])
-        val ovalRight = Math.max(BlurManager.getGuideOvalRectFOrig()[0], BlurManager.getGuideOvalRectFOrig()[2])
-        val ovalBottom = Math.max(BlurManager.getGuideOvalRectFOrig()[1], BlurManager.getGuideOvalRectFOrig()[3])
+        val ovalLeft = Math.min(getGuideOvalRectFOrig()[0], getGuideOvalRectFOrig()[2])
+        val ovalTop = Math.min(getGuideOvalRectFOrig()[1], getGuideOvalRectFOrig()[3])
+        val ovalRight = Math.max(getGuideOvalRectFOrig()[0], getGuideOvalRectFOrig()[2])
+        val ovalBottom = Math.max(getGuideOvalRectFOrig()[1], getGuideOvalRectFOrig()[3])
 
         EzLogger.d("""
             left = $left
@@ -196,6 +197,7 @@ object BlurManager {
         ovalRectFRightForSave = right
         ovalRectFBottomForSave = bottom
     }
+
     fun doFastBlur(sentBitmap: Bitmap, scale: Float, radius: Int): Bitmap? {
         if (radius < 1) {
             return null
@@ -444,5 +446,4 @@ object BlurManager {
 
         return bitmap
     }
-
 }

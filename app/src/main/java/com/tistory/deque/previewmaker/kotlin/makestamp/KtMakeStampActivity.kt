@@ -4,10 +4,8 @@ import android.app.Activity
 import androidx.lifecycle.Observer
 import android.content.Context
 import android.net.Uri
-import android.os.AsyncTask
 import com.google.android.material.snackbar.Snackbar
 import android.view.MenuItem
-import android.view.View
 import android.view.inputmethod.InputMethodManager
 import com.tistory.deque.previewmaker.R
 import com.tistory.deque.previewmaker.kotlin.base.BaseKotlinActivity
