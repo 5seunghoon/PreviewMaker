@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.MenuItem
 import com.tistory.deque.previewmaker.R
 import com.tistory.deque.previewmaker.kotlin.opensource.KtOpenSourceActivity
+import com.tistory.deque.previewmaker.kotlin.util.extension.setStatusBarColor
 import kotlinx.android.synthetic.main.activity_kt_credit.*
 
 class KtCreditActivity : AppCompatActivity() {
@@ -13,6 +14,7 @@ class KtCreditActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_kt_credit)
+        setStatusBarColor()
 
         title = getString(R.string.title_credit_activity)
 

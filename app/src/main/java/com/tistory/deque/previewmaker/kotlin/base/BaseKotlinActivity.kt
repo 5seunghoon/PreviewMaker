@@ -1,11 +1,11 @@
 package com.tistory.deque.previewmaker.kotlin.base
 
 import android.app.Dialog
-import androidx.lifecycle.Observer
 import android.os.Bundle
 import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import android.view.MenuItem
+import com.tistory.deque.previewmaker.kotlin.util.extension.setStatusBarColor
 
 /**
  * BaseKotlinActivity<ActivitySbsMainBinding>
@@ -57,6 +57,7 @@ abstract class BaseKotlinActivity<T : BaseKotlinViewModel> : AppCompatActivity()
 
         setContentView(layoutResourceId)
 
+        setStatusBarColor()
         baseObserving()
         initViewStart()
         initDataBinding()
