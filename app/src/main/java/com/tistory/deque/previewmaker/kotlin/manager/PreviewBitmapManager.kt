@@ -121,24 +121,16 @@ object PreviewBitmapManager {
         EzLogger.d("getResizedBitmapElements canvas w, h : $canvasWidth, $canvasHeight")
 
         if (bitmapRate >= canvasRate && previewBitmapWidth >= canvasWidth) { // w > h
-            EzLogger.d("getResizedBitmapElements case 1")
-
             changedPreviewPosWidth = 0
             changedPreviewPosHeight = (canvasHeight - (canvasWidth * (1 / bitmapRate)).toInt()) / 2
             changedPreviewBitmapWidth = canvasWidth
             changedPreviewBitmapHeight = (canvasWidth * (1 / bitmapRate)).toInt()
-
         } else if (bitmapRate < canvasRate && previewBitmapHeight >= canvasHeight) { // w < h
-            EzLogger.d("getResizedBitmapElements case 2")
-
             changedPreviewPosWidth = (canvasWidth - (canvasHeight * bitmapRate).toInt()) / 2
             changedPreviewPosHeight = 0
             changedPreviewBitmapWidth = (canvasHeight * bitmapRate).toInt()
             changedPreviewBitmapHeight = canvasHeight
-
         } else {
-            EzLogger.d("getResizedBitmapElements case 3")
-
             changedPreviewPosWidth = (canvasWidth - previewBitmapWidth) / 2
             changedPreviewPosHeight = (canvasHeight - previewBitmapHeight) / 2
             changedPreviewBitmapWidth = previewBitmapWidth

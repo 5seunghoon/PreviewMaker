@@ -234,6 +234,10 @@ class KtPreviewEditViewModel : BaseKotlinViewModel() {
                         },
                         onError = {
                             EzLogger.d("Load preview to canvas error : $it")
+                            showSnackbar(it.message.toString())
+                            selectedPreview = null
+                            _initCanvasAndPreviewEvent.call()
+                            _finishLoadingPreviewToCanvas.call()
                         }
                 ))
     }

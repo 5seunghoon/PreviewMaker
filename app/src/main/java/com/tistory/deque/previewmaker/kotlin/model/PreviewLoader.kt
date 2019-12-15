@@ -17,6 +17,7 @@ import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.toObservable
 import java.io.File
 import java.io.FileNotFoundException
+import java.io.IOException
 import java.util.concurrent.TimeUnit
 
 object PreviewLoader {
@@ -42,11 +43,18 @@ object PreviewLoader {
         return Observable.zip(
                 Observable.fromCallable {
                     if (PreviewBitmapManager.selectedStampBitmap == null) {
-                        PreviewBitmapManager.selectedStampBitmap = PreviewBitmapManager.stampImageUriToBitmap(stamp?.imageUri ?: return@fromCallable null, context)
+                        PreviewBitmapManager.selectedStampBitmap = PreviewBitmapManager.stampImageUriToBitmap(stamp?.imageUri
+                                ?: return@fromCallable null, context)
                     }
                     return@fromCallable PreviewBitmapManager.selectedStampBitmap
                 },
-                Observable.just(preview.getBitmap(context)),
+                Observable.fromCallable {
+                    try {
+                        return@fromCallable preview.getBitmap(context)
+                    } catch(e: IOException) {
+                        error(context.getString(R.string.error_might_file_not_found))
+                    }
+                },
                 BiFunction { _, previewBitmap -> previewBitmap }
         )
     }
