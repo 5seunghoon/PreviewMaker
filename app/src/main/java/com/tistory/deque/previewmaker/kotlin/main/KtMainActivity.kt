@@ -116,8 +116,6 @@ class KtMainActivity : BaseKotlinActivity<KtMainViewModel>() {
                     .setGotoSettingButton(true)
                     .check()
         }
-        
-        FilePathManager.makeNoMediaFile(applicationContext)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

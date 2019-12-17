@@ -9,6 +9,9 @@
 
     <string name="hint_stamp_name">낙관 이름</string>
     <string name="title_make_stamp_activity">낙관 이름 설정</string>
+    <string name="stamp_error_goto_start">낙관을 만드는 도중 오류가 발생했습니다. 처음부터 다시 시도해주세요.</string>
+    <string name="stamp_hidden_checkbox_text">낙관을 갤러리 앱에서 보이지 않게 하기</string>
+    <string name="stamp_hidden_checkbox_hint">낙관을 실수로 삭제하는 것을 방지할 수 있습니다</string>
 
     <string name="title_preview_make_activity">심플 프리뷰 메이커</string>
 
@@ -52,7 +55,7 @@
     <string name="snackbar_main_acti_back_to_exit">뒤로 버튼을 한번 더 누르시면 종료합니다.</string>
     <string name="snackbar_main_acti_back_to_exit_btn">EXIT</string>
     <string name="snackbar_main_acti_stamp_copy_err">파일 복사 에러. 다시 시도해 주세요.</string>
-    <string name="snackbar_main_acti_stamp_size_over_err">낙관의 사이즈가 너무 큽니다. 장축을 2천px 미만으로 줄여주세요.</string>
+    <string name="snackbar_main_acti_stamp_size_over_err">낙관 생성 실패. 장축이 2천px 이상일경우 낙관을 만들 수 없습니다. 다시 시도해주세요.</string>
 
     <string name="snackbar_make_stamp_acti_back_to_exit">뒤로 버튼을 한번 더 누르시면 낙관 설정을 취소합니다.</string>
     <string name="snackbar_make_stamp_acti_no_name_warn">이름을 입력해 주세요.</string>

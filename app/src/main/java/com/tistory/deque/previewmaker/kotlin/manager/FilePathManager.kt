@@ -13,10 +13,15 @@ import java.io.IOException
 object FilePathManager {
     private const val NO_MEDIA_FILE_NAME = ".nomedia"
 
-    fun getStampDirectory(): File {
+    fun getStampDirectory(needsHiddenDir: Boolean): File {
         val root: File = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
         val storageParentDir = File(root, EtcConstant.PREVIEW_SAVED_DIRECTORY)
-        val storageDir = File(root.toString() + "/" + EtcConstant.PREVIEW_SAVED_DIRECTORY, EtcConstant.STAMP_SAVED_DIRECTORY)
+        val stampDirName = if (needsHiddenDir) {
+            EtcConstant.STAMP_SAVED_DIRECTORY_HIDDEN
+        } else {
+            EtcConstant.STAMP_SAVED_DIRECTORY
+        }
+        val storageDir = File(root.toString() + "/" + EtcConstant.PREVIEW_SAVED_DIRECTORY, stampDirName)
         EzLogger.d("storageParentDir : $storageParentDir, storageDir : $storageDir")
 
         if (!storageParentDir.exists()) {
@@ -39,15 +44,11 @@ object FilePathManager {
         return storageDir
     }
 
-    fun migrateToStampV2(context: Context) {
-
-    }
-
     fun makeNoMediaFile(context: Context) {
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 == PackageManager.PERMISSION_GRANTED) {
             // If get file permission
-            val storageDir = getStampDirectory()
+            val storageDir = getStampDirectory(true)
             val noMediaFile = File(storageDir, NO_MEDIA_FILE_NAME)
             try {
                 if (!noMediaFile.exists()) {
