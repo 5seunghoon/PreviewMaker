@@ -21,9 +21,6 @@ import java.io.IOException
 import java.util.concurrent.TimeUnit
 
 object PreviewLoader {
-
-    private const val THUMBNAIL_LOADING_DELAY_MILLISECONDS = 20L
-
     private fun getThumbnailSize(context: Context): Size {
         val thumbnailBitmapSize: Int = context.resources.run {
             (getDimension(R.dimen.thumbnail_item_image_width_height) * displayMetrics.density).toInt()
@@ -32,11 +29,9 @@ object PreviewLoader {
     }
 
     fun loadPreview(context: Context, previewPathList: ArrayList<String>): Observable<Preview> {
-        return Observable.zip(
-                previewPathList.toObservable().flatMap { getPreviewObservable(context, it) },
-                Observable.interval(THUMBNAIL_LOADING_DELAY_MILLISECONDS, TimeUnit.MILLISECONDS), // Time interval between each preview
-                BiFunction { preview, _ -> preview }
-        )
+        return previewPathList
+                .toObservable()
+                .flatMap { getPreviewObservable(context, it) }
     }
 
     fun loadPreviewBitmap(context: Context, preview: Preview, stamp: Stamp?): Observable<Bitmap> {
