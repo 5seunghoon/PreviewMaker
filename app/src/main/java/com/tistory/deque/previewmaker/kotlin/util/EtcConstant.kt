@@ -11,6 +11,7 @@ object EtcConstant{
     const val MAIN_DIRECTORY = "Pictures"
     const val PREVIEW_SAVED_DIRECTORY = "Preview" + " " + "Maker"
     const val STAMP_SAVED_DIRECTORY = "Stamp"
+    const val STAMP_SAVED_DIRECTORY_HIDDEN = ".Stamp"
 
     const val STAMP_NAME_INTENT_KEY = "STAMP_NAME_INTENT_KEY"
     const val STAMP_ID_INTENT_KEY = "STAMP_ID_INTENT_KEY"

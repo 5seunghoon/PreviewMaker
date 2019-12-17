@@ -6,10 +6,10 @@ import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.os.Environment
 import android.provider.MediaStore
 import com.tistory.deque.previewmaker.R
 import com.tistory.deque.previewmaker.kotlin.base.BaseKotlinViewModel
+import com.tistory.deque.previewmaker.kotlin.manager.FilePathManager
 import com.tistory.deque.previewmaker.kotlin.util.EtcConstant
 import com.tistory.deque.previewmaker.kotlin.util.EzLogger
 import com.tistory.deque.previewmaker.kotlin.util.SingleLiveEvent
@@ -25,38 +25,67 @@ class KtMakeStampViewModel : BaseKotlinViewModel() {
     private val _galleryAddPicEvent = SingleLiveEvent<Uri>()
     val galleryAddPicEvent: LiveData<Uri> get() = _galleryAddPicEvent
 
-    private val _stampUriLiveData = MutableLiveData<Uri>()
-    val stampUriLiveData: LiveData<Uri> get() = _stampUriLiveData
+    private val _stampUriEvent = MutableLiveData<Uri>()
+    val stampUriEvent: LiveData<Uri> get() = _stampUriEvent
 
-    private val _finishActivityWithStampNameEvent = SingleLiveEvent<String>()
-    val finishActivityWithStampNameEvent: LiveData<String> get() = _finishActivityWithStampNameEvent
+    private val _finishActivityWithStampNameEvent = SingleLiveEvent<Pair<String, Uri>>() //Name, Uri(file://)
+    val finishActivityWithStampNameEvent: LiveData<Pair<String, Uri>> get() = _finishActivityWithStampNameEvent
+
+    private var stampSourceUri: Uri? = null
 
     fun setImageView(context: Context, data: Intent) {
         data.data?.let { sourceUri ->
-            makeStampFile(context, sourceUri) ?.let { outFile ->
-                _stampUriLiveData.value = Uri.fromFile(outFile)
-            } ?: showSnackbar("낙관 생성 실패. 장축이 2천px 이상일경우 낙관을 만들 수 없습니다. 다시 시도해주세요")
+            this.stampSourceUri = sourceUri
+            if (checkStampSizeValid(context.contentResolver)) {
+                _stampUriEvent.value = sourceUri
+            }
         }
     }
 
-    fun checkName(name: String) {
-        when {
-            name.isEmpty() -> showSnackbar(R.string.snackbar_make_stamp_acti_no_name_warn)
-            name.length > 10 -> showSnackbar(R.string.snackbar_make_stamp_acti_name_len_warn)
-            else -> _finishActivityWithStampNameEvent.value = name
+    fun clickOkButton(context: Context, name: String, needsHidden: Boolean) {
+        if (isValidStampName(name) && checkStampSizeValid(context.contentResolver)) {
+            val stampFile = makeStamp(context, needsHidden)
+            stampFile?.let {
+                _finishActivityWithStampNameEvent.value = Pair(name, Uri.fromFile(it))
+            } ?: run {
+                showSnackbar(R.string.stamp_error_goto_start)
+            }
         }
     }
 
-    fun makeStampFile(context: Context, sourceUri: Uri): File? {
-        if (checkStampSizeValid(context.contentResolver, sourceUri)) {
-            val outFile = createImageFile()
+    private fun makeStamp(context: Context, needsHidden: Boolean): File?  {
+        return makeStampFile(context, stampSourceUri ?: return null, needsHidden) ?: return null
+    }
+
+
+    private fun isValidStampName(name: String): Boolean {
+        return when {
+            name.isEmpty() -> {
+                showSnackbar(R.string.snackbar_make_stamp_acti_no_name_warn)
+                false
+            }
+            name.length > 10 -> {
+                showSnackbar(R.string.snackbar_make_stamp_acti_name_len_warn)
+                false
+            }
+            else -> true
+        }
+    }
+    private fun makeStampFile(context: Context, sourceUri: Uri, needsHidden: Boolean): File? {
+        if (checkStampSizeValid(context.contentResolver)) {
+            val outFile = createEmptyImageFile(needsHidden)
             EzLogger.d("outFile path : file.absolutePath -> ${outFile.absolutePath}")
             val sourceFile = File(sourceUri.getRealPath(context.contentResolver) ?: return null)
             EzLogger.d("sourceFile uri.getRealPath() : ${sourceUri.getRealPath(context.contentResolver)}")
+
+            if (needsHidden) {
+                FilePathManager.makeNoMediaFile(context)
+            }
             copyAndPasteImage(sourceFile, outFile)
             return outFile
+        } else {
+            return null
         }
-        return null
     }
 
     //sourceFile의 이미지를 outFile로 붙여넣음
@@ -83,35 +112,18 @@ class KtMakeStampViewModel : BaseKotlinViewModel() {
     }
 
     // 이미지 파일 객체 생성
-    private fun createImageFile(): File {
-        EzLogger.d("createImageFile func")
+    private fun createEmptyImageFile(needsHidden: Boolean): File {
         val timeStamp = SimpleDateFormat(EtcConstant.FILE_NAME_FORMAT, Locale.KOREA).format(Date())
         val imageFileName = EtcConstant.FILE_NAME_HEADER_STAMP + timeStamp + EtcConstant.FILE_NAME_IMAGE_FORMAT
+        val storageDir = FilePathManager.getStampDirectory(needsHidden)
         EzLogger.d("image file name : $imageFileName")
-
-
-        val root: File = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
-        val storageParentDir = File(root, EtcConstant.PREVIEW_SAVED_DIRECTORY)
-        val storageDir = File(root.toString() + "/" + EtcConstant.PREVIEW_SAVED_DIRECTORY, EtcConstant.STAMP_SAVED_DIRECTORY)
-        EzLogger.d("storageParentDir : $storageParentDir, storageDir : $storageDir")
-
-        if (!storageParentDir.exists()) {
-            storageParentDir.mkdirs()
-            storageDir.mkdirs()
-        }
-        if (!storageDir.exists()) {
-            storageDir.mkdirs()
-        }
-
-        val imageFile = File(storageDir, imageFileName)
-        EzLogger.d("imageFil.absolutePath : ${imageFile.absolutePath}")
-
-        return imageFile
+        EzLogger.d("storageDir : ${storageDir.path}")
+        return File(storageDir, imageFileName)
     }
 
-    private fun checkStampSizeValid(contentResolver: ContentResolver, stampBaseUri: Uri): Boolean {
+    private fun checkStampSizeValid(contentResolver: ContentResolver): Boolean {
         try {
-            val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, stampBaseUri)
+            val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, stampSourceUri)
             if (bitmap.height >= 2000 || bitmap.width >= 2000) {
                 EzLogger.d("SIZE OVER")
                 showSnackbar(R.string.snackbar_main_acti_stamp_size_over_err)

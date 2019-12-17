@@ -9,6 +9,7 @@ import android.view.MenuItem
 import android.view.inputmethod.InputMethodManager
 import com.tistory.deque.previewmaker.R
 import com.tistory.deque.previewmaker.kotlin.base.BaseKotlinActivity
+import com.tistory.deque.previewmaker.kotlin.manager.SharedPreferencesManager
 import com.tistory.deque.previewmaker.kotlin.util.EtcConstant
 import com.tistory.deque.previewmaker.kotlin.util.EzLogger
 import com.tistory.deque.previewmaker.kotlin.util.extension.galleryAddPic
@@ -25,20 +26,21 @@ class KtMakeStampActivity : BaseKotlinActivity<KtMakeStampViewModel>() {
     private var backPressedTime: Long = 0
 
     override fun initViewStart() {
-        setBackButtonAboveActionBar(true, "낙관 이름 설정")
+        setBackButtonAboveActionBar(true, getString(R.string.title_make_stamp_activity))
+        make_stamp_hidden_checkbox.isChecked = SharedPreferencesManager.getStampHiddenEnabled(applicationContext)
     }
 
     override fun initDataBinding() {
-        viewModel.stampUriLiveData.observe(this, Observer { uri ->
+        viewModel.stampUriEvent.observe(this, Observer { uri ->
             uri?.let {
                 make_stamp_image_view.run { post { setImageURI(it) } }
             }
         })
-        viewModel.finishActivityWithStampNameEvent.observe(this, Observer {name ->
-            name?.let {
+        viewModel.finishActivityWithStampNameEvent.observe(this, Observer { pairNameUri ->
+            pairNameUri?.let {
                 intent.run {
-                    data = viewModel.stampUriLiveData.value
-                    putExtra(EtcConstant.STAMP_NAME_INTENT_KEY, it)
+                    putExtra(EtcConstant.STAMP_NAME_INTENT_KEY, pairNameUri.first)
+                    data = pairNameUri.second
                     setResult(Activity.RESULT_OK, intent)
                     finish()
                 }
@@ -55,7 +57,11 @@ class KtMakeStampActivity : BaseKotlinActivity<KtMakeStampViewModel>() {
         make_stamp_submit_button.setOnClickListener {
             val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             imm.hideSoftInputFromWindow(make_stamp_name_edit_text.windowToken, 0)
-            viewModel.checkName(make_stamp_name_edit_text.text.toString())
+            val needsHidden = make_stamp_hidden_checkbox.isChecked
+            viewModel.clickOkButton(applicationContext, make_stamp_name_edit_text.text.toString(), needsHidden)
+        }
+        make_stamp_hidden_checkbox.setOnCheckedChangeListener { _, isChecked ->
+            SharedPreferencesManager.setStampHiddenEnabled(applicationContext, isChecked)
         }
     }
 
@@ -83,21 +89,10 @@ class KtMakeStampActivity : BaseKotlinActivity<KtMakeStampViewModel>() {
     }
 
     private fun cancelAndFinish() {
-        viewModel.stampUriLiveData.value?.let {
-            deleteFile(it)
+        viewModel.stampUriEvent.value?.let {
             setResult(RESULT_CANCELED, intent)
-            finish()
-        } ?: finish()
-    }
-
-    private fun deleteFile(uri: Uri) {
-        val file = File(uri.path!!)
-        if (file.delete()) {
-            galleryAddPic(uri)
-            EzLogger.d("stamp delete success uri : $uri")
-        } else {
-            EzLogger.d("Stamp delete fail uri : $uri")
         }
+        finish()
     }
 
 }

@@ -21,6 +21,7 @@ import com.tistory.deque.previewmaker.kotlin.base.BaseKotlinActivity
 import com.tistory.deque.previewmaker.kotlin.credit.KtCreditActivity
 import com.tistory.deque.previewmaker.kotlin.helpmain.KtHelpMainActivity
 import com.tistory.deque.previewmaker.kotlin.makestamp.KtMakeStampActivity
+import com.tistory.deque.previewmaker.kotlin.manager.FilePathManager
 import com.tistory.deque.previewmaker.kotlin.model.Stamp
 import com.tistory.deque.previewmaker.kotlin.previewedit.KtPreviewEditActivity
 import com.tistory.deque.previewmaker.kotlin.util.EtcConstant
@@ -104,7 +105,7 @@ class KtMainActivity : BaseKotlinActivity<KtMainViewModel>() {
         main_stamp_add_fab.setOnClickListener {
             TedPermission.with(applicationContext)
                     .setPermissionListener(object : PermissionListener {
-                        override fun onPermissionGranted() = viewModel.addStamp()
+                        override fun onPermissionGranted() = viewModel.addStampToDb()
 
                         override fun onPermissionDenied(deniedPermissions: ArrayList<String>) {}
                     })
@@ -138,6 +139,7 @@ class KtMainActivity : BaseKotlinActivity<KtMainViewModel>() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         viewModel.onActivityResult(requestCode, resultCode, data)
+        super.onActivityResult(requestCode, resultCode, data)
     }
 
     override fun onBackPressed() {

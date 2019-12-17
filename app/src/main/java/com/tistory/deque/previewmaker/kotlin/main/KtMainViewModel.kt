@@ -89,7 +89,7 @@ class KtMainViewModel : BaseKotlinViewModel() {
         _delStampAlertStartEvent.value = Pair(stamp, position)
     }
 
-    fun addStamp() {
+    fun addStampToDb() {
         _imagePickStartEvent.call()
     }
 
@@ -105,7 +105,7 @@ class KtMainViewModel : BaseKotlinViewModel() {
 
             RequestCode.REQUEST_MAKE_STAMP_ACTIVITY -> {
                 if (resultCode == Activity.RESULT_OK) {
-                    addStamp(data ?: return)
+                    addStampToDb(data ?: return)
                 }
             }
 
@@ -122,17 +122,17 @@ class KtMainViewModel : BaseKotlinViewModel() {
         }
     }
 
-    private fun addStamp(intent: Intent) {
+    private fun addStampToDb(intent: Intent) {
         dbOpenHelper?.let {
-            it.dbInsertStamp(intent.getStringExtra(EtcConstant.STAMP_NAME_INTENT_KEY), intent.data
+            it.dbInsertStamp(intent.getStringExtra(EtcConstant.STAMP_NAME_INTENT_KEY) ?: return, intent.data
                     ?: return)
 
             it.db?.rawQuery("SELECT MAX(_id) FROM ${KtDbOpenHelper.TABLE_NAME_STAMPS}", null)?.use { cursor ->
                 cursor.moveToFirst()
                 val maxId = cursor.getInt(0)
-
-                val newStamp = Stamp(maxId, intent.data
-                        ?: return, intent.getStringExtra(EtcConstant.STAMP_NAME_INTENT_KEY))
+                val newStamp = Stamp(maxId,
+                        intent.data ?: return,
+                        intent.getStringExtra(EtcConstant.STAMP_NAME_INTENT_KEY) ?: return)
                 EzLogger.d("new stamp : $newStamp")
                 _addStampLiveData.value = newStamp
             }
