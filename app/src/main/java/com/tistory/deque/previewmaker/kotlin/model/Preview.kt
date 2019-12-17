@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.media.ExifInterface
 import android.net.Uri
 import android.os.Environment
+import com.tistory.deque.previewmaker.kotlin.manager.FilePathManager
 import com.tistory.deque.previewmaker.kotlin.manager.PreviewBitmapManager
 import com.tistory.deque.previewmaker.kotlin.util.EtcConstant
 import com.tistory.deque.previewmaker.kotlin.util.EzLogger
@@ -32,11 +33,7 @@ data class Preview(
             val timeStamp = SimpleDateFormat(EtcConstant.FILE_NAME_FORMAT, Locale.KOREA).format(Date())
             val imageFileName = EtcConstant.FILE_NAME_HEADER_PREVIEW + timeStamp + EtcConstant.FILE_NAME_IMAGE_FORMAT
 
-            val root = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
-            val storageDir = File(root, EtcConstant.PREVIEW_SAVED_DIRECTORY)
-            if (!storageDir.exists()) {
-                storageDir.mkdirs()
-            }
+            val storageDir = FilePathManager.getPreviewDirectory()
             val imageFile = File(storageDir, imageFileName)
             val resultUri = Uri.fromFile(imageFile)
 

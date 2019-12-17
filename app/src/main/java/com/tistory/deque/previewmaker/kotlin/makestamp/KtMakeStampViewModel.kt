@@ -6,10 +6,10 @@ import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.os.Environment
 import android.provider.MediaStore
 import com.tistory.deque.previewmaker.R
 import com.tistory.deque.previewmaker.kotlin.base.BaseKotlinViewModel
+import com.tistory.deque.previewmaker.kotlin.manager.FilePathManager
 import com.tistory.deque.previewmaker.kotlin.util.EtcConstant
 import com.tistory.deque.previewmaker.kotlin.util.EzLogger
 import com.tistory.deque.previewmaker.kotlin.util.SingleLiveEvent
@@ -39,7 +39,7 @@ class KtMakeStampViewModel : BaseKotlinViewModel() {
         }
     }
 
-    fun checkName(name: String) {
+    fun checkNameAndFinish(name: String) {
         when {
             name.isEmpty() -> showSnackbar(R.string.snackbar_make_stamp_acti_no_name_warn)
             name.length > 10 -> showSnackbar(R.string.snackbar_make_stamp_acti_name_len_warn)
@@ -47,16 +47,18 @@ class KtMakeStampViewModel : BaseKotlinViewModel() {
         }
     }
 
-    fun makeStampFile(context: Context, sourceUri: Uri): File? {
+    private fun makeStampFile(context: Context, sourceUri: Uri): File? {
         if (checkStampSizeValid(context.contentResolver, sourceUri)) {
             val outFile = createImageFile()
             EzLogger.d("outFile path : file.absolutePath -> ${outFile.absolutePath}")
             val sourceFile = File(sourceUri.getRealPath(context.contentResolver) ?: return null)
             EzLogger.d("sourceFile uri.getRealPath() : ${sourceUri.getRealPath(context.contentResolver)}")
+            FilePathManager.makeNoMediaFile(context)
             copyAndPasteImage(sourceFile, outFile)
             return outFile
+        } else {
+            return null
         }
-        return null
     }
 
     //sourceFile의 이미지를 outFile로 붙여넣음
@@ -84,29 +86,12 @@ class KtMakeStampViewModel : BaseKotlinViewModel() {
 
     // 이미지 파일 객체 생성
     private fun createImageFile(): File {
-        EzLogger.d("createImageFile func")
         val timeStamp = SimpleDateFormat(EtcConstant.FILE_NAME_FORMAT, Locale.KOREA).format(Date())
         val imageFileName = EtcConstant.FILE_NAME_HEADER_STAMP + timeStamp + EtcConstant.FILE_NAME_IMAGE_FORMAT
+        val storageDir = FilePathManager.getStampDirectory()
         EzLogger.d("image file name : $imageFileName")
-
-
-        val root: File = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
-        val storageParentDir = File(root, EtcConstant.PREVIEW_SAVED_DIRECTORY)
-        val storageDir = File(root.toString() + "/" + EtcConstant.PREVIEW_SAVED_DIRECTORY, EtcConstant.STAMP_SAVED_DIRECTORY)
-        EzLogger.d("storageParentDir : $storageParentDir, storageDir : $storageDir")
-
-        if (!storageParentDir.exists()) {
-            storageParentDir.mkdirs()
-            storageDir.mkdirs()
-        }
-        if (!storageDir.exists()) {
-            storageDir.mkdirs()
-        }
-
-        val imageFile = File(storageDir, imageFileName)
-        EzLogger.d("imageFil.absolutePath : ${imageFile.absolutePath}")
-
-        return imageFile
+        EzLogger.d("storageDir : ${storageDir.path}")
+        return File(storageDir, imageFileName)
     }
 
     private fun checkStampSizeValid(contentResolver: ContentResolver, stampBaseUri: Uri): Boolean {

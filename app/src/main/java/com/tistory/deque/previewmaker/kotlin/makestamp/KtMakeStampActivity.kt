@@ -55,7 +55,7 @@ class KtMakeStampActivity : BaseKotlinActivity<KtMakeStampViewModel>() {
         make_stamp_submit_button.setOnClickListener {
             val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             imm.hideSoftInputFromWindow(make_stamp_name_edit_text.windowToken, 0)
-            viewModel.checkName(make_stamp_name_edit_text.text.toString())
+            viewModel.checkNameAndFinish(make_stamp_name_edit_text.text.toString())
         }
     }
 

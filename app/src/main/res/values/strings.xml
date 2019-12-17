@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">심플 프리뷰 메이커</string>
 
+    <string name="ok">OK</string>
+
     <string name="action_help">도움말</string>
     <string name="action_donate">개발자 팬싸 보내주기</string>
     <string name="action_credit">어플리케이션 정보</string>
