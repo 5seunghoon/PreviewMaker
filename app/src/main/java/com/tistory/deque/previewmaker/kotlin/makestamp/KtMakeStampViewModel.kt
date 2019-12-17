@@ -28,8 +28,8 @@ class KtMakeStampViewModel : BaseKotlinViewModel() {
     private val _stampUriEvent = MutableLiveData<Uri>()
     val stampUriEvent: LiveData<Uri> get() = _stampUriEvent
 
-    private val _finishActivityWithStampNameEvent = SingleLiveEvent<String>()
-    val finishActivityWithStampNameEvent: LiveData<String> get() = _finishActivityWithStampNameEvent
+    private val _finishActivityWithStampNameEvent = SingleLiveEvent<Pair<String, Uri>>() //Name, Uri(file://)
+    val finishActivityWithStampNameEvent: LiveData<Pair<String, Uri>> get() = _finishActivityWithStampNameEvent
 
     private var stampSourceUri: Uri? = null
 
@@ -44,14 +44,19 @@ class KtMakeStampViewModel : BaseKotlinViewModel() {
 
     fun clickOkButton(context: Context, name: String, needsHidden: Boolean) {
         if (isValidStampName(name) && checkStampSizeValid(context.contentResolver)) {
-            val isMakingStampSuccess = makeStamp(context, needsHidden)
-            if (isMakingStampSuccess) {
-                _finishActivityWithStampNameEvent.value = name
-            } else {
+            val stampFile = makeStamp(context, needsHidden)
+            stampFile?.let {
+                _finishActivityWithStampNameEvent.value = Pair(name, Uri.fromFile(it))
+            } ?: run {
                 showSnackbar(R.string.stamp_error_goto_start)
             }
         }
     }
+
+    private fun makeStamp(context: Context, needsHidden: Boolean): File?  {
+        return makeStampFile(context, stampSourceUri ?: return null, needsHidden) ?: return null
+    }
+
 
     private fun isValidStampName(name: String): Boolean {
         return when {
@@ -66,12 +71,6 @@ class KtMakeStampViewModel : BaseKotlinViewModel() {
             else -> true
         }
     }
-
-    private fun makeStamp(context: Context, needsHidden: Boolean): Boolean {
-        makeStampFile(context, stampSourceUri ?: return false, needsHidden) ?: return false
-        return true
-    }
-
     private fun makeStampFile(context: Context, sourceUri: Uri, needsHidden: Boolean): File? {
         if (checkStampSizeValid(context.contentResolver)) {
             val outFile = createEmptyImageFile(needsHidden)

@@ -36,11 +36,11 @@ class KtMakeStampActivity : BaseKotlinActivity<KtMakeStampViewModel>() {
                 make_stamp_image_view.run { post { setImageURI(it) } }
             }
         })
-        viewModel.finishActivityWithStampNameEvent.observe(this, Observer {name ->
-            name?.let {
+        viewModel.finishActivityWithStampNameEvent.observe(this, Observer { pairNameUri ->
+            pairNameUri?.let {
                 intent.run {
-                    data = viewModel.stampUriEvent.value
-                    putExtra(EtcConstant.STAMP_NAME_INTENT_KEY, it)
+                    putExtra(EtcConstant.STAMP_NAME_INTENT_KEY, pairNameUri.first)
+                    data = pairNameUri.second
                     setResult(Activity.RESULT_OK, intent)
                     finish()
                 }
