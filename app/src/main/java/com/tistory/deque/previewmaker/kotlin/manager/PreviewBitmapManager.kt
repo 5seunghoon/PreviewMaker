@@ -7,18 +7,15 @@ import com.tistory.deque.previewmaker.kotlin.util.EzLogger
 import java.io.FileNotFoundException
 import java.io.IOException
 import android.media.ExifInterface
-import android.R.attr.orientation
 import android.graphics.*
+import com.tistory.deque.previewmaker.kotlin.util.EtcConstant.PREVIEW_BITMAP_MAX_SIZE_DEFAULT
+import com.tistory.deque.previewmaker.kotlin.util.EtcConstant.STAMP_BITMAP_MAX_SIZE
 import io.reactivex.Single
-import java.lang.IllegalArgumentException
 import java.util.ArrayList
 import kotlin.math.roundToInt
 
 
 object PreviewBitmapManager {
-    private const val previewBitmapMaxSize = 2000
-    private const val stampBitmapMaxSize = 1000
-
     var selectedPreviewBitmap: Bitmap? = null
     var selectedStampBitmap: Bitmap? = null
     var blurredPreviewBitmap: Bitmap? = null
@@ -31,11 +28,11 @@ object PreviewBitmapManager {
     }
 
     fun stampImageUriToBitmap(imageUri: Uri, context: Context): Bitmap? {
-        return imageUriToBitmap(stampBitmapMaxSize, imageUri, context, null)
+        return imageUriToBitmap(STAMP_BITMAP_MAX_SIZE, imageUri, context, null)
     }
 
     fun previewImageUriToBitmap(imageUri: Uri, context: Context, rotation: Int?): Bitmap? {
-        return imageUriToBitmap(previewBitmapMaxSize, imageUri, context, rotation)
+        return imageUriToBitmap(PREVIEW_BITMAP_MAX_SIZE_DEFAULT, imageUri, context, rotation)
     }
 
     private fun imageUriToBitmap(maxSize: Int, imageUri: Uri, context: Context, rotation: Int?): Bitmap? {
@@ -165,28 +162,15 @@ object PreviewBitmapManager {
      * @param bottom
      */
     private fun blurBitmap(partOvalElements: ArrayList<Double>) {
-        val left: Int
-        val top: Int
-        val right: Int
-        val bottom: Int
-        val ovalLeft: Int
-        val ovalTop: Int
-        val ovalRight: Int
-        val ovalBottom: Int
-        try {
-            left = partOvalElements[0].roundToInt()
-            top = partOvalElements[1].roundToInt()
-            right = partOvalElements[2].roundToInt()
-            bottom = partOvalElements[3].roundToInt()
-            ovalLeft = partOvalElements[4].roundToInt()
-            ovalTop = partOvalElements[5].roundToInt()
-            ovalRight = partOvalElements[6].roundToInt()
-            ovalBottom = partOvalElements[7].roundToInt()
-            BlurManager.setBlurOrigRect(partOvalElements[0], partOvalElements[1], partOvalElements[2], partOvalElements[3])
-        } catch (e: IllegalArgumentException) {
-            e.printStackTrace()
-            return
-        }
+        val left: Int = partOvalElements[0].roundToInt()
+        val top: Int = partOvalElements[1].roundToInt()
+        val right: Int = partOvalElements[2].roundToInt()
+        val bottom: Int = partOvalElements[3].roundToInt()
+        val ovalLeft: Int = partOvalElements[4].roundToInt()
+        val ovalTop: Int = partOvalElements[5].roundToInt()
+        val ovalRight: Int = partOvalElements[6].roundToInt()
+        val ovalBottom: Int = partOvalElements[7].roundToInt()
+        BlurManager.setBlurOrigRect(partOvalElements[0], partOvalElements[1], partOvalElements[2], partOvalElements[3])
 
         BlurManager.doFastBlur(
                 Bitmap.createBitmap(selectedPreviewBitmap

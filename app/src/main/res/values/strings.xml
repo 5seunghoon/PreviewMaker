@@ -78,6 +78,7 @@
 
     <string name="guide_select_previews">프리뷰로 편집할 사진을 선택해주세요</string>
 
+    <string name="blur_error_toast_text">블러 수행 중 에러가 발생하였습니다.</string>
 
     <string name="canvasview_hint">편집할 프리뷰를 상단에서 선택해 주세요</string>
 

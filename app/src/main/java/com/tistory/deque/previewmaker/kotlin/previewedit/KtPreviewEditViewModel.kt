@@ -156,7 +156,7 @@ class KtPreviewEditViewModel : BaseKotlinViewModel() {
 
     fun cropSelectedPreview(activity: KtPreviewEditActivity) {
         selectedPreview?.let {
-            val options: UCrop.Options = setCropViewOption(activity)
+            val options: UCrop.Options = setUCropViewOption(activity)
 
             UCrop.of(it.originalImageUri, it.resultImageUri)
                     .withOptions(options)
@@ -166,24 +166,22 @@ class KtPreviewEditViewModel : BaseKotlinViewModel() {
         }
     }
 
-    private fun setCropViewOption(context: Context): UCrop.Options {
-        val options = UCrop.Options()
-        options.setToolbarColor(ContextCompat.getColor(context, R.color.colorPrimary))
-        options.setActiveWidgetColor(ContextCompat.getColor(context, R.color.colorAccent))
-        options.setToolbarWidgetColor(ContextCompat.getColor(context, R.color.black))
-        options.setStatusBarColor(ContextCompat.getColor(context, R.color.colorPrimaryDark))
-        options.setFreeStyleCropEnabled(true)
-
-        options.setAspectRatioOptions(1,
-                AspectRatio("16:9", 16f, 9f),
-                AspectRatio("3:2", 3f, 2f),
-                AspectRatio("ORIGINAL", CropImageView.DEFAULT_ASPECT_RATIO, CropImageView.DEFAULT_ASPECT_RATIO),
-                AspectRatio("1:1", 1f, 1f),
-                AspectRatio("2:3", 2f, 3f),
-                AspectRatio("9:16", 9f, 16f)
-        )
-
-        return options
+    private fun setUCropViewOption(context: Context): UCrop.Options {
+        return UCrop.Options().apply {
+            setToolbarColor(ContextCompat.getColor(context, R.color.colorPrimary))
+            setActiveWidgetColor(ContextCompat.getColor(context, R.color.colorAccent))
+            setToolbarWidgetColor(ContextCompat.getColor(context, R.color.black))
+            setStatusBarColor(ContextCompat.getColor(context, R.color.colorPrimaryDark))
+            setFreeStyleCropEnabled(true)
+            setAspectRatioOptions(1,
+                    AspectRatio("16:9", 16f, 9f),
+                    AspectRatio("3:2", 3f, 2f),
+                    AspectRatio("ORIGINAL", CropImageView.DEFAULT_ASPECT_RATIO, CropImageView.DEFAULT_ASPECT_RATIO),
+                    AspectRatio("1:1", 1f, 1f),
+                    AspectRatio("2:3", 2f, 3f),
+                    AspectRatio("9:16", 9f, 16f))
+            setMaxBitmapSize(EtcConstant.UCROP_MAX_BITMAP_SIZE)
+        }
     }
 
     fun dbUpdateStamp(id: Int, stamp: Stamp) {
@@ -252,6 +250,7 @@ class KtPreviewEditViewModel : BaseKotlinViewModel() {
                         },
                         onError = {
                             EzLogger.d("Blur error : ${it.printStackTrace()}")
+                            showSnackbar(R.string.blur_error_toast_text)
                             _finishLoadingPreviewToBlur.call()
                         }
                 ))

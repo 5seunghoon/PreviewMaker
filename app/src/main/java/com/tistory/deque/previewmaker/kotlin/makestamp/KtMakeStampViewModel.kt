@@ -11,6 +11,7 @@ import com.tistory.deque.previewmaker.R
 import com.tistory.deque.previewmaker.kotlin.base.BaseKotlinViewModel
 import com.tistory.deque.previewmaker.kotlin.manager.FilePathManager
 import com.tistory.deque.previewmaker.kotlin.util.EtcConstant
+import com.tistory.deque.previewmaker.kotlin.util.EtcConstant.STAMP_FILE_MAX_SIZE
 import com.tistory.deque.previewmaker.kotlin.util.EzLogger
 import com.tistory.deque.previewmaker.kotlin.util.SingleLiveEvent
 import com.tistory.deque.previewmaker.kotlin.util.extension.getRealPath
@@ -124,7 +125,7 @@ class KtMakeStampViewModel : BaseKotlinViewModel() {
     private fun checkStampSizeValid(contentResolver: ContentResolver): Boolean {
         try {
             val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, stampSourceUri)
-            if (bitmap.height >= 2000 || bitmap.width >= 2000) {
+            if (bitmap.height >= STAMP_FILE_MAX_SIZE || bitmap.width >= STAMP_FILE_MAX_SIZE) {
                 EzLogger.d("SIZE OVER")
                 showSnackbar(R.string.snackbar_main_acti_stamp_size_over_err)
                 return false
