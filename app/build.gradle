@@ -9,8 +9,8 @@ android {
         applicationId "com.tistory.deque.previewmaker"
         minSdkVersion 23
         targetSdkVersion 29
-        versionCode 19
-        versionName "1.4.0"
+        versionCode 20
+        versionName "1.4.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     compileOptions {
