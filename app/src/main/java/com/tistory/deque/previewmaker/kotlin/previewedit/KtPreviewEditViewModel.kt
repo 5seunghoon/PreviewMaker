@@ -10,6 +10,7 @@ import com.tistory.deque.previewmaker.kotlin.base.BaseKotlinViewModel
 import com.tistory.deque.previewmaker.kotlin.db.KtDbOpenHelper
 import com.tistory.deque.previewmaker.kotlin.manager.PreviewBitmapManager
 import com.tistory.deque.previewmaker.kotlin.manager.PreviewEditButtonViewStateManager
+import com.tistory.deque.previewmaker.kotlin.manager.SharedPreferencesManager
 import com.tistory.deque.previewmaker.kotlin.model.Preview
 import com.tistory.deque.previewmaker.kotlin.model.PreviewAdapterModel
 import com.tistory.deque.previewmaker.kotlin.model.PreviewLoader
@@ -128,7 +129,6 @@ class KtPreviewEditViewModel : BaseKotlinViewModel() {
         if (previewAdapterModel.size <= 1) return
         selectedPreviewPosition?.let {
             previewAdapterModel.delete(it)
-            //_previewThumbnailAdapterRemovePosition.value = it
             _previewThumbnailAdapterNotifyDataSet.call()
 
             // 보여줄 프리뷰 포지션 변경
@@ -167,16 +167,19 @@ class KtPreviewEditViewModel : BaseKotlinViewModel() {
     }
 
     private fun setUCropViewOption(context: Context): UCrop.Options {
+        val widthOverHeight = SharedPreferencesManager.getPreviewWidthOverHeightRatio(context)
+
         return UCrop.Options().apply {
             setToolbarColor(ContextCompat.getColor(context, R.color.colorPrimary))
             setActiveWidgetColor(ContextCompat.getColor(context, R.color.colorAccent))
             setToolbarWidgetColor(ContextCompat.getColor(context, R.color.black))
             setStatusBarColor(ContextCompat.getColor(context, R.color.colorPrimaryDark))
             setFreeStyleCropEnabled(true)
-            setAspectRatioOptions(1,
+            setAspectRatioOptions(3,
                     AspectRatio("16:9", 16f, 9f),
                     AspectRatio("3:2", 3f, 2f),
-                    AspectRatio("ORIGINAL", CropImageView.DEFAULT_ASPECT_RATIO, CropImageView.DEFAULT_ASPECT_RATIO),
+                    AspectRatio("ORIGIN", CropImageView.DEFAULT_ASPECT_RATIO, CropImageView.DEFAULT_ASPECT_RATIO),
+                    AspectRatio("PREV", widthOverHeight, 1f),
                     AspectRatio("1:1", 1f, 1f),
                     AspectRatio("2:3", 2f, 3f),
                     AspectRatio("9:16", 9f, 16f))
