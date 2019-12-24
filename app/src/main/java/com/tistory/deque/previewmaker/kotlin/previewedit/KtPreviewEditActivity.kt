@@ -13,6 +13,7 @@ import com.tistory.deque.previewmaker.kotlin.helppreviewedit.KtHelpPreviewEditAc
 import com.tistory.deque.previewmaker.kotlin.manager.BlurManager
 import com.tistory.deque.previewmaker.kotlin.manager.PreviewBitmapManager
 import com.tistory.deque.previewmaker.kotlin.manager.PreviewEditClickStateManager
+import com.tistory.deque.previewmaker.kotlin.manager.SharedPreferencesManager
 import com.tistory.deque.previewmaker.kotlin.model.Preview
 import com.tistory.deque.previewmaker.kotlin.model.Stamp
 import com.tistory.deque.previewmaker.kotlin.util.EtcConstant
@@ -156,6 +157,11 @@ class KtPreviewEditActivity : BaseKotlinActivity<KtPreviewEditViewModel>() {
         if (resultCode == RESULT_OK && requestCode == UCrop.REQUEST_CROP) {
             data?.let {
                 val resultUri = UCrop.getOutput(it) ?: return@let
+
+                val cropAspectRatio = UCrop.getOutputCropAspectRatio(it)
+                if (cropAspectRatio > 0f) {
+                    SharedPreferencesManager.setPreviewWidthOverHeightRatio(applicationContext, cropAspectRatio)
+                }
 
                 val mediaScanIntent = Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE)
                 mediaScanIntent.data = resultUri

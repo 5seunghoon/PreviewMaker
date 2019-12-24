@@ -8,6 +8,7 @@ object SharedPreferencesManager {
     private const val SHARED_PREFERENCES_NAME = "PREVIEW_MAKER_PREFERENCES"
 
     private const val STAMP_HIDDEN_ENABLED = "STAMP_HIDDEN_ENABLED"
+    private const val PREVIEW_WIDTH_OVER_HEIGHT_RATIO = "PREVIEW_WIDTH_OVER_HEIGHT_RATIO" // width/height ratio
 
     private var mPref: SharedPreferences? = null
 
@@ -23,4 +24,13 @@ object SharedPreferencesManager {
     fun getStampHiddenEnabled(context: Context): Boolean {
         return getPref(context).getBoolean(STAMP_HIDDEN_ENABLED, true)
     }
+
+    fun setPreviewWidthOverHeightRatio(context: Context, widthOverHeight: Float) {
+        getPref(context).edit().putFloat(PREVIEW_WIDTH_OVER_HEIGHT_RATIO, widthOverHeight).apply()
+    }
+
+    fun getPreviewWidthOverHeightRatio(context: Context): Float {
+        return getPref(context).getFloat(PREVIEW_WIDTH_OVER_HEIGHT_RATIO, 1.5f)
+    }
+
 }

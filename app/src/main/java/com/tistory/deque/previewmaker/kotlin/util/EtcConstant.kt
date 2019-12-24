@@ -22,4 +22,9 @@ object EtcConstant{
     const val SeekBarPreviewContrastMax = 512
     const val SeekBarPreviewSaturationMax = 512
     const val SeekBarPreviewKelvinMax = 512
+
+    const val UCROP_MAX_BITMAP_SIZE = 10000
+    const val PREVIEW_BITMAP_MAX_SIZE_DEFAULT = 2500
+    const val STAMP_BITMAP_MAX_SIZE = 1000
+    const val STAMP_FILE_MAX_SIZE = 2000
 }
