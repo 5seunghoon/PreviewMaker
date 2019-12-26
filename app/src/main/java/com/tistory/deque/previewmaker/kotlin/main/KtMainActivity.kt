@@ -47,7 +47,6 @@ class KtMainActivity : BaseKotlinActivity<KtMainViewModel>() {
         title = "심플 프리뷰 메이커"
         viewModel.dbOpen(applicationContext)
         viewModel.getAllStampFromDb()
-        supportActionBar?.elevation = 0f
         setRecyclerView()
         return
     }
@@ -118,25 +117,6 @@ class KtMainActivity : BaseKotlinActivity<KtMainViewModel>() {
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.toolbar_main_menu, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        when (item?.itemId) {
-            R.id.action_help -> {
-                startActivity(Intent(applicationContext, KtHelpMainActivity::class.java))
-                return true
-            }
-            R.id.action_credit -> {
-                startActivity(Intent(applicationContext, KtCreditActivity::class.java))
-                return true
-            }
-        }
-        return false
-    }
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         viewModel.onActivityResult(requestCode, resultCode, data)
         super.onActivityResult(requestCode, resultCode, data)
@@ -159,6 +139,19 @@ class KtMainActivity : BaseKotlinActivity<KtMainViewModel>() {
             adapter = stampAdapter.apply {
                 stampClickListener = viewModel::stampClickListener
                 stampDeleteListener = viewModel::stampDeleteListener
+                toolboxClickListener = object: ToolboxClickListener {
+                    override fun helpClickListener() {
+                        startActivity(Intent(applicationContext, KtHelpMainActivity::class.java))
+                    }
+
+                    override fun creditClickListener() {
+                        startActivity(Intent(applicationContext, KtCreditActivity::class.java))
+                    }
+
+                    override fun optionClickListener() {
+                    }
+
+                }
             }
             setHasFixedSize(true)
         }

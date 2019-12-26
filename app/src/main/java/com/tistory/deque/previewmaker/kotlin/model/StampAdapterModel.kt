@@ -2,7 +2,7 @@ package com.tistory.deque.previewmaker.kotlin.model
 
 import java.lang.IndexOutOfBoundsException
 
-class StampAdapterModel(){
+class StampAdapterModel {
 
     private var stampList: ArrayList<Stamp> = ArrayList()
     val size: Int get() = stampList.size
