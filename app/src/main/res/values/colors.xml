@@ -3,6 +3,12 @@
     <color name="colorPrimary">#FFFFFF</color>
     <color name="colorPrimaryDark">#3D3D3D</color>
     <color name="colorAccent">#ff4081</color>
+
+    <color name="main_bg_color">#ffffff</color>
+    <color name="stamp_item_name_text_color">#121212</color>
+    <color name="icon_normal_color">#121212</color>
+    <color name="stamp_item_png_background">#EEEEEE</color>
+
     <color name="backgroundGray">#EEEEEE</color>
     <color name="black">#000000</color>
     <color name="white">#FFFFFF</color>

@@ -100,7 +100,7 @@ class KtPreviewEditViewModel : BaseKotlinViewModel() {
 
             selectedPreview?.let {
                 if (!it.isSaved) {
-                    AlertDialog.Builder(activity).apply {
+                    AlertDialog.Builder(activity, R.style.AppTheme_Dialog).apply {
                         setMessage(R.string.snackbar_preview_edit_acti_clk_new_preview)
                         setPositiveButton("YES") { _, _ -> _startSavePreviewEvent.call() }
                         setNegativeButton("NO") { _, _ ->
