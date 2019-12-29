@@ -10,54 +10,46 @@ import kotlinx.android.synthetic.main.activity_kt_setting.*
 import org.koin.android.viewmodel.ext.android.viewModel
 
 class KtSettingActivity : BaseKotlinActivity<KtSettingViewModel>() {
-    data class PreferencesValue(val previewSizeLimit: Int)
 
     override val layoutResourceId: Int = R.layout.activity_kt_setting
     override val viewModel: KtSettingViewModel by viewModel()
 
-    private lateinit var prevPreferencesValue: PreferencesValue
-
-    private val previewSizeSeekBarInterval = 100
+    private val previewSizeLimitSeekBarProgress: Int
+        get() = setting_preview_size_limit_seek_bar.progress
 
     override fun initViewStart() {
-        prevPreferencesValue = PreferencesValue(SharedPreferencesManager.getPreviewBitmapSizeLimit(applicationContext))
+        viewModel.initPreferencesValue(applicationContext)
+
         title = resources.getString(R.string.setting_title)
 
         setting_preview_size_limit_seek_bar.run {
-            max = PREVIEW_BITMAP_SIZE_LIMIT_MAX / previewSizeSeekBarInterval
-            progress = prevPreferencesValue.previewSizeLimit / previewSizeSeekBarInterval
+            max = viewModel.generatePreviewSizeLimitRealToSeekBar(PREVIEW_BITMAP_SIZE_LIMIT_MAX)
+            progress = viewModel.generatePreviewSizeLimitRealToSeekBar(SharedPreferencesManager.getPreviewBitmapSizeLimit(applicationContext))
             setOnSeekBarChangeListener(viewModel.previewSizeLimitSeekBarListener)
         }
 
-        setting_preview_size_limit_text.text = generatePreviewSizeLimitPxText(setting_preview_size_limit_seek_bar.progress)
-
-        setting_save_button.setOnClickListener {
-            savePreferences(buildNewPreferencesValue())
-            finish()
-        }
+        setting_preview_size_limit_text.text = viewModel.generatePreviewSizeLimitSeekBarToReal(previewSizeLimitSeekBarProgress).toString()
     }
 
     override fun initDataBinding() {
         viewModel.previewSizeLimitSeekBarEvent.observe(this, Observer {
-            setting_preview_size_limit_text.text = generatePreviewSizeLimitPxText(it)
+            setting_preview_size_limit_text.text = viewModel.generatePreviewSizeLimitSeekBarToReal(it).toString()
         })
     }
 
     override fun initViewFinal() {
-    }
-
-    private fun generatePreviewSizeLimitPxText(seekBarValue: Int): String {
-        return (seekBarValue * previewSizeSeekBarInterval).toString()
+        setting_save_button.setOnClickListener {
+            viewModel.savePreferences(applicationContext, previewSizeLimitSeekBarProgress)\
+        }
     }
 
     override fun onBackPressed() {
-        val newPreferencesValue = buildNewPreferencesValue()
-        if (newPreferencesValue != prevPreferencesValue) {
+        if (viewModel.isPreferencesValueChanged(previewSizeLimitSeekBarProgress)) {
             AlertDialog.Builder(this, R.style.AppTheme_Dialog)
                     .setMessage(R.string.setting_save_dialog_message)
                     .setPositiveButton(R.string.setting_save_dialog_positive_text) { dialog, _ ->
                         dialog.dismiss()
-                        savePreferences(newPreferencesValue)
+                        viewModel.savePreferences(applicationContext, previewSizeLimitSeekBarProgress)
                         finish()
                     }
                     .setNegativeButton(R.string.setting_save_dialog_negative_text) { dialog, _ ->
@@ -69,12 +61,4 @@ class KtSettingActivity : BaseKotlinActivity<KtSettingViewModel>() {
         }
     }
 
-    private fun buildNewPreferencesValue(): PreferencesValue {
-        return PreferencesValue(setting_preview_size_limit_seek_bar.progress * previewSizeSeekBarInterval)
-    }
-
-    private fun savePreferences(newPreferencesValue: PreferencesValue) {
-        SharedPreferencesManager.setPreviewBitmapSizeLimit(applicationContext, newPreferencesValue.previewSizeLimit)
-        viewModel.showSnackbar(R.string.setting_save_success_snackbar_message)
-    }
 }

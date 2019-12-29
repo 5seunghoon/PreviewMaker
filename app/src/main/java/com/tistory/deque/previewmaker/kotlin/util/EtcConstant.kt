@@ -26,6 +26,7 @@ object EtcConstant{
     const val UCROP_MAX_BITMAP_SIZE = 6000
     const val PREVIEW_BITMAP_SIZE_LIMIT_DEFAULT = 2500
     const val PREVIEW_BITMAP_SIZE_LIMIT_MAX = 5000
+    const val PREVIEW_BITMAP_SIZE_LIMIT_MIN = 1000
     const val STAMP_BITMAP_MAX_SIZE = 1000
     const val STAMP_FILE_MAX_SIZE = 2000
 }

@@ -59,8 +59,7 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".kotlin.setting.KtSettingActivity"
-            android:launchMode="singleTask"
-            android:theme="@style/AppTheme.NoActionBar"  />
+            android:launchMode="singleTask" />
         <activity
             android:name=".kotlin.helpmain.KtHelpMainActivity"
             android:launchMode="singleTask" />
