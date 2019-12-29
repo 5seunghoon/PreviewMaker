@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/setting_toolbar_save"
+        android:icon="@drawable/btn_all_use_finish_36dp"
+        android:title="@string/setting_save"
+        app:showAsAction="always" />
+</menu>

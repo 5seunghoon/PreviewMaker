@@ -30,11 +30,11 @@ class KtSettingViewModel : BaseKotlinViewModel() {
         override fun onStopTrackingTouch(seekBar: SeekBar?) {}
     }
 
-    fun generatePreviewSizeLimitSeekBarToReal(seekBarProgress: Int): Int {
+    fun transformPreviewSizeLimitSeekBarToReal(seekBarProgress: Int): Int {
         return (seekBarProgress * previewSizeSeekBarInterval + EtcConstant.PREVIEW_BITMAP_SIZE_LIMIT_MIN)
     }
 
-    fun generatePreviewSizeLimitRealToSeekBar(limit: Int): Int {
+    fun transformPreviewSizeLimitRealToSeekBar(limit: Int): Int {
         return (limit - EtcConstant.PREVIEW_BITMAP_SIZE_LIMIT_MIN) / previewSizeSeekBarInterval
     }
 
@@ -43,7 +43,7 @@ class KtSettingViewModel : BaseKotlinViewModel() {
     }
 
     private fun buildNewPreferencesValue(previewSizeLimitSeekBarProgress: Int): PreferencesValue {
-        return PreferencesValue(generatePreviewSizeLimitSeekBarToReal(previewSizeLimitSeekBarProgress))
+        return PreferencesValue(transformPreviewSizeLimitSeekBarToReal(previewSizeLimitSeekBarProgress))
     }
 
     fun isPreferencesValueChanged(previewSizeLimitSeekBarProgress: Int): Boolean {
@@ -52,7 +52,9 @@ class KtSettingViewModel : BaseKotlinViewModel() {
     }
 
     fun savePreferences(context: Context, previewSizeLimitSeekBarProgress: Int) {
-        SharedPreferencesManager.setPreviewBitmapSizeLimit(context, previewSizeLimitSeekBarProgress)
+        prevPreferencesValue = buildNewPreferencesValue(previewSizeLimitSeekBarProgress)
+
+        SharedPreferencesManager.setPreviewBitmapSizeLimit(context, prevPreferencesValue.previewSizeLimit)
         showSnackbar(R.string.setting_save_success_snackbar_message)
     }
 }
