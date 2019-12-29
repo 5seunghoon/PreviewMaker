@@ -14,5 +14,7 @@
     <color name="icon_normal_color">#121212</color>
     <color name="bg_for_alpha_image">#EEEEEE</color>
 
-    <color name="ucrop_toolbar_text_color">#121212</color>
+    <color name="ucrop_toolbar_text_color">#121212</color>\
+
+    <color name="divider">#CCCCCC</color>
 </resources>

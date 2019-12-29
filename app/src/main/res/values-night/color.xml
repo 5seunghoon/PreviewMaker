@@ -15,4 +15,6 @@
     <color name="bg_for_alpha_image">#333333</color>
 
     <color name="ucrop_toolbar_text_color">#F0F0F0</color>
+
+    <color name="divider">#575757</color>
 </resources>

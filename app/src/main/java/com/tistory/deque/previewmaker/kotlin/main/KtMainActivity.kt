@@ -24,6 +24,7 @@ import com.tistory.deque.previewmaker.kotlin.makestamp.KtMakeStampActivity
 import com.tistory.deque.previewmaker.kotlin.manager.FilePathManager
 import com.tistory.deque.previewmaker.kotlin.model.Stamp
 import com.tistory.deque.previewmaker.kotlin.previewedit.KtPreviewEditActivity
+import com.tistory.deque.previewmaker.kotlin.setting.KtSettingActivity
 import com.tistory.deque.previewmaker.kotlin.util.EtcConstant
 import com.tistory.deque.previewmaker.kotlin.util.EzLogger
 import com.tistory.deque.previewmaker.kotlin.util.RequestCode
@@ -149,8 +150,8 @@ class KtMainActivity : BaseKotlinActivity<KtMainViewModel>() {
                     }
 
                     override fun optionClickListener() {
+                        startActivity(Intent(applicationContext, KtSettingActivity::class.java))
                     }
-
                 }
             }
             setHasFixedSize(true)
