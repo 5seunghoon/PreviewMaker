@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorPrimary">#2E2E2E</color>
-    <color name="colorPrimaryDark">#3D3D3D</color>
+    <color name="colorPrimaryDark">#2E2E2E</color>
     <color name="colorAccent">#ff4081</color>
+
+    <color name="status_bar_color">#2E2E2E</color>
 
     <color name="main_bg_color">#2E2E2E</color>
     <color name="main_text_color">#E0E0E0</color>
@@ -12,5 +14,5 @@
     <color name="icon_normal_color">#F0F0F0</color>
     <color name="bg_for_alpha_image">#333333</color>
 
-    <color name="status_bar_color">#2E2E2E</color>
+    <color name="ucrop_toolbar_text_color">#F0F0F0</color>
 </resources>
