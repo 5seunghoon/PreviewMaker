@@ -6,7 +6,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center"
-    android:background="@android:color/white"
     android:orientation="vertical"
     tools:context=".kotlin.helpmain.KtHelpMainActivity">
 
@@ -15,5 +14,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center"
+        android:contentDescription="@null"
         app:srcCompat="@drawable/help_main_activity" />
 </LinearLayout>

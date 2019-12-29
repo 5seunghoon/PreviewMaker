@@ -11,7 +11,8 @@ home -> stamp
     android:layout_height="wrap_content"
     xmlns:tools="http://schemas.android.com/tools"
     android:background="@color/preview_edit_button_parent_bg"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:ignore="ContentDescription">
 
     <FrameLayout
         android:layout_width="match_parent"

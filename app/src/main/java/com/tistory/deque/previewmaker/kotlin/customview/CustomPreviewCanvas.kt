@@ -1,5 +1,6 @@
 package com.tistory.deque.previewmaker.kotlin.customview
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.*
 import android.os.AsyncTask
@@ -221,6 +222,7 @@ class CustomPreviewCanvas : View {
         canvas?.drawOval(BlurManager.blurGuideOvalRectF, BlurManager.blurGuidePaint)
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         when (event?.action) {
             MotionEvent.ACTION_DOWN -> touchDown(event)

@@ -15,9 +15,4 @@
     <color name="bg_for_alpha_image">#EEEEEE</color>
 
     <color name="ucrop_toolbar_text_color">#121212</color>
-
-    <color name="black">#000000</color>
-    <color name="white">#FFFFFF</color>
-    <color name="grayLoadingBackground">#55000000</color>
-    <color name="whiteRipple">#CCCCCC</color>
 </resources>
