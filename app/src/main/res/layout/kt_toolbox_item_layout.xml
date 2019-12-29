@@ -1,75 +1,97 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginStart="@dimen/stamp_item_start_end_margin"
-    android:layout_marginTop="@dimen/stamp_item_top_margin"
-    android:layout_marginEnd="@dimen/stamp_item_start_end_margin"
-    android:layout_marginBottom="@dimen/stamp_item_bottom_margin"
-    android:orientation="vertical">
+    android:orientation="horizontal">
 
-    <LinearLayout
+    <ImageView
+        android:layout_width="@dimen/option_item_layout_height"
+        android:layout_height="@dimen/option_item_layout_height"
+        android:layout_gravity="center"
+        android:layout_marginStart="@dimen/stamp_item_start_end_margin"
+        android:contentDescription="@null"
+        android:src="@drawable/icon_hi_res_512" />
+
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="@dimen/option_item_layout_height"
-        android:gravity="center"
-        android:orientation="horizontal">
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="@dimen/stamp_item_start_end_margin"
+        android:layout_marginBottom="8dp"
+        android:orientation="vertical">
 
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="4" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/option_item_layout_height"
+            android:gravity="center"
+            android:orientation="horizontal">
 
-        <FrameLayout
-            android:id="@+id/toolbox_option_button"
-            android:layout_width="0dp"
-            android:layout_height="24dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="4dp"
-            android:layout_weight="1"
-            android:background="?attr/selectableItemBackground">
-
-            <ImageView
-                android:layout_width="match_parent"
+            <TextView
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:contentDescription="@null"
-                android:scaleType="fitCenter"
-                android:src="@drawable/ic_settings_black_24dp" />
-        </FrameLayout>
+                android:layout_weight="4"
+                android:gravity="center_vertical"
+                android:padding="8dp"
+                android:text="@string/app_name_short"
+                android:textColor="@color/main_text_color"
+                android:textSize="16sp" />
 
-        <FrameLayout
-            android:id="@+id/toolbox_help_button"
-            android:layout_width="0dp"
-            android:layout_height="24dp"
-            android:layout_marginStart="4dp"
-            android:layout_marginEnd="4dp"
-            android:layout_weight="1"
-            android:background="?attr/selectableItemBackground">
+            <FrameLayout
+                android:id="@+id/toolbox_help_button"
+                android:layout_width="0dp"
+                android:layout_height="36dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="4dp"
+                android:layout_weight="1"
+                android:background="?attr/selectableItemBackgroundBorderless">
 
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:contentDescription="@null"
-                android:scaleType="fitCenter"
-                android:src="@drawable/action_help_black_24dp" />
-        </FrameLayout>
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center"
+                    android:contentDescription="@null"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/action_help_black_24dp" />
+            </FrameLayout>
 
-        <FrameLayout
-            android:id="@+id/toolbox_credit_button"
-            android:layout_width="0dp"
-            android:layout_height="24dp"
-            android:layout_marginStart="4dp"
-            android:layout_marginEnd="8dp"
-            android:layout_weight="1"
-            android:background="?attr/selectableItemBackground">
+            <FrameLayout
+                android:id="@+id/toolbox_credit_button"
+                android:layout_width="0dp"
+                android:layout_height="36dp"
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="4dp"
+                android:layout_weight="1"
+                android:background="?attr/selectableItemBackgroundBorderless">
 
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:contentDescription="@null"
-                android:scaleType="fitCenter"
-                android:src="@drawable/action_info_black_24dp" />
-        </FrameLayout>
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center"
+                    android:contentDescription="@null"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/action_info_black_24dp" />
+            </FrameLayout>
 
-    </LinearLayout>
+            <FrameLayout
+                android:id="@+id/toolbox_option_button"
+                android:layout_width="0dp"
+                android:layout_height="36dp"
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="8dp"
+                android:layout_weight="1"
+                android:background="?attr/selectableItemBackgroundBorderless">
 
-</androidx.cardview.widget.CardView>
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center"
+                    android:contentDescription="@null"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/ic_settings_black_24dp" />
+            </FrameLayout>
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+</LinearLayout>
