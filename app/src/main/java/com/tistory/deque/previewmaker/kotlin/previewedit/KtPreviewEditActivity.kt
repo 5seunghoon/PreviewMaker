@@ -2,6 +2,7 @@ package com.tistory.deque.previewmaker.kotlin.previewedit
 
 import androidx.lifecycle.Observer
 import android.content.Intent
+import android.content.res.Configuration
 import android.net.Uri
 import com.google.android.material.snackbar.Snackbar
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -137,7 +138,6 @@ class KtPreviewEditActivity : BaseKotlinActivity<KtPreviewEditViewModel>() {
     }
 
     override fun initViewFinal() {
-        //viewModel.makePreviewThumbnail(applicationContext, previewPathList)
         viewModel.loadPreviewThumbnail(applicationContext, previewPathList)
     }
 
@@ -191,6 +191,7 @@ class KtPreviewEditActivity : BaseKotlinActivity<KtPreviewEditViewModel>() {
         PreviewEditClickStateManager.initState()
         PreviewBitmapManager.resetManager()
         BlurManager.resetManager()
+        viewModel.reset()
         super.onDestroy()
     }
 

@@ -1,5 +1,6 @@
 package com.tistory.deque.previewmaker.kotlin.customview
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.*
 import android.os.AsyncTask
@@ -18,6 +19,7 @@ import java.lang.IllegalArgumentException
 import kotlin.math.roundToInt
 import android.graphics.Bitmap
 import android.content.Intent
+import android.content.res.Configuration
 import com.tistory.deque.previewmaker.R
 import java.io.File
 import java.io.FileOutputStream
@@ -69,7 +71,7 @@ class CustomPreviewCanvas : View {
         super.onDraw(canvas)
         this.canvas = canvas
 
-        setBackgroundColor(ContextCompat.getColor(context, R.color.backgroundGray))
+        setBackgroundColor(ContextCompat.getColor(context, R.color.bg_for_alpha_image))
         preview?.let {
             if (isSaveRoutine) {
                 drawSaveBitmap(it)
@@ -91,7 +93,7 @@ class CustomPreviewCanvas : View {
                     }
                 }
             }
-        } ?: setBackgroundColor(Color.WHITE)
+        } ?: setBackgroundColor(ContextCompat.getColor(context, R.color.bg_for_alpha_image))
     }
 
     private fun drawSaveBitmap(preview: Preview) {
@@ -220,6 +222,7 @@ class CustomPreviewCanvas : View {
         canvas?.drawOval(BlurManager.blurGuideOvalRectF, BlurManager.blurGuidePaint)
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         when (event?.action) {
             MotionEvent.ACTION_DOWN -> touchDown(event)

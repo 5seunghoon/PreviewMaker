@@ -25,7 +25,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@android:color/white"
+                android:background="@android:color/transparent"
                 android:orientation="horizontal"
                 android:baselineAligned="false">
 
@@ -36,7 +36,7 @@
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="8dp"
                     android:layout_weight="3"
-                    android:background="@color/backgroundGray"
+                    android:background="@color/bg_for_alpha_image"
                     android:gravity="center"
                     android:orientation="horizontal">
 
@@ -64,6 +64,7 @@
                         android:gravity="end|center"
                         android:paddingStart="8dp"
                         android:paddingEnd="0dp"
+                        android:textColor="@color/main_text_color"
                         android:text=""
                         tools:text="name name"
                         android:textSize="14sp" />
@@ -76,7 +77,7 @@
                 android:id="@+id/stamp_item_select_layout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@drawable/ripple_effect_transparent_normal"
+                android:background="?attr/selectableItemBackground"
                 android:orientation="horizontal"/>
 
         </FrameLayout>
@@ -85,7 +86,7 @@
             android:id="@+id/stamp_item_delete_button"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:background="@drawable/ripple_effect_transparent_normal"
+            android:background="?attr/selectableItemBackground"
             android:gravity="center"
             android:orientation="horizontal">
 

@@ -197,7 +197,7 @@ class KtMainActivity : BaseKotlinActivity<KtMainViewModel>() {
     }
 
     private fun delAlertShow(stamp: Stamp, position: Int) {
-        val stampDeleteAlert = AlertDialog.Builder(this)
+        val stampDeleteAlert = AlertDialog.Builder(this, R.style.AppTheme_Dialog)
         stampDeleteAlert
                 .setMessage("낙관 [${stamp.name}] 을 정말 삭제하시겠습니까?").setCancelable(true)
                 .setPositiveButton("YES") { _, _ -> viewModel.deleteStampAndScan(stamp, position) }

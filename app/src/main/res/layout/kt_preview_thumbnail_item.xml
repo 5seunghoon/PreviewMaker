@@ -15,14 +15,15 @@
             android:id="@+id/preview_thumbnail_item_image_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:contentDescription="@null"
             android:scaleType="centerCrop"
-            app:srcCompat="@color/white" />
+            app:srcCompat="@color/bg_for_alpha_image" />
 
         <LinearLayout
             android:id="@+id/preview_thumbnail_item_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/ripple_effect_transparent_normal"
+            android:background="?attr/selectableItemBackground"
             android:orientation="vertical" />
     </FrameLayout>
 

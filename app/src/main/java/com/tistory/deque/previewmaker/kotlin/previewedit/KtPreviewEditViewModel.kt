@@ -100,7 +100,7 @@ class KtPreviewEditViewModel : BaseKotlinViewModel() {
 
             selectedPreview?.let {
                 if (!it.isSaved) {
-                    AlertDialog.Builder(activity).apply {
+                    AlertDialog.Builder(activity, R.style.AppTheme_Dialog).apply {
                         setMessage(R.string.snackbar_preview_edit_acti_clk_new_preview)
                         setPositiveButton("YES") { _, _ -> _startSavePreviewEvent.call() }
                         setNegativeButton("NO") { _, _ ->
@@ -172,8 +172,8 @@ class KtPreviewEditViewModel : BaseKotlinViewModel() {
         return UCrop.Options().apply {
             setToolbarColor(ContextCompat.getColor(context, R.color.colorPrimary))
             setActiveWidgetColor(ContextCompat.getColor(context, R.color.colorAccent))
-            setToolbarWidgetColor(ContextCompat.getColor(context, R.color.black))
             setStatusBarColor(ContextCompat.getColor(context, R.color.colorPrimaryDark))
+            setToolbarWidgetColor(ContextCompat.getColor(context, R.color.ucrop_toolbar_text_color))
             setFreeStyleCropEnabled(true)
             setAspectRatioOptions(3,
                     AspectRatio("16:9", 16f, 9f),
@@ -257,5 +257,13 @@ class KtPreviewEditViewModel : BaseKotlinViewModel() {
                             _finishLoadingPreviewToBlur.call()
                         }
                 ))
+    }
+
+    fun reset() {
+        previewAdapterModel.clear()
+        _previewThumbnailAdapterNotifyDataSet.call()
+        selectedPreview = null
+        selectedPreviewPosition = null
+        stamp = null
     }
 }

@@ -2,7 +2,7 @@ package com.tistory.deque.previewmaker.kotlin.model
 
 class PreviewAdapterModel {
 
-    var previewArrayList: ArrayList<Preview> = ArrayList()
+    private var previewArrayList: ArrayList<Preview> = ArrayList()
 
     val size: Int
         get() = previewArrayList.size
@@ -20,4 +20,7 @@ class PreviewAdapterModel {
         previewArrayList.removeAt(position)
     }
 
+    fun clear() {
+        previewArrayList.clear()
+    }
 }
