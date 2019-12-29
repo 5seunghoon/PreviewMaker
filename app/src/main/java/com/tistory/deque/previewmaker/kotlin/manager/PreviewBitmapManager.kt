@@ -8,7 +8,7 @@ import java.io.FileNotFoundException
 import java.io.IOException
 import android.media.ExifInterface
 import android.graphics.*
-import com.tistory.deque.previewmaker.kotlin.util.EtcConstant.PREVIEW_BITMAP_MAX_SIZE_DEFAULT
+import com.tistory.deque.previewmaker.kotlin.util.EtcConstant.PREVIEW_BITMAP_SIZE_LIMIT_DEFAULT
 import com.tistory.deque.previewmaker.kotlin.util.EtcConstant.STAMP_BITMAP_MAX_SIZE
 import io.reactivex.Single
 import java.util.ArrayList
@@ -32,7 +32,8 @@ object PreviewBitmapManager {
     }
 
     fun previewImageUriToBitmap(imageUri: Uri, context: Context, rotation: Int?): Bitmap? {
-        return imageUriToBitmap(PREVIEW_BITMAP_MAX_SIZE_DEFAULT, imageUri, context, rotation)
+        val previewBitmapSizeLimit = SharedPreferencesManager.getPreviewBitmapSizeLimit(context)
+        return imageUriToBitmap(previewBitmapSizeLimit, imageUri, context, rotation)
     }
 
     private fun imageUriToBitmap(maxSize: Int, imageUri: Uri, context: Context, rotation: Int?): Bitmap? {

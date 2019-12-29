@@ -13,5 +13,5 @@
   <dimen name="thumbnail_item_image_width_height">90dp</dimen>
   <dimen name="thumbnail_item_image_margin">8dp</dimen>
 
-  <dimen name="option_item_layout_height">36dp</dimen>
+  <dimen name="option_item_layout_height">48dp</dimen>
 </resources>
