@@ -55,6 +55,7 @@
                 android:checked="true"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textColor="@color/main_text_color"
                 android:text="@string/stamp_hidden_checkbox_text"
                 android:textSize="14sp" />
 

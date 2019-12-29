@@ -1,35 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-xmlns:app="http://schemas.android.com/apk/res-auto"
-xmlns:tools="http://schemas.android.com/tools"
 android:layout_width="match_parent"
 android:layout_height="match_parent"
 android:layout_margin="16dp"
-android:orientation="vertical"
-tools:context=".kotlin.opensource.KtOpenSourceActivity">
+android:orientation="vertical">
 
 <TextView
+    android:textColor="@color/main_text_color"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="8dp"
-    android:text="ButterKnife\nhttps://github.com/JakeWharton/butterknife\nApache License, Version 2.0" />
+    android:text="@string/open_source_multi_image_selector"/>
 
 <TextView
+    android:textColor="@color/main_text_color"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="8dp"
-    android:text="MultiImageSelector\nhttps://github.com/lovetuzitong/MultiImageSelector\nMIT License (MIT)" />
+    android:text="@string/open_source_ted_permission"/>
 
 <TextView
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginBottom="8dp"
-    android:text="TedPermission\nhttps://github.com/ParkSangGwon/TedPermission\nApache License, Version 2.0" />
-
-<TextView
+    android:textColor="@color/main_text_color"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_marginBottom="8dp"
-    android:text="uCrop\nhttps://github.com/Yalantis/uCrop\nApache License, Version 2.0" />
+    android:text="@string/open_source_ucrop"/>
 
 </LinearLayout>

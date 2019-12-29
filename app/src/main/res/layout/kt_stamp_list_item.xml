@@ -64,7 +64,7 @@
                         android:gravity="end|center"
                         android:paddingStart="8dp"
                         android:paddingEnd="0dp"
-                        android:textColor="@color/stamp_item_name_text_color"
+                        android:textColor="@color/main_text_color"
                         android:text=""
                         tools:text="name name"
                         android:textSize="14sp" />

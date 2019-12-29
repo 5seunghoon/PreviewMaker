@@ -17,7 +17,6 @@
 
     <string name="title_help_activity">도움말</string>
     <string name="title_credit_activity">어플리케이션 정보</string>
-    <string name="credit_activity_github_url">https://github.com/5seunghoon/PreviewMaker</string>
     <string name="credit_open_source_info">오픈소스 정보</string>
 
     <string name="tutorial_main_activity_text">낙관을 먼저 추가해 주세요</string>
@@ -92,4 +91,10 @@
     <string name="snackbar_main_stamp_source_not_exist">선택된 낙관이 없습니다.</string>
 
     <string name="error_might_file_not_found">파일을 찾을 수 없습니다.</string>
+
+
+    <string name="credit_activity_github_url" translatable="false">https://github.com/5seunghoon/PreviewMaker</string>
+    <string name="open_source_multi_image_selector" translatable="false">MultiImageSelector\nhttps://github.com/lovetuzitong/MultiImageSelector\nMIT License (MIT)</string>
+    <string name="open_source_ted_permission" translatable="false">TedPermission\nhttps://github.com/ParkSangGwon/TedPermission\nApache License, Version 2.0</string>
+    <string name="open_source_ucrop" translatable="false">uCrop\nhttps://github.com/Yalantis/uCrop\nApache License, Version 2.0</string>
 </resources>
