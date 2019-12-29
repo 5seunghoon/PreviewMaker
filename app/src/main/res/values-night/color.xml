@@ -5,6 +5,8 @@
     <color name="colorAccent">#ff4081</color>
 
     <color name="main_bg_color">#2E2E2E</color>
+    <color name="main_text_color">#E0E0E0</color>
+
     <color name="stamp_item_name_text_color">#DBDBDB</color>
     <color name="icon_normal_color">#F0F0F0</color>
     <color name="background_for_alpha_image">#333333</color>
