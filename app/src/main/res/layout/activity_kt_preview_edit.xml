@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/backgroundGray"
+    android:background="@color/bg_for_alpha_image"
     android:orientation="vertical"
     tools:context=".kotlin.previewedit.KtPreviewEditActivity">
 
@@ -21,14 +21,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="4dp"
-                android:background="@color/white"
+                android:background="@color/main_bg_color"
                 android:orientation="vertical">
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/preview_edit_thumbnail_recycler_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/white"
+                    android:background="@android:color/transparent"
                     android:clipToPadding="false"
                     android:overScrollMode="never"
                     android:paddingStart="8dp"
@@ -59,7 +59,7 @@
                     android:id="@+id/preview_edit_canvas_parent"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="@color/white"
+                    android:background="@color/main_bg_color"
                     android:orientation="vertical"
                     android:padding="8dp">
 
@@ -74,7 +74,6 @@
                     android:id="@+id/preview_edit_hint_text_view"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="@android:color/white"
                     android:gravity="center"
                     android:padding="16dp"
                     android:text="@string/canvasview_hint"
@@ -90,7 +89,7 @@
             android:id="@+id/preview_edit_loading_progress_bar_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/grayLoadingBackground"
+            android:background="@color/bg_for_alpha_image"
             android:gravity="center"
             android:visibility="gone"
             android:focusable="true"

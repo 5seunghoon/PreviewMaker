@@ -5,7 +5,7 @@
     android:id="@+id/make_stamp_main_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_for_alpha_image"
+    android:background="@color/bg_for_alpha_image"
     android:orientation="vertical"
     tools:context=".kotlin.makestamp.KtMakeStampActivity">
 

@@ -36,7 +36,7 @@
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="8dp"
                     android:layout_weight="3"
-                    android:background="@color/background_for_alpha_image"
+                    android:background="@color/bg_for_alpha_image"
                     android:gravity="center"
                     android:orientation="horizontal">
 

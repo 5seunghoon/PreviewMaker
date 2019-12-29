@@ -18,6 +18,7 @@ import java.lang.IllegalArgumentException
 import kotlin.math.roundToInt
 import android.graphics.Bitmap
 import android.content.Intent
+import android.content.res.Configuration
 import com.tistory.deque.previewmaker.R
 import java.io.File
 import java.io.FileOutputStream
@@ -69,7 +70,7 @@ class CustomPreviewCanvas : View {
         super.onDraw(canvas)
         this.canvas = canvas
 
-        setBackgroundColor(ContextCompat.getColor(context, R.color.backgroundGray))
+        setBackgroundColor(ContextCompat.getColor(context, R.color.bg_for_alpha_image))
         preview?.let {
             if (isSaveRoutine) {
                 drawSaveBitmap(it)
@@ -91,7 +92,7 @@ class CustomPreviewCanvas : View {
                     }
                 }
             }
-        } ?: setBackgroundColor(Color.WHITE)
+        } ?: setBackgroundColor(ContextCompat.getColor(context, R.color.bg_for_alpha_image))
     }
 
     private fun drawSaveBitmap(preview: Preview) {

@@ -10,7 +10,7 @@ home -> stamp
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="@color/white"
+    android:background="@color/preview_edit_button_parent_bg"
     android:orientation="vertical">
 
     <FrameLayout
@@ -29,7 +29,7 @@ home -> stamp
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="@drawable/ripple_effect_white_normal"
+                android:background="?attr/selectableItemBackground"
                 android:gravity="center"
                 android:orientation="vertical">
 
@@ -45,7 +45,7 @@ home -> stamp
                     android:layout_marginTop="2dp"
                     android:layout_marginBottom="2dp"
                     android:text="@string/action_delete_title"
-                    android:textColor="@color/black"
+                    android:textColor="@color/main_text_color"
                     android:textSize="12sp" />
             </LinearLayout>
 
@@ -54,7 +54,7 @@ home -> stamp
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="@drawable/ripple_effect_white_normal"
+                android:background="?attr/selectableItemBackground"
                 android:gravity="center"
                 android:orientation="vertical">
 
@@ -70,7 +70,7 @@ home -> stamp
                     android:layout_marginTop="2dp"
                     android:layout_marginBottom="2dp"
                     android:text="@string/action_crop_title"
-                    android:textColor="@color/black"
+                    android:textColor="@color/main_text_color"
                     android:textSize="12sp" />
             </LinearLayout>
 
@@ -79,7 +79,7 @@ home -> stamp
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="@drawable/ripple_effect_white_normal"
+                android:background="?attr/selectableItemBackground"
                 android:gravity="center"
                 android:orientation="vertical">
 
@@ -95,7 +95,7 @@ home -> stamp
                     android:layout_marginTop="2dp"
                     android:layout_marginBottom="2dp"
                     android:text="@string/action_stamp_title"
-                    android:textColor="@color/black"
+                    android:textColor="@color/main_text_color"
                     android:textSize="12sp" />
             </LinearLayout>
 
@@ -104,7 +104,7 @@ home -> stamp
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="@drawable/ripple_effect_white_normal"
+                android:background="?attr/selectableItemBackground"
                 android:gravity="center"
                 android:orientation="vertical">
 
@@ -120,7 +120,7 @@ home -> stamp
                     android:layout_marginTop="2dp"
                     android:layout_marginBottom="2dp"
                     android:text="@string/action_filter_title"
-                    android:textColor="@color/black"
+                    android:textColor="@color/main_text_color"
                     android:textSize="12sp" />
             </LinearLayout>
 
@@ -129,7 +129,7 @@ home -> stamp
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="@drawable/ripple_effect_white_normal"
+                android:background="?attr/selectableItemBackground"
                 android:gravity="center"
                 android:orientation="vertical">
 
@@ -145,7 +145,7 @@ home -> stamp
                     android:layout_marginTop="2dp"
                     android:layout_marginBottom="2dp"
                     android:text="@string/action_saveeach_title"
-                    android:textColor="@color/black"
+                    android:textColor="@color/main_text_color"
                     android:textSize="12sp" />
             </LinearLayout>
 
@@ -163,7 +163,7 @@ home -> stamp
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="@drawable/ripple_effect_white_normal"
+                android:background="?attr/selectableItemBackground"
                 android:gravity="center"
                 android:orientation="vertical">
 
@@ -179,7 +179,7 @@ home -> stamp
                     android:layout_marginTop="2dp"
                     android:layout_marginBottom="2dp"
                     android:text="@string/action_stamp_edit_delete_title"
-                    android:textColor="@color/black"
+                    android:textColor="@color/main_text_color"
                     android:textSize="12sp" />
             </LinearLayout>
 
@@ -188,7 +188,7 @@ home -> stamp
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="@drawable/ripple_effect_white_normal"
+                android:background="?attr/selectableItemBackground"
                 android:gravity="center"
                 android:orientation="vertical">
 
@@ -204,7 +204,7 @@ home -> stamp
                     android:layout_marginTop="2dp"
                     android:layout_marginBottom="2dp"
                     android:text="@string/action_stamp_edit_brightness_title"
-                    android:textColor="@color/black"
+                    android:textColor="@color/main_text_color"
                     android:textSize="12sp" />
             </LinearLayout>
 
@@ -213,7 +213,7 @@ home -> stamp
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="@drawable/ripple_effect_white_normal"
+                android:background="?attr/selectableItemBackground"
                 android:gravity="center"
                 android:orientation="vertical">
 
@@ -229,7 +229,7 @@ home -> stamp
                     android:layout_marginTop="2dp"
                     android:layout_marginBottom="2dp"
                     android:text="@string/action_preview_edit_reset_title"
-                    android:textColor="@color/black"
+                    android:textColor="@color/main_text_color"
                     android:textSize="12sp" />
             </LinearLayout>
 
@@ -238,7 +238,7 @@ home -> stamp
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="@drawable/ripple_effect_white_normal"
+                android:background="?attr/selectableItemBackground"
                 android:gravity="center"
                 android:orientation="vertical">
 
@@ -254,7 +254,7 @@ home -> stamp
                     android:layout_marginTop="2dp"
                     android:layout_marginBottom="2dp"
                     android:text="@string/action_stamp_edit_finish_title"
-                    android:textColor="@color/black"
+                    android:textColor="@color/main_text_color"
                     android:textSize="12sp" />
             </LinearLayout>
         </LinearLayout>
@@ -271,7 +271,7 @@ home -> stamp
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="@drawable/ripple_effect_white_normal"
+                android:background="?attr/selectableItemBackground"
                 android:gravity="center"
                 android:orientation="vertical">
 
@@ -287,7 +287,7 @@ home -> stamp
                     android:layout_marginTop="2dp"
                     android:layout_marginBottom="2dp"
                     android:text="@string/action_preview_edit_brightness_contrast_title"
-                    android:textColor="@color/black"
+                    android:textColor="@color/main_text_color"
                     android:textSize="12sp" />
             </LinearLayout>
 
@@ -296,7 +296,7 @@ home -> stamp
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="@drawable/ripple_effect_white_normal"
+                android:background="?attr/selectableItemBackground"
                 android:gravity="center"
                 android:orientation="vertical">
 
@@ -312,7 +312,7 @@ home -> stamp
                     android:layout_marginTop="2dp"
                     android:layout_marginBottom="2dp"
                     android:text="@string/action_preview_edit_saturation_kelvin_title"
-                    android:textColor="@color/black"
+                    android:textColor="@color/main_text_color"
                     android:textSize="12sp" />
             </LinearLayout>
 
@@ -321,7 +321,7 @@ home -> stamp
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="@drawable/ripple_effect_white_normal"
+                android:background="?attr/selectableItemBackground"
                 android:gravity="center"
                 android:orientation="vertical">
 
@@ -337,7 +337,7 @@ home -> stamp
                     android:layout_marginTop="2dp"
                     android:layout_marginBottom="2dp"
                     android:text="@string/action_preview_blur_title"
-                    android:textColor="@color/black"
+                    android:textColor="@color/main_text_color"
                     android:textSize="12sp" />
             </LinearLayout>
 
@@ -346,7 +346,7 @@ home -> stamp
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="@drawable/ripple_effect_white_normal"
+                android:background="?attr/selectableItemBackground"
                 android:gravity="center"
                 android:orientation="vertical">
 
@@ -362,7 +362,7 @@ home -> stamp
                     android:layout_marginTop="2dp"
                     android:layout_marginBottom="2dp"
                     android:text="@string/action_preview_edit_reset_title"
-                    android:textColor="@color/black"
+                    android:textColor="@color/main_text_color"
                     android:textSize="12sp" />
             </LinearLayout>
 
@@ -371,7 +371,7 @@ home -> stamp
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="@drawable/ripple_effect_white_normal"
+                android:background="?attr/selectableItemBackground"
                 android:gravity="center"
                 android:orientation="vertical">
 
@@ -387,7 +387,7 @@ home -> stamp
                     android:layout_marginTop="2dp"
                     android:layout_marginBottom="2dp"
                     android:text="@string/action_preview_edit_finish_title"
-                    android:textColor="@color/black"
+                    android:textColor="@color/main_text_color"
                     android:textSize="12sp" />
             </LinearLayout>
         </LinearLayout>
@@ -396,7 +396,6 @@ home -> stamp
             android:id="@+id/custom_edit_group_handler_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/white"
             android:orientation="horizontal">
 
             <FrameLayout
@@ -408,7 +407,6 @@ home -> stamp
                     android:id="@+id/custom_edit_group_seek_bar_layout"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="@color/white"
                     android:orientation="vertical"
                     android:visibility="visible">
 
@@ -417,7 +415,6 @@ home -> stamp
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="1"
-                        android:background="@color/white"
                         android:gravity="center_vertical"
                         android:orientation="horizontal"
                         android:visibility="visible">
@@ -458,7 +455,6 @@ home -> stamp
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="1"
-                        android:background="@color/white"
                         android:gravity="center_vertical"
                         android:orientation="horizontal">
 
@@ -498,7 +494,6 @@ home -> stamp
                     android:id="@+id/custom_edit_group_only_cancel_or_ok_layout"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="@color/white"
                     android:orientation="horizontal"
                     android:visibility="gone">
 
@@ -512,7 +507,7 @@ home -> stamp
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:background="@drawable/ripple_effect_white_normal"
+                        android:background="?attr/selectableItemBackground"
                         android:gravity="center"
                         android:orientation="vertical">
 
@@ -528,7 +523,7 @@ home -> stamp
                             android:layout_marginTop="2dp"
                             android:layout_marginBottom="2dp"
                             android:text="@string/action_preview_edit_cancle_title"
-                            android:textColor="@color/black"
+                            android:textColor="@color/main_text_color"
                             android:textSize="12sp" />
                     </LinearLayout>
                 </LinearLayout>
@@ -540,7 +535,7 @@ home -> stamp
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:background="@drawable/ripple_effect_white_normal"
+                android:background="?attr/selectableItemBackground"
                 android:gravity="center"
                 android:orientation="vertical"
                 android:visibility="visible">
@@ -557,7 +552,7 @@ home -> stamp
                     android:layout_marginTop="2dp"
                     android:layout_marginBottom="2dp"
                     android:text="@string/action_preview_edit_ok_title"
-                    android:textColor="@color/black"
+                    android:textColor="@color/main_text_color"
                     android:textSize="12sp" />
             </LinearLayout>
 
