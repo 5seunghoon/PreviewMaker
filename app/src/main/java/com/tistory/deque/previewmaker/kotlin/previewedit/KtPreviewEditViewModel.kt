@@ -258,4 +258,12 @@ class KtPreviewEditViewModel : BaseKotlinViewModel() {
                         }
                 ))
     }
+
+    fun reset() {
+        previewAdapterModel.clear()
+        _previewThumbnailAdapterNotifyDataSet.call()
+        selectedPreview = null
+        selectedPreviewPosition = null
+        stamp = null
+    }
 }

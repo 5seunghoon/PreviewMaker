@@ -89,12 +89,12 @@
             android:id="@+id/preview_edit_loading_progress_bar_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/bg_for_alpha_image"
-            android:gravity="center"
-            android:visibility="gone"
-            android:focusable="true"
             android:clickable="true"
-            android:orientation="vertical">
+            android:focusable="true"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone"
+            tools:visibility="visible">
 
             <ProgressBar
                 android:id="@+id/progressBar"
