@@ -5,7 +5,7 @@
     android:id="@+id/make_stamp_main_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/backgroundGray"
+    android:background="@color/background_for_alpha_image"
     android:orientation="vertical"
     tools:context=".kotlin.makestamp.KtMakeStampActivity">
 
@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:background="@android:color/white"
+        android:background="@color/main_bg_color"
         android:gravity="center"
         android:orientation="vertical"
         android:paddingStart="48dp"
@@ -83,7 +83,8 @@
                 android:id="@+id/make_stamp_image_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@android:color/transparent" />
+                android:background="@android:color/transparent"
+                android:contentDescription="@null" />
 
         </LinearLayout>
 </LinearLayout>
