@@ -32,7 +32,8 @@ object PreviewBitmapManager {
     }
 
     fun previewImageUriToBitmap(imageUri: Uri, context: Context, rotation: Int?): Bitmap? {
-        return imageUriToBitmap(PREVIEW_BITMAP_SIZE_LIMIT_DEFAULT, imageUri, context, rotation)
+        val previewBitmapSizeLimit = SharedPreferencesManager.getPreviewBitmapSizeLimit(context)
+        return imageUriToBitmap(previewBitmapSizeLimit, imageUri, context, rotation)
     }
 
     private fun imageUriToBitmap(maxSize: Int, imageUri: Uri, context: Context, rotation: Int?): Bitmap? {

@@ -98,7 +98,7 @@
     <string name="setting_save_dialog_positive_text">네</string>
     <string name="setting_save_dialog_negative_text">아니오</string>
     <string name="setting_preview_size_limit_hint">프리뷰 최대 사이즈</string>
-    <string name="setting_preview_size_limit_desc">프리뷰가 저장될 때 적용되는 최대 사이즈 값입니다.\n사진을 조금 더 고화소로 저장하고 싶으면 이 값을 올려보세요.\n앱이 비정상적으로 종료된다면 이 값을 줄여보세요.\n추천하는 사이즈는 2500입니다.</string>=
+    <string name="setting_preview_size_limit_desc">프리뷰가 저장될 때 적용되는 최대 사이즈 값입니다.\n사진을 조금 더 고화소로 저장하고 싶으면 이 값을 올려보세요.\n혹시 앱이 비정상적으로 종료된다면 이 값을 줄여보세요.\n추천하는 사이즈는 2500입니다.</string>=
     <string name="setting_preview_size_limit_px" translatable="false">px</string>
     <string name="setting_preview_size_limit_px_desc">최대 사이즈 :</string>
     <string name="setting_save_success_snackbar_message">저장 완료</string>
