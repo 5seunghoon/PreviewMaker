@@ -1,0 +1,1 @@
+<p><i>PreviewMaker</i> helps you to put watermarks on a lot of photos. You can use multiple templates (like „do not copy“ stamps or a „sample“ background-writing), chose size and position where the watermark should appear, and even edit color temperature, hue, brightness and contrast.</p>

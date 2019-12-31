@@ -1,0 +1,1 @@
+<p><i>PreviewMaker</i> hilft, Wasserzeichen auch zu größeren Mengen an Fotos hinzuzufügen. Dazu lassen sich Vorlagen verwenden (wie etwa „do not copy“ Stempel oder ein einfacher „Sample“ Hintergrundtext). Größe und Position können frei gewählt werden. Schließlich lassen sich auch Farbtemperatur, Farbton (Hue), Helligkeit und Kontrast des Fotos anpassen.</p>
