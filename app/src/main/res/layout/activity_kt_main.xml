@@ -18,6 +18,12 @@
         android:paddingStart="8dp"
         android:paddingEnd="8dp">
 
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/main_stamp_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/transparent" />
+
         <TextView
             android:id="@+id/main_hint_text_view"
             android:layout_width="match_parent"
@@ -32,12 +38,6 @@
             android:text="@string/tutorial_main_activity_text"
             android:textColor="@color/colorAccent"
             android:textSize="28sp" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/main_stamp_recycler_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@android:color/transparent" />
     </LinearLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton

@@ -265,7 +265,8 @@ home -> stamp
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:visibility="gone">
+            android:visibility="gone"
+            tools:visibility="visible">
 
             <LinearLayout
                 android:id="@+id/custom_edit_group_filter_bright_contra"
@@ -287,6 +288,7 @@ home -> stamp
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
                     android:layout_marginBottom="2dp"
+                    android:gravity="center"
                     android:text="@string/action_preview_edit_brightness_contrast_title"
                     android:textColor="@color/main_text_color"
                     android:textSize="12sp" />
@@ -312,6 +314,7 @@ home -> stamp
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
                     android:layout_marginBottom="2dp"
+                    android:gravity="center"
                     android:text="@string/action_preview_edit_saturation_kelvin_title"
                     android:textColor="@color/main_text_color"
                     android:textSize="12sp" />
@@ -397,7 +400,8 @@ home -> stamp
             android:id="@+id/custom_edit_group_handler_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            tools:visibility="gone">
 
             <FrameLayout
                 android:layout_width="0dp"
@@ -523,7 +527,7 @@ home -> stamp
                             android:layout_height="wrap_content"
                             android:layout_marginTop="2dp"
                             android:layout_marginBottom="2dp"
-                            android:text="@string/action_preview_edit_cancle_title"
+                            android:text="@string/action_preview_edit_cancel_title"
                             android:textColor="@color/main_text_color"
                             android:textSize="12sp" />
                     </LinearLayout>
