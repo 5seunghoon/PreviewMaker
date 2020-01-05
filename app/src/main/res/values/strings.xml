@@ -4,17 +4,11 @@
 
     <string name="ok">OK</string>
 
-    <string name="action_help">도움말</string>
-    <string name="action_donate">개발자 팬싸 보내주기</string>
-    <string name="action_credit">어플리케이션 정보</string>
-
     <string name="hint_stamp_name">낙관 이름</string>
     <string name="title_make_stamp_activity">낙관 이름 설정</string>
     <string name="stamp_error_goto_start">낙관을 만드는 도중 오류가 발생했습니다. 처음부터 다시 시도해주세요.</string>
     <string name="stamp_hidden_checkbox_text">낙관을 갤러리 앱에서 보이지 않게 하기</string>
     <string name="stamp_hidden_checkbox_hint">낙관을 실수로 삭제하는 것을 방지할 수 있습니다</string>
-
-    <string name="title_preview_make_activity">심플 프리뷰 메이커</string>
 
     <string name="title_help_activity">도움말</string>
     <string name="title_credit_activity">어플리케이션 정보</string>
@@ -24,26 +18,16 @@
 
     <string name="action_stamp_title">낙관 편집</string>
     <string name="action_crop_title">자르기</string>
-    <string name="action_saveall_title">모두 저장</string>
     <string name="action_saveeach_title">저장</string>
-    <string name="action_sticker_title">스티커</string>
     <string name="action_delete_title">삭제</string>
     <string name="action_filter_title">간단 보정</string>
 
     <string name="action_stamp_edit_finish_title">편집 완료</string>
     <string name="action_stamp_edit_delete_title">낙관 삭제</string>
     <string name="action_stamp_edit_brightness_title">밝기 조정</string>
-    <string name="action_stamp_edit_brightness_title_short">밝기</string>
-    <string name="action_stamp_edit_reset">초기화</string>
 
-    <string name="action_preview_edit_brightness_title">밝기</string>
-    <string name="action_preview_edit_contrast_title">대비</string>
     <string name="action_preview_edit_brightness_contrast_title">밝기/대비</string>
-    <string name="action_preview_edit_saturation_title">색조</string>
-    <string name="action_preview_edit_kelvin_title">색온도</string>
     <string name="action_preview_edit_saturation_kelvin_title">온도/색조</string>
-
-    <string name="action_preview_blur_radius_title">크기</string>
 
     <string name="action_preview_edit_reset_title">초기화</string>
     <string name="action_preview_blur_title">블러</string>
@@ -71,29 +55,18 @@
     <string name="tedpermission_del_stamp_deny_rational">낙관을 삭제하려면 권한이 꼭 필요합니다.\n[설정]-[애플리케이션]에서 권한을 허용해주세요.</string>
 
     <string name="snackbar_preview_edit_acti_back_to_exit">뒤로 버튼을 한 번 더 누르시면 편집이 취소됩니다.\n저장되지 않을 수 있습니다.</string>
-    <string name="snackbar_preview_edit_acti_back_to_exit_btn">EXIT</string>
     <string name="snackbar_preview_edit_acti_clk_new_preview">편집 중인 프리뷰를 저장하시겠습니까?</string>
 
     <string name="snackbar_stamp_not_found">낙관 파일을 찾을 수 없습니다. 낙관을 다시 설정해보시겠어요?</string>
-
-    <string name="guide_select_previews">프리뷰로 편집할 사진을 선택해주세요</string>
 
     <string name="blur_error_toast_text">블러 수행 중 에러가 발생하였습니다.</string>
 
     <string name="canvasview_hint">편집할 프리뷰를 상단에서 선택해 주세요</string>
 
-    <string name="message_save_dialog">저장중입니다.\n화면에 다르게 표시될 수 있지만, 정상입니다.</string>
-
-    <string name="message_preview_load_dialog">프리뷰를 불러오는 중입니다.</string>
-
-    <string name="message_blurring_bitmap_dialog">블러를 적용 중입니다.</string>
-    <string name="snackbar_main_stamp_source_not_exist">선택된 낙관이 없습니다.</string>
-
     <string name="error_might_file_not_found">파일을 찾을 수 없습니다.</string>
 
     <string name="setting_title">설정</string>
     <string name="setting_save">저장</string>
-    <string name="setting_save_dialog_title">설정 저장</string>
     <string name="setting_save_dialog_message">설정을 저장하시겠습니까?</string>
     <string name="setting_save_dialog_positive_text">네</string>
     <string name="setting_save_dialog_negative_text">아니오</string>
