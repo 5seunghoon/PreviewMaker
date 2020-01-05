@@ -1,80 +1,80 @@
 <resources>
-    <string name="app_name">심플 프리뷰 메이커</string>
-    <string name="app_name_short">프리뷰 메이커</string>
+    <string name="app_name">Simple Preview Maker</string>
+    <string name="app_name_short">Preview Maker</string>
 
     <string name="ok">OK</string>
 
-    <string name="hint_stamp_name">낙관 이름</string>
-    <string name="title_make_stamp_activity">낙관 이름 설정</string>
-    <string name="stamp_error_goto_start">낙관을 만드는 도중 오류가 발생했습니다. 처음부터 다시 시도해주세요.</string>
-    <string name="stamp_hidden_checkbox_text">낙관을 갤러리 앱에서 보이지 않게 하기</string>
-    <string name="stamp_hidden_checkbox_hint">낙관을 실수로 삭제하는 것을 방지할 수 있습니다</string>
+    <string name="hint_stamp_name">Stamp name</string>
+    <string name="title_make_stamp_activity">Make stamp</string>
+    <string name="stamp_error_goto_start">An error occurred while creating the stamp. Please try again from the beginning.</string>
+    <string name="stamp_hidden_checkbox_text">Keep the stamp to invisible in the gallery app</string>
+    <string name="stamp_hidden_checkbox_hint">It prevents accidental deletion of the stamp</string>
 
-    <string name="title_help_activity">도움말</string>
-    <string name="title_credit_activity">어플리케이션 정보</string>
-    <string name="credit_open_source_info">오픈소스 정보</string>
+    <string name="title_help_activity">Helps</string>
+    <string name="title_credit_activity">Application info</string>
+    <string name="credit_open_source_info">Open source info</string>
 
-    <string name="tutorial_main_activity_text">낙관을 먼저 추가해 주세요</string>
+    <string name="tutorial_main_activity_text">Please add the stamp</string>
 
-    <string name="action_stamp_title">낙관 편집</string>
-    <string name="action_crop_title">자르기</string>
-    <string name="action_saveeach_title">저장</string>
-    <string name="action_delete_title">삭제</string>
-    <string name="action_filter_title">간단 보정</string>
+    <string name="action_stamp_title">Stamp</string>
+    <string name="action_crop_title">Crop</string>
+    <string name="action_saveeach_title">Save</string>
+    <string name="action_delete_title">Delete</string>
+    <string name="action_filter_title">Filter</string>
 
-    <string name="action_stamp_edit_finish_title">편집 완료</string>
-    <string name="action_stamp_edit_delete_title">낙관 삭제</string>
-    <string name="action_stamp_edit_brightness_title">밝기 조정</string>
+    <string name="action_stamp_edit_finish_title">Finish editing</string>
+    <string name="action_stamp_edit_delete_title">Delete stamp</string>
+    <string name="action_stamp_edit_brightness_title">Brightness</string>
 
-    <string name="action_preview_edit_brightness_contrast_title">밝기/대비</string>
-    <string name="action_preview_edit_saturation_kelvin_title">온도/색조</string>
+    <string name="action_preview_edit_brightness_contrast_title">Brightness,\nContrast</string>
+    <string name="action_preview_edit_saturation_kelvin_title">Saturation,\nKelvin</string>
 
-    <string name="action_preview_edit_reset_title">초기화</string>
-    <string name="action_preview_blur_title">블러</string>
-    <string name="action_preview_edit_finish_title">보정 저장</string>
+    <string name="action_preview_edit_reset_title">Reset</string>
+    <string name="action_preview_blur_title">Blur</string>
+    <string name="action_preview_edit_finish_title">Save filter</string>
 
-    <string name="action_preview_edit_ok_title">확인</string>
-    <string name="action_preview_edit_cancle_title">취소</string>
+    <string name="action_preview_edit_ok_title">OK</string>
+    <string name="action_preview_edit_cancel_title">Cancel</string>
 
-    <string name="snackbar_main_acti_back_to_exit">뒤로 버튼을 한번 더 누르시면 종료합니다.</string>
+    <string name="snackbar_main_acti_back_to_exit">Press the back button one more time to exit</string>
     <string name="snackbar_main_acti_back_to_exit_btn">EXIT</string>
-    <string name="snackbar_main_acti_stamp_copy_err">파일 복사 에러. 다시 시도해 주세요.</string>
-    <string name="snackbar_main_acti_stamp_size_over_err">낙관 생성 실패. 장축이 2천px 이상일경우 낙관을 만들 수 없습니다. 다시 시도해주세요.</string>
+        <string name="snackbar_main_acti_stamp_copy_err">Error copying file. Please try again.</string>
+    <string name="snackbar_main_acti_stamp_size_over_err">Failure to create stamp. You cannot make a stamp if the long axis is more than 2,000 px. Please try again.</string>
 
-    <string name="snackbar_make_stamp_acti_back_to_exit">뒤로 버튼을 한번 더 누르시면 낙관 설정을 취소합니다.</string>
-    <string name="snackbar_make_stamp_acti_no_name_warn">이름을 입력해 주세요.</string>
-    <string name="snackbar_make_stamp_acti_name_len_warn">낙관의 이름을 10자 이내로 줄여주세요.</string>
+    <string name="snackbar_make_stamp_acti_back_to_exit">Press the back button again to cancel the stamp setting.</string>
+    <string name="snackbar_make_stamp_acti_no_name_warn">Please enter stamp name.</string>
+    <string name="snackbar_make_stamp_acti_name_len_warn">Please shorten the name to less than 10 characters.</string>
 
-    <string name="tedpermission_add_stamp_rational">사진을 불러오고 저장하기 위해서는 파일 접근 권한이 필요합니다.</string>
-    <string name="tedpermission_add_stamp_deny_rational">사진을 불러오고 저장하려면 권한이 꼭 필요합니다.\n[설정]-[애플리케이션]에서 권한을 허용해주세요.</string>
+    <string name="tedpermission_add_stamp_rational">File access permission is required to make preview.</string>
+    <string name="tedpermission_add_stamp_deny_rational">Permissions are required to make preview.\nPlease allow permissions in [Settings]-[Application].</string>
 
-    <string name="tedpermission_select_stamp_rational">낙관을 선택하기 위해서는 파일 접근 권한이 필요합니다.</string>
-    <string name="tedpermission_select_stamp_deny_rational">낙관을 선택하려면 권한이 꼭 필요합니다.\n[설정]-[애플리케이션]에서 권한을 허용해주세요.</string>
+    <string name="tedpermission_select_stamp_rational">File access permission is required to select stamp.</string>
+    <string name="tedpermission_select_stamp_deny_rational">Permissions are required to select stamp.\nPlease allow permissions in [Settings]-[Application].</string>
 
-    <string name="tedpermission_del_stamp_rational">낙관을 삭제하기 위해서는 파일 접근 권한이 필요합니다.</string>
-    <string name="tedpermission_del_stamp_deny_rational">낙관을 삭제하려면 권한이 꼭 필요합니다.\n[설정]-[애플리케이션]에서 권한을 허용해주세요.</string>
+    <string name="tedpermission_del_stamp_rational">File access permission is required to delete stamp.</string>
+    <string name="tedpermission_del_stamp_deny_rational">Permissions are required to delete stamp.\nPlease allow permissions in [Settings]-[Application].</string>
 
-    <string name="snackbar_preview_edit_acti_back_to_exit">뒤로 버튼을 한 번 더 누르시면 편집이 취소됩니다.\n저장되지 않을 수 있습니다.</string>
-    <string name="snackbar_preview_edit_acti_clk_new_preview">편집 중인 프리뷰를 저장하시겠습니까?</string>
+    <string name="snackbar_preview_edit_acti_back_to_exit">Press the back button one more time to cancel edit.\nIt may not be saved.</string>
+    <string name="snackbar_preview_edit_acti_clk_new_preview">Do you want to save?</string>
 
-    <string name="snackbar_stamp_not_found">낙관 파일을 찾을 수 없습니다. 낙관을 다시 설정해보시겠어요?</string>
+    <string name="snackbar_stamp_not_found">Stamp file not found. Would you re-make stamp?</string>
 
-    <string name="blur_error_toast_text">블러 수행 중 에러가 발생하였습니다.</string>
+    <string name="blur_error_toast_text">Error occurred while performing blurring.</string>
 
-    <string name="canvasview_hint">편집할 프리뷰를 상단에서 선택해 주세요</string>
+    <string name="canvasview_hint">Please select the preview you want to edit at the top.</string>
 
-    <string name="error_might_file_not_found">파일을 찾을 수 없습니다.</string>
+    <string name="error_might_file_not_found">File not found.</string>
 
-    <string name="setting_title">설정</string>
-    <string name="setting_save">저장</string>
-    <string name="setting_save_dialog_message">설정을 저장하시겠습니까?</string>
-    <string name="setting_save_dialog_positive_text">네</string>
-    <string name="setting_save_dialog_negative_text">아니오</string>
-    <string name="setting_preview_size_limit_hint">프리뷰 최대 사이즈</string>
-    <string name="setting_preview_size_limit_desc">프리뷰가 저장될 때 적용되는 최대 사이즈 값입니다.\n사진을 조금 더 고화소로 저장하고 싶으면 이 값을 올려보세요.\n혹시 앱이 비정상적으로 종료된다면 이 값을 줄여보세요.\n추천하는 사이즈는 2500입니다.</string>=
+    <string name="setting_title">Settings</string>
+    <string name="setting_save">Save</string>
+    <string name="setting_save_dialog_message">Do you want to save settings?</string>
+    <string name="setting_save_dialog_positive_text">Yes</string>
+    <string name="setting_save_dialog_negative_text">No</string>
+    <string name="setting_preview_size_limit_hint">Max size of preview</string>
+    <string name="setting_preview_size_limit_desc">Max size value that is applied when the preview is saved.\nIf you want to save your preview as high-quality, increase this value.\nOr if your app is shutting down abnormally, reduce this value. Recommended size is 2500px.</string>
     <string name="setting_preview_size_limit_px" translatable="false">px</string>
-    <string name="setting_preview_size_limit_px_desc">최대 사이즈 :</string>
-    <string name="setting_save_success_snackbar_message">저장 완료</string>
+    <string name="setting_preview_size_limit_px_desc">Max size :</string>
+    <string name="setting_save_success_snackbar_message">Save succeeding</string>
 
     <string name="credit_activity_github_url" translatable="false">https://github.com/5seunghoon/PreviewMaker</string>
     <string name="open_source_multi_image_selector" translatable="false">MultiImageSelector\nhttps://github.com/lovetuzitong/MultiImageSelector\nMIT License (MIT)</string>
