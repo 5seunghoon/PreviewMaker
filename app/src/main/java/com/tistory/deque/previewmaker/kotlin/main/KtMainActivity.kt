@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.TedPermission
 import com.tistory.deque.previewmaker.R
@@ -33,6 +34,7 @@ import kotlinx.android.synthetic.main.activity_kt_main.*
 import me.nereo.multi_image_selector.MultiImageSelectorActivity
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
+import java.lang.StringBuilder
 import kotlin.collections.ArrayList
 
 class KtMainActivity : BaseKotlinActivity<KtMainViewModel>() {
@@ -198,16 +200,21 @@ class KtMainActivity : BaseKotlinActivity<KtMainViewModel>() {
     }
 
     private fun delAlertShow(stamp: Stamp, position: Int) {
-        val stampDeleteAlert = AlertDialog.Builder(this, R.style.AppTheme_Dialog)
-        stampDeleteAlert
-                .setMessage("낙관 [${stamp.name}] 을 정말 삭제하시겠습니까?").setCancelable(true)
-                .setPositiveButton("YES") { _, _ -> viewModel.deleteStampAndScan(stamp, position) }
-                .setNegativeButton("NO") { _, _ -> }
-        val delAlert = stampDeleteAlert.create()
+        val deleteAlert = AlertDialog.Builder(this, R.style.AppTheme_Dialog).apply {
+            setMessage(
+                    StringBuilder().apply {
+                        append(applicationContext.resources.getString(R.string.main_stamp_delete_alert_first))
+                        append(stamp.name)
+                        append(applicationContext.resources.getString(R.string.main_stamp_delete_alert_second))
+                    }.toString()
+            )
+            setPositiveButton("YES") { _, _ -> viewModel.deleteStampAndScan(context, stamp, position) }
+            setNegativeButton("NO") { _, _ -> }
+        }.create()
 
         TedPermission.with(applicationContext)
                 .setPermissionListener(object : PermissionListener {
-                    override fun onPermissionGranted() = delAlert.show()
+                    override fun onPermissionGranted() = deleteAlert.show()
                     override fun onPermissionDenied(deniedPermissions: ArrayList<String>) {}
                 })
                 .setRationaleMessage(getString(R.string.tedpermission_del_stamp_rational))
@@ -220,13 +227,27 @@ class KtMainActivity : BaseKotlinActivity<KtMainViewModel>() {
 
     private fun invisibleHint() {
         if (stampAdapter.size > 0) {
-            main_hint_text_view.run { post { visibility = View.GONE } }
+            main_hint_text_view.run {
+                post {
+                    visibility = View.GONE
+                    main_stamp_recycler_view.layoutParams = main_stamp_recycler_view.layoutParams.apply {
+                        height = ViewGroup.LayoutParams.MATCH_PARENT
+                    }
+                }
+            }
         }
     }
 
     private fun visibleHint() {
         if (stampAdapter.size <= 0) {
-            main_hint_text_view.run { post { visibility = View.VISIBLE } }
+            main_hint_text_view.run {
+                post {
+                    visibility = View.VISIBLE
+                    main_stamp_recycler_view.layoutParams = main_stamp_recycler_view.layoutParams.apply {
+                        height = ViewGroup.LayoutParams.WRAP_CONTENT
+                    }
+                }
+            }
         }
     }
 

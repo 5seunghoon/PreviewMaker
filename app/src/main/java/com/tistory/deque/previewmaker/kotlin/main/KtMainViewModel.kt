@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import com.tistory.deque.previewmaker.R
 import com.tistory.deque.previewmaker.kotlin.db.KtDbOpenHelper
 import com.tistory.deque.previewmaker.kotlin.base.BaseKotlinViewModel
 import com.tistory.deque.previewmaker.kotlin.model.Stamp
@@ -139,7 +140,7 @@ class KtMainViewModel : BaseKotlinViewModel() {
         }
     }
 
-    fun deleteStampAndScan(stamp: Stamp, position: Int) {
+    fun deleteStampAndScan(context: Context, stamp: Stamp, position: Int) {
         EzLogger.d("delete position : $position, stamp : $stamp")
 
         val stampFile = File(stamp.imageUri.path)
@@ -151,7 +152,7 @@ class KtMainViewModel : BaseKotlinViewModel() {
         dbOpenHelper?.dbDeleteStamp(stamp.id) // db에서 삭제
         _delStampFromAdapterEvent.value = position // 어뎁터에서 삭제
         _visibleHintEvent.call() // 힌트 보여줄지 체크하고 힌트 보여줌
-        showSnackbar("[${stamp.name}] 삭제 완료")
+        showSnackbar("[${stamp.name}] ${context.resources.getString(R.string.main_stamp_delete_success_snackbar)}")
     }
 
     fun savePositionAndGetPreview(stamp: Stamp) {
