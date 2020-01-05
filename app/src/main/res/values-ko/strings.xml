@@ -15,6 +15,9 @@
     <string name="credit_open_source_info">오픈소스 정보</string>
 
     <string name="tutorial_main_activity_text">낙관을 먼저 추가해 주세요</string>
+    <string name="main_stamp_delete_alert_first">낙관 [</string>
+    <string name="main_stamp_delete_alert_second">] 을 정말로 삭제하시겠습니까?</string>
+    <string name="main_stamp_delete_success_snackbar">삭제 완료</string>
 
     <string name="action_stamp_title">낙관 편집</string>
     <string name="action_crop_title">자르기</string>
@@ -75,4 +78,5 @@
     <string name="setting_preview_size_limit_px" translatable="false">px</string>
     <string name="setting_preview_size_limit_px_desc">최대 사이즈 :</string>
     <string name="setting_save_success_snackbar_message">저장 완료</string>
+    <string name="setting_save_file_name_snackbar_message">파일 이름</string>
 </resources>

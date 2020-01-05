@@ -196,8 +196,10 @@ class KtPreviewEditViewModel : BaseKotlinViewModel() {
         blurPreviewBitmap(canvasWidth, canvasHeight)
     }
 
-    fun showSaveEndSnackbar(fileName: String) {
-        showSnackbar("저장 완료\n저장 경로:${EtcConstant.PREVIEW_SAVED_DIRECTORY}/$fileName")
+    fun showSaveEndSnackbar(context: Context, fileName: String) {
+        showSnackbar("${context.resources.getString(R.string.setting_save_success_snackbar_message)}, " +
+                "${context.resources.getString(R.string.setting_save_file_name_snackbar_message)} :\n" +
+                "${EtcConstant.PREVIEW_SAVED_DIRECTORY}/$fileName")
     }
 
     fun loadPreviewThumbnail(applicationContext: Context, previewPathList: java.util.ArrayList<String>) {

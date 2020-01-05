@@ -15,6 +15,9 @@
     <string name="credit_open_source_info">Open source info</string>
 
     <string name="tutorial_main_activity_text">Please add the stamp</string>
+    <string name="main_stamp_delete_alert_first">Are you sure to delete [</string>
+    <string name="main_stamp_delete_alert_second">]?</string>
+    <string name="main_stamp_delete_success_snackbar">Delete succeeding</string>
 
     <string name="action_stamp_title">Stamp</string>
     <string name="action_crop_title">Crop</string>
@@ -75,6 +78,7 @@
     <string name="setting_preview_size_limit_px" translatable="false">px</string>
     <string name="setting_preview_size_limit_px_desc">Max size :</string>
     <string name="setting_save_success_snackbar_message">Save succeeding</string>
+    <string name="setting_save_file_name_snackbar_message">File name</string>
 
     <string name="credit_activity_github_url" translatable="false">https://github.com/5seunghoon/PreviewMaker</string>
     <string name="open_source_multi_image_selector" translatable="false">MultiImageSelector\nhttps://github.com/lovetuzitong/MultiImageSelector\nMIT License (MIT)</string>
