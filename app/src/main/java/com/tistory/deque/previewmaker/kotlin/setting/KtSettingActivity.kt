@@ -80,6 +80,7 @@ class KtSettingActivity : BaseKotlinActivity<KtSettingViewModel>() {
                     }
                     .setNegativeButton(R.string.setting_save_dialog_negative_text) { dialog, _ ->
                         dialog.dismiss()
+                        finish()
                     }
                     .show()
         } else {
